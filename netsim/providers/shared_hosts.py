@@ -72,8 +72,13 @@ def generate_shared_hosts_files(topology: Box, provider_folder: str = "clab_file
         # Generate hosts file for this device type
         hosts_file_path = f"{shared_hosts_dir}/hosts_{device_type}"
         
-        # Prepare template data
-        template_data = {
+        # Prepare template data - use first node of this device type as base
+        # This ensures we have all the necessary node context
+        first_node_name = next(iter(device_groups[device_type]))
+        base_node = topology.nodes[first_node_name]
+        
+        # Merge with global data like the original implementation
+        template_data = base_node + {
             'hostvars': topology.nodes,
             'hosts': hosts_data,
             'addressing': topology.addressing
@@ -94,7 +99,7 @@ def generate_shared_hosts_files(topology: Box, provider_folder: str = "clab_file
                     templates.write_template(
                         in_folder=os.path.dirname(full_path),
                         j2=os.path.basename(full_path),
-                        data=template_data,
+                        data=template_data.to_dict(),
                         out_folder=shared_hosts_dir,
                         filename=f"hosts_{device_type}"
                     )
