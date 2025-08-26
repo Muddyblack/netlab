@@ -161,10 +161,16 @@ class _Provider(Callback):
     sys_folder = str(_files.get_moddir())+"/"
     out_folder = f"{self.provider}_files/{node.name}"
 
-    # Check if we need to pre-compute hosts entries
-    cache_key = '_hosts_entries_cache'
+    # Initialize cache if needed
     if not hasattr(topology.defaults, '_cache'):
       topology.defaults._cache = Box()
+    
+    # Cache for template content checks
+    if '_template_checks' not in topology.defaults._cache:
+      topology.defaults._cache['_template_checks'] = {}
+    
+    # Pre-compute hosts entries if needed
+    cache_key = '_hosts_entries_cache'
     
     bind_dict = filemaps.mapping_to_dict(binds)
     for file,mapping in bind_dict.items():
@@ -173,8 +179,14 @@ class _Provider(Callback):
       file_name = file.replace(out_folder+"/","")
       template_name = self.find_extra_template(node,file_name,topology)
       if template_name:
-        # Check if this is a hosts file that includes hosts-common
-        is_hosts_file = file_name == 'hosts' and 'hosts-common' in open(template_name).read()
+        # Check if this is a hosts file (with caching)
+        is_hosts_file = False
+        if file_name == 'hosts':
+          if template_name not in topology.defaults._cache['_template_checks']:
+            # Cache the template check result
+            with open(template_name, 'r') as f:
+              topology.defaults._cache['_template_checks'][template_name] = 'hosts-common' in f.read()
+          is_hosts_file = topology.defaults._cache['_template_checks'][template_name]
         
         if is_hosts_file and cache_key not in topology.defaults._cache:
           # Pre-compute hosts entries once for all nodes
@@ -183,18 +195,23 @@ class _Provider(Callback):
           topology.defaults._cache[cache_key] = hosts_entries
           log.print_verbose(f"Pre-computed {len(hosts_entries)} hosts entries (cached for all nodes)")
         
-        # Prepare node data - create a new Box instead of using +
-        node_data = Box({
-          **node.to_dict(),
-          'hostvars': topology.nodes, 
-          'hosts': get_host_addresses(topology),
-          'addressing': topology.addressing  # Needed for subnet prefix
-        })
-        
-        # If this is a hosts file and we have cached entries, inject them
+        # Prepare minimal node data - only include what's actually needed
         if is_hosts_file and cache_key in topology.defaults._cache:
-          node_data['_hosts_entries'] = topology.defaults._cache[cache_key]
+          # For hosts file with cache, we don't need hostvars
+          node_data = {
+            **node.to_dict(),
+            '_hosts_entries': topology.defaults._cache[cache_key],
+            'addressing': topology.addressing.to_dict()
+          }
           log.print_verbose(f"Using cached hosts entries for {node.name}")
+        else:
+          # For other templates, include full data
+          node_data = {
+            **node.to_dict(),
+            'hostvars': topology.nodes.to_dict(), 
+            'hosts': get_host_addresses(topology).to_dict(),
+            'addressing': topology.addressing.to_dict()
+          }
         
         if '/' in file_name:                      # Create subdirectory in out_folder if needed
           pathlib.Path(f"{out_folder}/{os.path.dirname(file_name)}").mkdir(parents=True,exist_ok=True)
@@ -202,66 +219,69 @@ class _Provider(Callback):
           templates.write_template(
             in_folder=os.path.dirname(template_name),
             j2=os.path.basename(template_name),
-            data=node_data.to_dict(),
+            data=node_data,
             out_folder=out_folder, filename=file_name)
         except Exception as ex:
           log.fatal(
             text=f"Error rendering {template_name} into {file_name}\n{strings.extra_data_printout(str(ex))}",
             module=self.provider)
 
-        strings.print_colored_text('[MAPPED]  ','bright_cyan','Mapped ')
-        print(f"{out_folder}/{file_name} to {node.name}:{mapping} (from {template_name.replace(sys_folder,'')})")
+        # Only print mapping info in verbose mode to reduce I/O overhead
+        log.print_verbose(f"[MAPPED] {out_folder}/{file_name} to {node.name}:{mapping} (from {template_name.replace(sys_folder,'')})")
       else:
         log.error(f"Cannot find template for {file_name} on node {node.name}",log.MissingValue,'provider')
 
-  def _compute_hosts_entries(self, topology: Box) -> list:
+  def _compute_hosts_entries(self, topology: Box) -> str:
     """Pre-compute hosts entries from all nodes to avoid O(n²) template rendering"""
-    hosts_entries = []
-    underscores = {}
+    # Use a list for building strings efficiently
+    entries = []
+    underscores = set()
     
     for hname, hdata in topology.nodes.items():
       intf_list = hdata.get('interfaces', [])
-      if 'loopback' in hdata:
+      has_loopback = 'loopback' in hdata
+      
+      if has_loopback:
         intf_list = [hdata.loopback] + intf_list
       
+      # Pre-compute underscore fix for this node
+      has_underscore = '_' in hname
+      display_hname = hname.replace('_', '-') if has_underscore else hname
+      
       for intf in intf_list:
-        h_entry = hname
+        h_entry_parts = [hname]
+        
+        # Build h_entry efficiently
         if 'vrf' in intf:
-          h_entry = f"{intf.vrf}.{h_entry}"
+          h_entry_parts.insert(0, intf.vrf)
         
         if intf.get('type', 'loopback') != 'loopback':
-          h_entry = f"{intf.ifname.replace('/', '-')}.{h_entry}"
+          h_entry_parts.insert(0, intf.ifname.replace('/', '-'))
         
-        underscore_fix = '_' in hname and hname not in underscores
-        need_host = 'loopback' not in hdata or underscore_fix
+        h_entry = '.'.join(reversed(h_entry_parts))
+        
+        # Determine if we need host name
+        underscore_fix = has_underscore and hname not in underscores
+        need_host = not has_loopback or underscore_fix
         
         if underscore_fix:
-          underscores[hname] = hname
-          display_hname = hname.replace('_', '-')
-        else:
-          display_hname = hname
+          underscores.add(hname)
         
-        # Process IPv4 addresses
-        if isinstance(intf.get('ipv4', False), str):
-          # Extract IP address from CIDR notation
-          ip_addr = intf.ipv4.split('/')[0]
-          entry = f"{ip_addr} "
-          if need_host:
-            entry += f"{display_hname} "
-          entry += h_entry
-          hosts_entries.append(entry)
-        
-        # Process IPv6 addresses
-        if isinstance(intf.get('ipv6', False), str):
-          # Extract IP address from CIDR notation
-          ip_addr = intf.ipv6.split('/')[0]
-          entry = f"{ip_addr} "
-          if need_host:
-            entry += f"{display_hname} "
-          entry += h_entry
-          hosts_entries.append(entry)
+        # Process addresses more efficiently
+        for af in ('ipv4', 'ipv6'):
+          addr = intf.get(af)
+          if isinstance(addr, str):
+            # Extract IP address from CIDR notation
+            ip_addr = addr.split('/', 1)[0]
+            
+            # Build entry efficiently
+            if need_host:
+              entries.append(f"{ip_addr} {display_hname} {h_entry}")
+            else:
+              entries.append(f"{ip_addr} {h_entry}")
     
-    return hosts_entries
+    # Join all entries with newlines for efficiency
+    return '\n'.join(entries)
 
   def create(self, topology: Box, fname: typing.Optional[str]) -> None:
     self.transform(topology)

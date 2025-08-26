@@ -1,0 +1,238 @@
+provider: clab
+nodes:
+  r1:
+    device: linux
+  r2:
+    device: linux
+  r3:
+    device: linux
+  r4:
+    device: linux
+  r5:
+    device: linux
+  r6:
+    device: linux
+  r7:
+    device: linux
+  r8:
+    device: linux
+  r9:
+    device: linux
+  r10:
+    device: linux
+  r11:
+    device: linux
+  r12:
+    device: linux
+  r13:
+    device: linux
+  r14:
+    device: linux
+  r15:
+    device: linux
+  r16:
+    device: linux
+  r17:
+    device: linux
+  r18:
+    device: linux
+  r19:
+    device: linux
+  r20:
+    device: linux
+  r21:
+    device: linux
+  r22:
+    device: linux
+  r23:
+    device: linux
+  r24:
+    device: linux
+  r25:
+    device: linux
+  r26:
+    device: linux
+  r27:
+    device: linux
+  r28:
+    device: linux
+  r29:
+    device: linux
+  r30:
+    device: linux
+  r31:
+    device: linux
+  r32:
+    device: linux
+  r33:
+    device: linux
+  r34:
+    device: linux
+  r35:
+    device: linux
+  r36:
+    device: linux
+  r37:
+    device: linux
+  r38:
+    device: linux
+  r39:
+    device: linux
+  r40:
+    device: linux
+  r41:
+    device: linux
+  r42:
+    device: linux
+  r43:
+    device: linux
+  r44:
+    device: linux
+  r45:
+    device: linux
+  r46:
+    device: linux
+  r47:
+    device: linux
+  r48:
+    device: linux
+  r49:
+    device: linux
+  r50:
+    device: linux
+links:
+- r1-r2
+- r1-r6
+- r1-r11
+- r2-r3
+- r2-r7
+- r2-r12
+- r3-r4
+- r3-r8
+- r3-r13
+- r4-r5
+- r4-r9
+- r4-r14
+- r5-r6
+- r5-r10
+- r5-r15
+- r6-r7
+- r6-r11
+- r6-r16
+- r7-r8
+- r7-r12
+- r7-r17
+- r8-r9
+- r8-r13
+- r8-r18
+- r9-r10
+- r9-r14
+- r9-r19
+- r10-r11
+- r10-r15
+- r10-r20
+- r11-r12
+- r11-r16
+- r11-r21
+- r12-r13
+- r12-r17
+- r12-r22
+- r13-r14
+- r13-r18
+- r13-r23
+- r14-r15
+- r14-r19
+- r14-r24
+- r15-r16
+- r15-r20
+- r15-r25
+- r16-r17
+- r16-r21
+- r16-r26
+- r17-r18
+- r17-r22
+- r17-r27
+- r18-r19
+- r18-r23
+- r18-r28
+- r19-r20
+- r19-r24
+- r19-r29
+- r20-r21
+- r20-r25
+- r20-r30
+- r21-r22
+- r21-r26
+- r21-r31
+- r22-r23
+- r22-r27
+- r22-r32
+- r23-r24
+- r23-r28
+- r23-r33
+- r24-r25
+- r24-r29
+- r24-r34
+- r25-r26
+- r25-r30
+- r25-r35
+- r26-r27
+- r26-r31
+- r26-r36
+- r27-r28
+- r27-r32
+- r27-r37
+- r28-r29
+- r28-r33
+- r28-r38
+- r29-r30
+- r29-r34
+- r29-r39
+- r30-r31
+- r30-r35
+- r30-r40
+- r31-r32
+- r31-r36
+- r31-r41
+- r32-r33
+- r32-r37
+- r32-r42
+- r33-r34
+- r33-r38
+- r33-r43
+- r34-r35
+- r34-r39
+- r34-r44
+- r35-r36
+- r35-r40
+- r35-r45
+- r36-r37
+- r36-r41
+- r36-r46
+- r37-r38
+- r37-r42
+- r37-r47
+- r38-r39
+- r38-r43
+- r38-r48
+- r39-r40
+- r39-r44
+- r39-r49
+- r40-r41
+- r40-r45
+- r40-r50
+- r41-r42
+- r41-r46
+- r42-r43
+- r42-r47
+- r43-r44
+- r43-r48
+- r44-r45
+- r44-r49
+- r45-r46
+- r45-r50
+- r46-r47
+- r47-r48
+- r48-r49
+- r49-r50
+- r50-r1

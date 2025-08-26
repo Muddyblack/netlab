@@ -1,7 +1,7 @@
 addressing:
   l2only: {}
   lan:
-    ipv4: 172.16.0.0/16
+    ipv4: 10.0.0.0/16
     prefix: 24
   loopback:
     ipv4: 10.0.0.0/24
@@ -41,50 +41,9 @@ defaults:
     - vlan
     - vrf
     - vxlan
-    hosts:
-      r1:
-        ipv4:
-        - 172.16.0.1
-        - 172.16.9.1
-      r10:
-        ipv4:
-        - 172.16.8.2
-        - 172.16.9.2
-      r2:
-        ipv4:
-        - 172.16.0.3
-        - 172.16.1.3
-      r3:
-        ipv4:
-        - 172.16.1.4
-        - 172.16.2.4
-      r4:
-        ipv4:
-        - 172.16.2.5
-        - 172.16.3.5
-      r5:
-        ipv4:
-        - 172.16.3.6
-        - 172.16.4.6
-      r6:
-        ipv4:
-        - 172.16.4.7
-        - 172.16.5.7
-      r7:
-        ipv4:
-        - 172.16.5.8
-        - 172.16.6.8
-      r8:
-        ipv4:
-        - 172.16.6.9
-        - 172.16.7.9
-      r9:
-        ipv4:
-        - 172.16.7.10
-        - 172.16.8.10
     node_id_id:
       max: 150
-      next: 10
+      next: 100
       value: !!set
         1: null
         2: null
@@ -96,6 +55,96 @@ defaults:
         8: null
         9: null
         10: null
+        11: null
+        12: null
+        13: null
+        14: null
+        15: null
+        16: null
+        17: null
+        18: null
+        19: null
+        20: null
+        21: null
+        22: null
+        23: null
+        24: null
+        25: null
+        26: null
+        27: null
+        28: null
+        29: null
+        30: null
+        31: null
+        32: null
+        33: null
+        34: null
+        35: null
+        36: null
+        37: null
+        38: null
+        39: null
+        40: null
+        41: null
+        42: null
+        43: null
+        44: null
+        45: null
+        46: null
+        47: null
+        48: null
+        49: null
+        50: null
+        51: null
+        52: null
+        53: null
+        54: null
+        55: null
+        56: null
+        57: null
+        58: null
+        59: null
+        60: null
+        61: null
+        62: null
+        63: null
+        64: null
+        65: null
+        66: null
+        67: null
+        68: null
+        69: null
+        70: null
+        71: null
+        72: null
+        73: null
+        74: null
+        75: null
+        76: null
+        77: null
+        78: null
+        79: null
+        80: null
+        81: null
+        82: null
+        83: null
+        84: null
+        85: null
+        86: null
+        87: null
+        88: null
+        89: null
+        90: null
+        91: null
+        92: null
+        93: null
+        94: null
+        95: null
+        96: null
+        97: null
+        98: null
+        99: null
+        100: null
   addressing:
     l2only: null
     lan:
@@ -7358,7 +7407,7 @@ defaults:
   warnings:
     duplicate_address: true
 input:
-- /workspace/test_10.yml
+- /workspace/test_100.yml
 - package:topology-defaults.yml
 links:
 - _linkname: links[1]
@@ -7366,16 +7415,16 @@ links:
   interfaces:
   - ifindex: 1
     ifname: eth1
-    ipv4: 172.16.0.1/24
+    ipv4: 10.0.0.1/24
     node: r1
   - ifindex: 1
     ifname: eth1
-    ipv4: 172.16.0.3/24
+    ipv4: 10.0.0.2/24
     node: r2
   linkindex: 1
   node_count: 2
   prefix:
-    ipv4: 172.16.0.0/24
+    ipv4: 10.0.0.0/24
   role: stub
   type: lan
 - _linkname: links[2]
@@ -7383,16 +7432,16 @@ links:
   interfaces:
   - ifindex: 2
     ifname: eth2
-    ipv4: 172.16.1.3/24
+    ipv4: 10.0.1.2/24
     node: r2
   - ifindex: 1
     ifname: eth1
-    ipv4: 172.16.1.4/24
+    ipv4: 10.0.1.3/24
     node: r3
   linkindex: 2
   node_count: 2
   prefix:
-    ipv4: 172.16.1.0/24
+    ipv4: 10.0.1.0/24
   role: stub
   type: lan
 - _linkname: links[3]
@@ -7400,16 +7449,16 @@ links:
   interfaces:
   - ifindex: 2
     ifname: eth2
-    ipv4: 172.16.2.4/24
+    ipv4: 10.0.2.3/24
     node: r3
   - ifindex: 1
     ifname: eth1
-    ipv4: 172.16.2.5/24
+    ipv4: 10.0.2.4/24
     node: r4
   linkindex: 3
   node_count: 2
   prefix:
-    ipv4: 172.16.2.0/24
+    ipv4: 10.0.2.0/24
   role: stub
   type: lan
 - _linkname: links[4]
@@ -7417,16 +7466,16 @@ links:
   interfaces:
   - ifindex: 2
     ifname: eth2
-    ipv4: 172.16.3.5/24
+    ipv4: 10.0.3.4/24
     node: r4
   - ifindex: 1
     ifname: eth1
-    ipv4: 172.16.3.6/24
+    ipv4: 10.0.3.5/24
     node: r5
   linkindex: 4
   node_count: 2
   prefix:
-    ipv4: 172.16.3.0/24
+    ipv4: 10.0.3.0/24
   role: stub
   type: lan
 - _linkname: links[5]
@@ -7434,16 +7483,16 @@ links:
   interfaces:
   - ifindex: 2
     ifname: eth2
-    ipv4: 172.16.4.6/24
+    ipv4: 10.0.4.5/24
     node: r5
   - ifindex: 1
     ifname: eth1
-    ipv4: 172.16.4.7/24
+    ipv4: 10.0.4.6/24
     node: r6
   linkindex: 5
   node_count: 2
   prefix:
-    ipv4: 172.16.4.0/24
+    ipv4: 10.0.4.0/24
   role: stub
   type: lan
 - _linkname: links[6]
@@ -7451,16 +7500,16 @@ links:
   interfaces:
   - ifindex: 2
     ifname: eth2
-    ipv4: 172.16.5.7/24
+    ipv4: 10.0.5.6/24
     node: r6
   - ifindex: 1
     ifname: eth1
-    ipv4: 172.16.5.8/24
+    ipv4: 10.0.5.7/24
     node: r7
   linkindex: 6
   node_count: 2
   prefix:
-    ipv4: 172.16.5.0/24
+    ipv4: 10.0.5.0/24
   role: stub
   type: lan
 - _linkname: links[7]
@@ -7468,16 +7517,16 @@ links:
   interfaces:
   - ifindex: 2
     ifname: eth2
-    ipv4: 172.16.6.8/24
+    ipv4: 10.0.6.7/24
     node: r7
   - ifindex: 1
     ifname: eth1
-    ipv4: 172.16.6.9/24
+    ipv4: 10.0.6.8/24
     node: r8
   linkindex: 7
   node_count: 2
   prefix:
-    ipv4: 172.16.6.0/24
+    ipv4: 10.0.6.0/24
   role: stub
   type: lan
 - _linkname: links[8]
@@ -7485,16 +7534,16 @@ links:
   interfaces:
   - ifindex: 2
     ifname: eth2
-    ipv4: 172.16.7.9/24
+    ipv4: 10.0.7.8/24
     node: r8
   - ifindex: 1
     ifname: eth1
-    ipv4: 172.16.7.10/24
+    ipv4: 10.0.7.9/24
     node: r9
   linkindex: 8
   node_count: 2
   prefix:
-    ipv4: 172.16.7.0/24
+    ipv4: 10.0.7.0/24
   role: stub
   type: lan
 - _linkname: links[9]
@@ -7502,16 +7551,16 @@ links:
   interfaces:
   - ifindex: 2
     ifname: eth2
-    ipv4: 172.16.8.10/24
+    ipv4: 10.0.8.9/24
     node: r9
   - ifindex: 1
     ifname: eth1
-    ipv4: 172.16.8.2/24
+    ipv4: 10.0.8.10/24
     node: r10
   linkindex: 9
   node_count: 2
   prefix:
-    ipv4: 172.16.8.0/24
+    ipv4: 10.0.8.0/24
   role: stub
   type: lan
 - _linkname: links[10]
@@ -7519,16 +7568,1546 @@ links:
   interfaces:
   - ifindex: 2
     ifname: eth2
-    ipv4: 172.16.9.2/24
+    ipv4: 10.0.9.10/24
     node: r10
-  - ifindex: 2
-    ifname: eth2
-    ipv4: 172.16.9.1/24
-    node: r1
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.9.11/24
+    node: r11
   linkindex: 10
   node_count: 2
   prefix:
-    ipv4: 172.16.9.0/24
+    ipv4: 10.0.9.0/24
+  role: stub
+  type: lan
+- _linkname: links[11]
+  bridge: workspace_11
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.10.11/24
+    node: r11
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.10.12/24
+    node: r12
+  linkindex: 11
+  node_count: 2
+  prefix:
+    ipv4: 10.0.10.0/24
+  role: stub
+  type: lan
+- _linkname: links[12]
+  bridge: workspace_12
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.11.12/24
+    node: r12
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.11.13/24
+    node: r13
+  linkindex: 12
+  node_count: 2
+  prefix:
+    ipv4: 10.0.11.0/24
+  role: stub
+  type: lan
+- _linkname: links[13]
+  bridge: workspace_13
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.12.13/24
+    node: r13
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.12.14/24
+    node: r14
+  linkindex: 13
+  node_count: 2
+  prefix:
+    ipv4: 10.0.12.0/24
+  role: stub
+  type: lan
+- _linkname: links[14]
+  bridge: workspace_14
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.13.14/24
+    node: r14
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.13.15/24
+    node: r15
+  linkindex: 14
+  node_count: 2
+  prefix:
+    ipv4: 10.0.13.0/24
+  role: stub
+  type: lan
+- _linkname: links[15]
+  bridge: workspace_15
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.14.15/24
+    node: r15
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.14.16/24
+    node: r16
+  linkindex: 15
+  node_count: 2
+  prefix:
+    ipv4: 10.0.14.0/24
+  role: stub
+  type: lan
+- _linkname: links[16]
+  bridge: workspace_16
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.15.16/24
+    node: r16
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.15.17/24
+    node: r17
+  linkindex: 16
+  node_count: 2
+  prefix:
+    ipv4: 10.0.15.0/24
+  role: stub
+  type: lan
+- _linkname: links[17]
+  bridge: workspace_17
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.16.17/24
+    node: r17
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.16.18/24
+    node: r18
+  linkindex: 17
+  node_count: 2
+  prefix:
+    ipv4: 10.0.16.0/24
+  role: stub
+  type: lan
+- _linkname: links[18]
+  bridge: workspace_18
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.17.18/24
+    node: r18
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.17.19/24
+    node: r19
+  linkindex: 18
+  node_count: 2
+  prefix:
+    ipv4: 10.0.17.0/24
+  role: stub
+  type: lan
+- _linkname: links[19]
+  bridge: workspace_19
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.18.19/24
+    node: r19
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.18.20/24
+    node: r20
+  linkindex: 19
+  node_count: 2
+  prefix:
+    ipv4: 10.0.18.0/24
+  role: stub
+  type: lan
+- _linkname: links[20]
+  bridge: workspace_20
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.19.20/24
+    node: r20
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.19.21/24
+    node: r21
+  linkindex: 20
+  node_count: 2
+  prefix:
+    ipv4: 10.0.19.0/24
+  role: stub
+  type: lan
+- _linkname: links[21]
+  bridge: workspace_21
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.20.21/24
+    node: r21
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.20.22/24
+    node: r22
+  linkindex: 21
+  node_count: 2
+  prefix:
+    ipv4: 10.0.20.0/24
+  role: stub
+  type: lan
+- _linkname: links[22]
+  bridge: workspace_22
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.21.22/24
+    node: r22
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.21.23/24
+    node: r23
+  linkindex: 22
+  node_count: 2
+  prefix:
+    ipv4: 10.0.21.0/24
+  role: stub
+  type: lan
+- _linkname: links[23]
+  bridge: workspace_23
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.22.23/24
+    node: r23
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.22.24/24
+    node: r24
+  linkindex: 23
+  node_count: 2
+  prefix:
+    ipv4: 10.0.22.0/24
+  role: stub
+  type: lan
+- _linkname: links[24]
+  bridge: workspace_24
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.23.24/24
+    node: r24
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.23.25/24
+    node: r25
+  linkindex: 24
+  node_count: 2
+  prefix:
+    ipv4: 10.0.23.0/24
+  role: stub
+  type: lan
+- _linkname: links[25]
+  bridge: workspace_25
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.24.25/24
+    node: r25
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.24.26/24
+    node: r26
+  linkindex: 25
+  node_count: 2
+  prefix:
+    ipv4: 10.0.24.0/24
+  role: stub
+  type: lan
+- _linkname: links[26]
+  bridge: workspace_26
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.25.26/24
+    node: r26
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.25.27/24
+    node: r27
+  linkindex: 26
+  node_count: 2
+  prefix:
+    ipv4: 10.0.25.0/24
+  role: stub
+  type: lan
+- _linkname: links[27]
+  bridge: workspace_27
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.26.27/24
+    node: r27
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.26.28/24
+    node: r28
+  linkindex: 27
+  node_count: 2
+  prefix:
+    ipv4: 10.0.26.0/24
+  role: stub
+  type: lan
+- _linkname: links[28]
+  bridge: workspace_28
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.27.28/24
+    node: r28
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.27.29/24
+    node: r29
+  linkindex: 28
+  node_count: 2
+  prefix:
+    ipv4: 10.0.27.0/24
+  role: stub
+  type: lan
+- _linkname: links[29]
+  bridge: workspace_29
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.28.29/24
+    node: r29
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.28.30/24
+    node: r30
+  linkindex: 29
+  node_count: 2
+  prefix:
+    ipv4: 10.0.28.0/24
+  role: stub
+  type: lan
+- _linkname: links[30]
+  bridge: workspace_30
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.29.30/24
+    node: r30
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.29.31/24
+    node: r31
+  linkindex: 30
+  node_count: 2
+  prefix:
+    ipv4: 10.0.29.0/24
+  role: stub
+  type: lan
+- _linkname: links[31]
+  bridge: workspace_31
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.30.31/24
+    node: r31
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.30.32/24
+    node: r32
+  linkindex: 31
+  node_count: 2
+  prefix:
+    ipv4: 10.0.30.0/24
+  role: stub
+  type: lan
+- _linkname: links[32]
+  bridge: workspace_32
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.31.32/24
+    node: r32
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.31.33/24
+    node: r33
+  linkindex: 32
+  node_count: 2
+  prefix:
+    ipv4: 10.0.31.0/24
+  role: stub
+  type: lan
+- _linkname: links[33]
+  bridge: workspace_33
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.32.33/24
+    node: r33
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.32.34/24
+    node: r34
+  linkindex: 33
+  node_count: 2
+  prefix:
+    ipv4: 10.0.32.0/24
+  role: stub
+  type: lan
+- _linkname: links[34]
+  bridge: workspace_34
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.33.34/24
+    node: r34
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.33.35/24
+    node: r35
+  linkindex: 34
+  node_count: 2
+  prefix:
+    ipv4: 10.0.33.0/24
+  role: stub
+  type: lan
+- _linkname: links[35]
+  bridge: workspace_35
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.34.35/24
+    node: r35
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.34.36/24
+    node: r36
+  linkindex: 35
+  node_count: 2
+  prefix:
+    ipv4: 10.0.34.0/24
+  role: stub
+  type: lan
+- _linkname: links[36]
+  bridge: workspace_36
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.35.36/24
+    node: r36
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.35.37/24
+    node: r37
+  linkindex: 36
+  node_count: 2
+  prefix:
+    ipv4: 10.0.35.0/24
+  role: stub
+  type: lan
+- _linkname: links[37]
+  bridge: workspace_37
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.36.37/24
+    node: r37
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.36.38/24
+    node: r38
+  linkindex: 37
+  node_count: 2
+  prefix:
+    ipv4: 10.0.36.0/24
+  role: stub
+  type: lan
+- _linkname: links[38]
+  bridge: workspace_38
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.37.38/24
+    node: r38
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.37.39/24
+    node: r39
+  linkindex: 38
+  node_count: 2
+  prefix:
+    ipv4: 10.0.37.0/24
+  role: stub
+  type: lan
+- _linkname: links[39]
+  bridge: workspace_39
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.38.39/24
+    node: r39
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.38.40/24
+    node: r40
+  linkindex: 39
+  node_count: 2
+  prefix:
+    ipv4: 10.0.38.0/24
+  role: stub
+  type: lan
+- _linkname: links[40]
+  bridge: workspace_40
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.39.40/24
+    node: r40
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.39.41/24
+    node: r41
+  linkindex: 40
+  node_count: 2
+  prefix:
+    ipv4: 10.0.39.0/24
+  role: stub
+  type: lan
+- _linkname: links[41]
+  bridge: workspace_41
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.40.41/24
+    node: r41
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.40.42/24
+    node: r42
+  linkindex: 41
+  node_count: 2
+  prefix:
+    ipv4: 10.0.40.0/24
+  role: stub
+  type: lan
+- _linkname: links[42]
+  bridge: workspace_42
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.41.42/24
+    node: r42
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.41.43/24
+    node: r43
+  linkindex: 42
+  node_count: 2
+  prefix:
+    ipv4: 10.0.41.0/24
+  role: stub
+  type: lan
+- _linkname: links[43]
+  bridge: workspace_43
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.42.43/24
+    node: r43
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.42.44/24
+    node: r44
+  linkindex: 43
+  node_count: 2
+  prefix:
+    ipv4: 10.0.42.0/24
+  role: stub
+  type: lan
+- _linkname: links[44]
+  bridge: workspace_44
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.43.44/24
+    node: r44
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.43.45/24
+    node: r45
+  linkindex: 44
+  node_count: 2
+  prefix:
+    ipv4: 10.0.43.0/24
+  role: stub
+  type: lan
+- _linkname: links[45]
+  bridge: workspace_45
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.44.45/24
+    node: r45
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.44.46/24
+    node: r46
+  linkindex: 45
+  node_count: 2
+  prefix:
+    ipv4: 10.0.44.0/24
+  role: stub
+  type: lan
+- _linkname: links[46]
+  bridge: workspace_46
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.45.46/24
+    node: r46
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.45.47/24
+    node: r47
+  linkindex: 46
+  node_count: 2
+  prefix:
+    ipv4: 10.0.45.0/24
+  role: stub
+  type: lan
+- _linkname: links[47]
+  bridge: workspace_47
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.46.47/24
+    node: r47
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.46.48/24
+    node: r48
+  linkindex: 47
+  node_count: 2
+  prefix:
+    ipv4: 10.0.46.0/24
+  role: stub
+  type: lan
+- _linkname: links[48]
+  bridge: workspace_48
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.47.48/24
+    node: r48
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.47.49/24
+    node: r49
+  linkindex: 48
+  node_count: 2
+  prefix:
+    ipv4: 10.0.47.0/24
+  role: stub
+  type: lan
+- _linkname: links[49]
+  bridge: workspace_49
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.48.49/24
+    node: r49
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.48.50/24
+    node: r50
+  linkindex: 49
+  node_count: 2
+  prefix:
+    ipv4: 10.0.48.0/24
+  role: stub
+  type: lan
+- _linkname: links[50]
+  bridge: workspace_50
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.49.50/24
+    node: r50
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.49.51/24
+    node: r51
+  linkindex: 50
+  node_count: 2
+  prefix:
+    ipv4: 10.0.49.0/24
+  role: stub
+  type: lan
+- _linkname: links[51]
+  bridge: workspace_51
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.50.51/24
+    node: r51
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.50.52/24
+    node: r52
+  linkindex: 51
+  node_count: 2
+  prefix:
+    ipv4: 10.0.50.0/24
+  role: stub
+  type: lan
+- _linkname: links[52]
+  bridge: workspace_52
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.51.52/24
+    node: r52
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.51.53/24
+    node: r53
+  linkindex: 52
+  node_count: 2
+  prefix:
+    ipv4: 10.0.51.0/24
+  role: stub
+  type: lan
+- _linkname: links[53]
+  bridge: workspace_53
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.52.53/24
+    node: r53
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.52.54/24
+    node: r54
+  linkindex: 53
+  node_count: 2
+  prefix:
+    ipv4: 10.0.52.0/24
+  role: stub
+  type: lan
+- _linkname: links[54]
+  bridge: workspace_54
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.53.54/24
+    node: r54
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.53.55/24
+    node: r55
+  linkindex: 54
+  node_count: 2
+  prefix:
+    ipv4: 10.0.53.0/24
+  role: stub
+  type: lan
+- _linkname: links[55]
+  bridge: workspace_55
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.54.55/24
+    node: r55
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.54.56/24
+    node: r56
+  linkindex: 55
+  node_count: 2
+  prefix:
+    ipv4: 10.0.54.0/24
+  role: stub
+  type: lan
+- _linkname: links[56]
+  bridge: workspace_56
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.55.56/24
+    node: r56
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.55.57/24
+    node: r57
+  linkindex: 56
+  node_count: 2
+  prefix:
+    ipv4: 10.0.55.0/24
+  role: stub
+  type: lan
+- _linkname: links[57]
+  bridge: workspace_57
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.56.57/24
+    node: r57
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.56.58/24
+    node: r58
+  linkindex: 57
+  node_count: 2
+  prefix:
+    ipv4: 10.0.56.0/24
+  role: stub
+  type: lan
+- _linkname: links[58]
+  bridge: workspace_58
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.57.58/24
+    node: r58
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.57.59/24
+    node: r59
+  linkindex: 58
+  node_count: 2
+  prefix:
+    ipv4: 10.0.57.0/24
+  role: stub
+  type: lan
+- _linkname: links[59]
+  bridge: workspace_59
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.58.59/24
+    node: r59
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.58.60/24
+    node: r60
+  linkindex: 59
+  node_count: 2
+  prefix:
+    ipv4: 10.0.58.0/24
+  role: stub
+  type: lan
+- _linkname: links[60]
+  bridge: workspace_60
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.59.60/24
+    node: r60
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.59.61/24
+    node: r61
+  linkindex: 60
+  node_count: 2
+  prefix:
+    ipv4: 10.0.59.0/24
+  role: stub
+  type: lan
+- _linkname: links[61]
+  bridge: workspace_61
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.60.61/24
+    node: r61
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.60.62/24
+    node: r62
+  linkindex: 61
+  node_count: 2
+  prefix:
+    ipv4: 10.0.60.0/24
+  role: stub
+  type: lan
+- _linkname: links[62]
+  bridge: workspace_62
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.61.62/24
+    node: r62
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.61.63/24
+    node: r63
+  linkindex: 62
+  node_count: 2
+  prefix:
+    ipv4: 10.0.61.0/24
+  role: stub
+  type: lan
+- _linkname: links[63]
+  bridge: workspace_63
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.62.63/24
+    node: r63
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.62.64/24
+    node: r64
+  linkindex: 63
+  node_count: 2
+  prefix:
+    ipv4: 10.0.62.0/24
+  role: stub
+  type: lan
+- _linkname: links[64]
+  bridge: workspace_64
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.63.64/24
+    node: r64
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.63.65/24
+    node: r65
+  linkindex: 64
+  node_count: 2
+  prefix:
+    ipv4: 10.0.63.0/24
+  role: stub
+  type: lan
+- _linkname: links[65]
+  bridge: workspace_65
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.64.65/24
+    node: r65
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.64.66/24
+    node: r66
+  linkindex: 65
+  node_count: 2
+  prefix:
+    ipv4: 10.0.64.0/24
+  role: stub
+  type: lan
+- _linkname: links[66]
+  bridge: workspace_66
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.65.66/24
+    node: r66
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.65.67/24
+    node: r67
+  linkindex: 66
+  node_count: 2
+  prefix:
+    ipv4: 10.0.65.0/24
+  role: stub
+  type: lan
+- _linkname: links[67]
+  bridge: workspace_67
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.66.67/24
+    node: r67
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.66.68/24
+    node: r68
+  linkindex: 67
+  node_count: 2
+  prefix:
+    ipv4: 10.0.66.0/24
+  role: stub
+  type: lan
+- _linkname: links[68]
+  bridge: workspace_68
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.67.68/24
+    node: r68
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.67.69/24
+    node: r69
+  linkindex: 68
+  node_count: 2
+  prefix:
+    ipv4: 10.0.67.0/24
+  role: stub
+  type: lan
+- _linkname: links[69]
+  bridge: workspace_69
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.68.69/24
+    node: r69
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.68.70/24
+    node: r70
+  linkindex: 69
+  node_count: 2
+  prefix:
+    ipv4: 10.0.68.0/24
+  role: stub
+  type: lan
+- _linkname: links[70]
+  bridge: workspace_70
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.69.70/24
+    node: r70
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.69.71/24
+    node: r71
+  linkindex: 70
+  node_count: 2
+  prefix:
+    ipv4: 10.0.69.0/24
+  role: stub
+  type: lan
+- _linkname: links[71]
+  bridge: workspace_71
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.70.71/24
+    node: r71
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.70.72/24
+    node: r72
+  linkindex: 71
+  node_count: 2
+  prefix:
+    ipv4: 10.0.70.0/24
+  role: stub
+  type: lan
+- _linkname: links[72]
+  bridge: workspace_72
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.71.72/24
+    node: r72
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.71.73/24
+    node: r73
+  linkindex: 72
+  node_count: 2
+  prefix:
+    ipv4: 10.0.71.0/24
+  role: stub
+  type: lan
+- _linkname: links[73]
+  bridge: workspace_73
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.72.73/24
+    node: r73
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.72.74/24
+    node: r74
+  linkindex: 73
+  node_count: 2
+  prefix:
+    ipv4: 10.0.72.0/24
+  role: stub
+  type: lan
+- _linkname: links[74]
+  bridge: workspace_74
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.73.74/24
+    node: r74
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.73.75/24
+    node: r75
+  linkindex: 74
+  node_count: 2
+  prefix:
+    ipv4: 10.0.73.0/24
+  role: stub
+  type: lan
+- _linkname: links[75]
+  bridge: workspace_75
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.74.75/24
+    node: r75
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.74.76/24
+    node: r76
+  linkindex: 75
+  node_count: 2
+  prefix:
+    ipv4: 10.0.74.0/24
+  role: stub
+  type: lan
+- _linkname: links[76]
+  bridge: workspace_76
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.75.76/24
+    node: r76
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.75.77/24
+    node: r77
+  linkindex: 76
+  node_count: 2
+  prefix:
+    ipv4: 10.0.75.0/24
+  role: stub
+  type: lan
+- _linkname: links[77]
+  bridge: workspace_77
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.76.77/24
+    node: r77
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.76.78/24
+    node: r78
+  linkindex: 77
+  node_count: 2
+  prefix:
+    ipv4: 10.0.76.0/24
+  role: stub
+  type: lan
+- _linkname: links[78]
+  bridge: workspace_78
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.77.78/24
+    node: r78
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.77.79/24
+    node: r79
+  linkindex: 78
+  node_count: 2
+  prefix:
+    ipv4: 10.0.77.0/24
+  role: stub
+  type: lan
+- _linkname: links[79]
+  bridge: workspace_79
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.78.79/24
+    node: r79
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.78.80/24
+    node: r80
+  linkindex: 79
+  node_count: 2
+  prefix:
+    ipv4: 10.0.78.0/24
+  role: stub
+  type: lan
+- _linkname: links[80]
+  bridge: workspace_80
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.79.80/24
+    node: r80
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.79.81/24
+    node: r81
+  linkindex: 80
+  node_count: 2
+  prefix:
+    ipv4: 10.0.79.0/24
+  role: stub
+  type: lan
+- _linkname: links[81]
+  bridge: workspace_81
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.80.81/24
+    node: r81
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.80.82/24
+    node: r82
+  linkindex: 81
+  node_count: 2
+  prefix:
+    ipv4: 10.0.80.0/24
+  role: stub
+  type: lan
+- _linkname: links[82]
+  bridge: workspace_82
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.81.82/24
+    node: r82
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.81.83/24
+    node: r83
+  linkindex: 82
+  node_count: 2
+  prefix:
+    ipv4: 10.0.81.0/24
+  role: stub
+  type: lan
+- _linkname: links[83]
+  bridge: workspace_83
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.82.83/24
+    node: r83
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.82.84/24
+    node: r84
+  linkindex: 83
+  node_count: 2
+  prefix:
+    ipv4: 10.0.82.0/24
+  role: stub
+  type: lan
+- _linkname: links[84]
+  bridge: workspace_84
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.83.84/24
+    node: r84
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.83.85/24
+    node: r85
+  linkindex: 84
+  node_count: 2
+  prefix:
+    ipv4: 10.0.83.0/24
+  role: stub
+  type: lan
+- _linkname: links[85]
+  bridge: workspace_85
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.84.85/24
+    node: r85
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.84.86/24
+    node: r86
+  linkindex: 85
+  node_count: 2
+  prefix:
+    ipv4: 10.0.84.0/24
+  role: stub
+  type: lan
+- _linkname: links[86]
+  bridge: workspace_86
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.85.86/24
+    node: r86
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.85.87/24
+    node: r87
+  linkindex: 86
+  node_count: 2
+  prefix:
+    ipv4: 10.0.85.0/24
+  role: stub
+  type: lan
+- _linkname: links[87]
+  bridge: workspace_87
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.86.87/24
+    node: r87
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.86.88/24
+    node: r88
+  linkindex: 87
+  node_count: 2
+  prefix:
+    ipv4: 10.0.86.0/24
+  role: stub
+  type: lan
+- _linkname: links[88]
+  bridge: workspace_88
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.87.88/24
+    node: r88
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.87.89/24
+    node: r89
+  linkindex: 88
+  node_count: 2
+  prefix:
+    ipv4: 10.0.87.0/24
+  role: stub
+  type: lan
+- _linkname: links[89]
+  bridge: workspace_89
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.88.89/24
+    node: r89
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.88.90/24
+    node: r90
+  linkindex: 89
+  node_count: 2
+  prefix:
+    ipv4: 10.0.88.0/24
+  role: stub
+  type: lan
+- _linkname: links[90]
+  bridge: workspace_90
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.89.90/24
+    node: r90
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.89.91/24
+    node: r91
+  linkindex: 90
+  node_count: 2
+  prefix:
+    ipv4: 10.0.89.0/24
+  role: stub
+  type: lan
+- _linkname: links[91]
+  bridge: workspace_91
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.90.91/24
+    node: r91
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.90.92/24
+    node: r92
+  linkindex: 91
+  node_count: 2
+  prefix:
+    ipv4: 10.0.90.0/24
+  role: stub
+  type: lan
+- _linkname: links[92]
+  bridge: workspace_92
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.91.92/24
+    node: r92
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.91.93/24
+    node: r93
+  linkindex: 92
+  node_count: 2
+  prefix:
+    ipv4: 10.0.91.0/24
+  role: stub
+  type: lan
+- _linkname: links[93]
+  bridge: workspace_93
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.92.93/24
+    node: r93
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.92.94/24
+    node: r94
+  linkindex: 93
+  node_count: 2
+  prefix:
+    ipv4: 10.0.92.0/24
+  role: stub
+  type: lan
+- _linkname: links[94]
+  bridge: workspace_94
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.93.94/24
+    node: r94
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.93.95/24
+    node: r95
+  linkindex: 94
+  node_count: 2
+  prefix:
+    ipv4: 10.0.93.0/24
+  role: stub
+  type: lan
+- _linkname: links[95]
+  bridge: workspace_95
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.94.95/24
+    node: r95
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.94.96/24
+    node: r96
+  linkindex: 95
+  node_count: 2
+  prefix:
+    ipv4: 10.0.94.0/24
+  role: stub
+  type: lan
+- _linkname: links[96]
+  bridge: workspace_96
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.95.96/24
+    node: r96
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.95.97/24
+    node: r97
+  linkindex: 96
+  node_count: 2
+  prefix:
+    ipv4: 10.0.95.0/24
+  role: stub
+  type: lan
+- _linkname: links[97]
+  bridge: workspace_97
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.96.97/24
+    node: r97
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.96.98/24
+    node: r98
+  linkindex: 97
+  node_count: 2
+  prefix:
+    ipv4: 10.0.96.0/24
+  role: stub
+  type: lan
+- _linkname: links[98]
+  bridge: workspace_98
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.97.98/24
+    node: r98
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.97.99/24
+    node: r99
+  linkindex: 98
+  node_count: 2
+  prefix:
+    ipv4: 10.0.97.0/24
+  role: stub
+  type: lan
+- _linkname: links[99]
+  bridge: workspace_99
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.98.99/24
+    node: r99
+  - ifindex: 1
+    ifname: eth1
+    ipv4: 10.0.98.100/24
+    node: r100
+  linkindex: 99
+  node_count: 2
+  prefix:
+    ipv4: 10.0.98.0/24
+  role: stub
+  type: lan
+- _linkname: links[100]
+  bridge: workspace_100
+  interfaces:
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.99.100/24
+    node: r100
+  - ifindex: 2
+    ifname: eth2
+    ipv4: 10.0.99.1/24
+    node: r1
+  linkindex: 100
+  node_count: 2
+  prefix:
+    ipv4: 10.0.99.0/24
   role: stub
   type: lan
 module:
@@ -7552,27 +9131,27 @@ nodes:
     - bridge: workspace_1
       ifindex: 1
       ifname: eth1
-      ipv4: 172.16.0.1/24
+      ipv4: 10.0.0.1/24
       linkindex: 1
       mtu: 1500
       name: r1 -> r2
       neighbors:
       - ifname: eth1
-        ipv4: 172.16.0.3/24
+        ipv4: 10.0.0.2/24
         node: r2
       role: stub
       type: lan
-    - bridge: workspace_10
+    - bridge: workspace_100
       ifindex: 2
       ifname: eth2
-      ipv4: 172.16.9.1/24
-      linkindex: 10
+      ipv4: 10.0.99.1/24
+      linkindex: 100
       mtu: 1500
-      name: r1 -> r10
+      name: r1 -> r100
       neighbors:
       - ifname: eth2
-        ipv4: 172.16.9.2/24
-        node: r10
+        ipv4: 10.0.99.100/24
+        node: r100
       role: stub
       type: lan
     mgmt:
@@ -7598,42 +9177,552 @@ nodes:
       kind: linux
     device: linux
     hostname: clab-workspace-r10
-    id: 2
+    id: 10
     interfaces:
     - bridge: workspace_9
       ifindex: 1
       ifname: eth1
-      ipv4: 172.16.8.2/24
+      ipv4: 10.0.8.10/24
       linkindex: 9
       mtu: 1500
       name: r10 -> r9
       neighbors:
       - ifname: eth2
-        ipv4: 172.16.8.10/24
+        ipv4: 10.0.8.9/24
         node: r9
       role: stub
       type: lan
     - bridge: workspace_10
       ifindex: 2
       ifname: eth2
-      ipv4: 172.16.9.2/24
+      ipv4: 10.0.9.10/24
       linkindex: 10
       mtu: 1500
-      name: r10 -> r1
+      name: r10 -> r11
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.9.11/24
+        node: r11
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.110
+      mac: 08:4f:a9:0a:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r10
+    role: host
+    routing:
+      static: []
+  r100:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r100/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r100
+    id: 100
+    interfaces:
+    - bridge: workspace_99
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.98.100/24
+      linkindex: 99
+      mtu: 1500
+      name: r100 -> r99
       neighbors:
       - ifname: eth2
-        ipv4: 172.16.9.1/24
+        ipv4: 10.0.98.99/24
+        node: r99
+      role: stub
+      type: lan
+    - bridge: workspace_100
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.99.100/24
+      linkindex: 100
+      mtu: 1500
+      name: r100 -> r1
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.99.1/24
         node: r1
       role: stub
       type: lan
     mgmt:
       ifname: eth0
-      ipv4: 192.168.121.102
-      mac: 08:4f:a9:02:00:00
+      ipv4: 192.168.121.200
+      mac: 08:4f:a9:64:00:00
     module:
     - routing
     mtu: 1500
-    name: r10
+    name: r100
+    role: host
+    routing:
+      static: []
+  r11:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r11/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r11
+    id: 11
+    interfaces:
+    - bridge: workspace_10
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.9.11/24
+      linkindex: 10
+      mtu: 1500
+      name: r11 -> r10
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.9.10/24
+        node: r10
+      role: stub
+      type: lan
+    - bridge: workspace_11
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.10.11/24
+      linkindex: 11
+      mtu: 1500
+      name: r11 -> r12
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.10.12/24
+        node: r12
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.111
+      mac: 08:4f:a9:0b:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r11
+    role: host
+    routing:
+      static: []
+  r12:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r12/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r12
+    id: 12
+    interfaces:
+    - bridge: workspace_11
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.10.12/24
+      linkindex: 11
+      mtu: 1500
+      name: r12 -> r11
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.10.11/24
+        node: r11
+      role: stub
+      type: lan
+    - bridge: workspace_12
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.11.12/24
+      linkindex: 12
+      mtu: 1500
+      name: r12 -> r13
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.11.13/24
+        node: r13
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.112
+      mac: 08:4f:a9:0c:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r12
+    role: host
+    routing:
+      static: []
+  r13:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r13/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r13
+    id: 13
+    interfaces:
+    - bridge: workspace_12
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.11.13/24
+      linkindex: 12
+      mtu: 1500
+      name: r13 -> r12
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.11.12/24
+        node: r12
+      role: stub
+      type: lan
+    - bridge: workspace_13
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.12.13/24
+      linkindex: 13
+      mtu: 1500
+      name: r13 -> r14
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.12.14/24
+        node: r14
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.113
+      mac: 08:4f:a9:0d:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r13
+    role: host
+    routing:
+      static: []
+  r14:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r14/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r14
+    id: 14
+    interfaces:
+    - bridge: workspace_13
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.12.14/24
+      linkindex: 13
+      mtu: 1500
+      name: r14 -> r13
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.12.13/24
+        node: r13
+      role: stub
+      type: lan
+    - bridge: workspace_14
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.13.14/24
+      linkindex: 14
+      mtu: 1500
+      name: r14 -> r15
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.13.15/24
+        node: r15
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.114
+      mac: 08:4f:a9:0e:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r14
+    role: host
+    routing:
+      static: []
+  r15:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r15/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r15
+    id: 15
+    interfaces:
+    - bridge: workspace_14
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.13.15/24
+      linkindex: 14
+      mtu: 1500
+      name: r15 -> r14
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.13.14/24
+        node: r14
+      role: stub
+      type: lan
+    - bridge: workspace_15
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.14.15/24
+      linkindex: 15
+      mtu: 1500
+      name: r15 -> r16
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.14.16/24
+        node: r16
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.115
+      mac: 08:4f:a9:0f:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r15
+    role: host
+    routing:
+      static: []
+  r16:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r16/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r16
+    id: 16
+    interfaces:
+    - bridge: workspace_15
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.14.16/24
+      linkindex: 15
+      mtu: 1500
+      name: r16 -> r15
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.14.15/24
+        node: r15
+      role: stub
+      type: lan
+    - bridge: workspace_16
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.15.16/24
+      linkindex: 16
+      mtu: 1500
+      name: r16 -> r17
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.15.17/24
+        node: r17
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.116
+      mac: 08:4f:a9:10:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r16
+    role: host
+    routing:
+      static: []
+  r17:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r17/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r17
+    id: 17
+    interfaces:
+    - bridge: workspace_16
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.15.17/24
+      linkindex: 16
+      mtu: 1500
+      name: r17 -> r16
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.15.16/24
+        node: r16
+      role: stub
+      type: lan
+    - bridge: workspace_17
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.16.17/24
+      linkindex: 17
+      mtu: 1500
+      name: r17 -> r18
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.16.18/24
+        node: r18
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.117
+      mac: 08:4f:a9:11:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r17
+    role: host
+    routing:
+      static: []
+  r18:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r18/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r18
+    id: 18
+    interfaces:
+    - bridge: workspace_17
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.16.18/24
+      linkindex: 17
+      mtu: 1500
+      name: r18 -> r17
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.16.17/24
+        node: r17
+      role: stub
+      type: lan
+    - bridge: workspace_18
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.17.18/24
+      linkindex: 18
+      mtu: 1500
+      name: r18 -> r19
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.17.19/24
+        node: r19
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.118
+      mac: 08:4f:a9:12:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r18
+    role: host
+    routing:
+      static: []
+  r19:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r19/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r19
+    id: 19
+    interfaces:
+    - bridge: workspace_18
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.17.19/24
+      linkindex: 18
+      mtu: 1500
+      name: r19 -> r18
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.17.18/24
+        node: r18
+      role: stub
+      type: lan
+    - bridge: workspace_19
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.18.19/24
+      linkindex: 19
+      mtu: 1500
+      name: r19 -> r20
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.18.20/24
+        node: r20
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.119
+      mac: 08:4f:a9:13:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r19
     role: host
     routing:
       static: []
@@ -7649,42 +9738,552 @@ nodes:
       kind: linux
     device: linux
     hostname: clab-workspace-r2
-    id: 3
+    id: 2
     interfaces:
     - bridge: workspace_1
       ifindex: 1
       ifname: eth1
-      ipv4: 172.16.0.3/24
+      ipv4: 10.0.0.2/24
       linkindex: 1
       mtu: 1500
       name: r2 -> r1
       neighbors:
       - ifname: eth1
-        ipv4: 172.16.0.1/24
+        ipv4: 10.0.0.1/24
         node: r1
       role: stub
       type: lan
     - bridge: workspace_2
       ifindex: 2
       ifname: eth2
-      ipv4: 172.16.1.3/24
+      ipv4: 10.0.1.2/24
       linkindex: 2
       mtu: 1500
       name: r2 -> r3
       neighbors:
       - ifname: eth1
-        ipv4: 172.16.1.4/24
+        ipv4: 10.0.1.3/24
         node: r3
       role: stub
       type: lan
     mgmt:
       ifname: eth0
-      ipv4: 192.168.121.103
-      mac: 08:4f:a9:03:00:00
+      ipv4: 192.168.121.102
+      mac: 08:4f:a9:02:00:00
     module:
     - routing
     mtu: 1500
     name: r2
+    role: host
+    routing:
+      static: []
+  r20:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r20/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r20
+    id: 20
+    interfaces:
+    - bridge: workspace_19
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.18.20/24
+      linkindex: 19
+      mtu: 1500
+      name: r20 -> r19
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.18.19/24
+        node: r19
+      role: stub
+      type: lan
+    - bridge: workspace_20
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.19.20/24
+      linkindex: 20
+      mtu: 1500
+      name: r20 -> r21
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.19.21/24
+        node: r21
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.120
+      mac: 08:4f:a9:14:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r20
+    role: host
+    routing:
+      static: []
+  r21:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r21/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r21
+    id: 21
+    interfaces:
+    - bridge: workspace_20
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.19.21/24
+      linkindex: 20
+      mtu: 1500
+      name: r21 -> r20
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.19.20/24
+        node: r20
+      role: stub
+      type: lan
+    - bridge: workspace_21
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.20.21/24
+      linkindex: 21
+      mtu: 1500
+      name: r21 -> r22
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.20.22/24
+        node: r22
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.121
+      mac: 08:4f:a9:15:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r21
+    role: host
+    routing:
+      static: []
+  r22:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r22/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r22
+    id: 22
+    interfaces:
+    - bridge: workspace_21
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.20.22/24
+      linkindex: 21
+      mtu: 1500
+      name: r22 -> r21
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.20.21/24
+        node: r21
+      role: stub
+      type: lan
+    - bridge: workspace_22
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.21.22/24
+      linkindex: 22
+      mtu: 1500
+      name: r22 -> r23
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.21.23/24
+        node: r23
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.122
+      mac: 08:4f:a9:16:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r22
+    role: host
+    routing:
+      static: []
+  r23:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r23/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r23
+    id: 23
+    interfaces:
+    - bridge: workspace_22
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.21.23/24
+      linkindex: 22
+      mtu: 1500
+      name: r23 -> r22
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.21.22/24
+        node: r22
+      role: stub
+      type: lan
+    - bridge: workspace_23
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.22.23/24
+      linkindex: 23
+      mtu: 1500
+      name: r23 -> r24
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.22.24/24
+        node: r24
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.123
+      mac: 08:4f:a9:17:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r23
+    role: host
+    routing:
+      static: []
+  r24:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r24/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r24
+    id: 24
+    interfaces:
+    - bridge: workspace_23
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.22.24/24
+      linkindex: 23
+      mtu: 1500
+      name: r24 -> r23
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.22.23/24
+        node: r23
+      role: stub
+      type: lan
+    - bridge: workspace_24
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.23.24/24
+      linkindex: 24
+      mtu: 1500
+      name: r24 -> r25
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.23.25/24
+        node: r25
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.124
+      mac: 08:4f:a9:18:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r24
+    role: host
+    routing:
+      static: []
+  r25:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r25/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r25
+    id: 25
+    interfaces:
+    - bridge: workspace_24
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.23.25/24
+      linkindex: 24
+      mtu: 1500
+      name: r25 -> r24
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.23.24/24
+        node: r24
+      role: stub
+      type: lan
+    - bridge: workspace_25
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.24.25/24
+      linkindex: 25
+      mtu: 1500
+      name: r25 -> r26
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.24.26/24
+        node: r26
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.125
+      mac: 08:4f:a9:19:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r25
+    role: host
+    routing:
+      static: []
+  r26:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r26/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r26
+    id: 26
+    interfaces:
+    - bridge: workspace_25
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.24.26/24
+      linkindex: 25
+      mtu: 1500
+      name: r26 -> r25
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.24.25/24
+        node: r25
+      role: stub
+      type: lan
+    - bridge: workspace_26
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.25.26/24
+      linkindex: 26
+      mtu: 1500
+      name: r26 -> r27
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.25.27/24
+        node: r27
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.126
+      mac: 08:4f:a9:1a:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r26
+    role: host
+    routing:
+      static: []
+  r27:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r27/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r27
+    id: 27
+    interfaces:
+    - bridge: workspace_26
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.25.27/24
+      linkindex: 26
+      mtu: 1500
+      name: r27 -> r26
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.25.26/24
+        node: r26
+      role: stub
+      type: lan
+    - bridge: workspace_27
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.26.27/24
+      linkindex: 27
+      mtu: 1500
+      name: r27 -> r28
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.26.28/24
+        node: r28
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.127
+      mac: 08:4f:a9:1b:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r27
+    role: host
+    routing:
+      static: []
+  r28:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r28/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r28
+    id: 28
+    interfaces:
+    - bridge: workspace_27
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.26.28/24
+      linkindex: 27
+      mtu: 1500
+      name: r28 -> r27
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.26.27/24
+        node: r27
+      role: stub
+      type: lan
+    - bridge: workspace_28
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.27.28/24
+      linkindex: 28
+      mtu: 1500
+      name: r28 -> r29
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.27.29/24
+        node: r29
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.128
+      mac: 08:4f:a9:1c:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r28
+    role: host
+    routing:
+      static: []
+  r29:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r29/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r29
+    id: 29
+    interfaces:
+    - bridge: workspace_28
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.27.29/24
+      linkindex: 28
+      mtu: 1500
+      name: r29 -> r28
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.27.28/24
+        node: r28
+      role: stub
+      type: lan
+    - bridge: workspace_29
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.28.29/24
+      linkindex: 29
+      mtu: 1500
+      name: r29 -> r30
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.28.30/24
+        node: r30
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.129
+      mac: 08:4f:a9:1d:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r29
     role: host
     routing:
       static: []
@@ -7700,42 +10299,552 @@ nodes:
       kind: linux
     device: linux
     hostname: clab-workspace-r3
-    id: 4
+    id: 3
     interfaces:
     - bridge: workspace_2
       ifindex: 1
       ifname: eth1
-      ipv4: 172.16.1.4/24
+      ipv4: 10.0.1.3/24
       linkindex: 2
       mtu: 1500
       name: r3 -> r2
       neighbors:
       - ifname: eth2
-        ipv4: 172.16.1.3/24
+        ipv4: 10.0.1.2/24
         node: r2
       role: stub
       type: lan
     - bridge: workspace_3
       ifindex: 2
       ifname: eth2
-      ipv4: 172.16.2.4/24
+      ipv4: 10.0.2.3/24
       linkindex: 3
       mtu: 1500
       name: r3 -> r4
       neighbors:
       - ifname: eth1
-        ipv4: 172.16.2.5/24
+        ipv4: 10.0.2.4/24
         node: r4
       role: stub
       type: lan
     mgmt:
       ifname: eth0
-      ipv4: 192.168.121.104
-      mac: 08:4f:a9:04:00:00
+      ipv4: 192.168.121.103
+      mac: 08:4f:a9:03:00:00
     module:
     - routing
     mtu: 1500
     name: r3
+    role: host
+    routing:
+      static: []
+  r30:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r30/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r30
+    id: 30
+    interfaces:
+    - bridge: workspace_29
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.28.30/24
+      linkindex: 29
+      mtu: 1500
+      name: r30 -> r29
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.28.29/24
+        node: r29
+      role: stub
+      type: lan
+    - bridge: workspace_30
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.29.30/24
+      linkindex: 30
+      mtu: 1500
+      name: r30 -> r31
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.29.31/24
+        node: r31
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.130
+      mac: 08:4f:a9:1e:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r30
+    role: host
+    routing:
+      static: []
+  r31:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r31/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r31
+    id: 31
+    interfaces:
+    - bridge: workspace_30
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.29.31/24
+      linkindex: 30
+      mtu: 1500
+      name: r31 -> r30
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.29.30/24
+        node: r30
+      role: stub
+      type: lan
+    - bridge: workspace_31
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.30.31/24
+      linkindex: 31
+      mtu: 1500
+      name: r31 -> r32
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.30.32/24
+        node: r32
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.131
+      mac: 08:4f:a9:1f:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r31
+    role: host
+    routing:
+      static: []
+  r32:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r32/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r32
+    id: 32
+    interfaces:
+    - bridge: workspace_31
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.30.32/24
+      linkindex: 31
+      mtu: 1500
+      name: r32 -> r31
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.30.31/24
+        node: r31
+      role: stub
+      type: lan
+    - bridge: workspace_32
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.31.32/24
+      linkindex: 32
+      mtu: 1500
+      name: r32 -> r33
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.31.33/24
+        node: r33
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.132
+      mac: 08:4f:a9:20:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r32
+    role: host
+    routing:
+      static: []
+  r33:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r33/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r33
+    id: 33
+    interfaces:
+    - bridge: workspace_32
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.31.33/24
+      linkindex: 32
+      mtu: 1500
+      name: r33 -> r32
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.31.32/24
+        node: r32
+      role: stub
+      type: lan
+    - bridge: workspace_33
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.32.33/24
+      linkindex: 33
+      mtu: 1500
+      name: r33 -> r34
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.32.34/24
+        node: r34
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.133
+      mac: 08:4f:a9:21:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r33
+    role: host
+    routing:
+      static: []
+  r34:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r34/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r34
+    id: 34
+    interfaces:
+    - bridge: workspace_33
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.32.34/24
+      linkindex: 33
+      mtu: 1500
+      name: r34 -> r33
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.32.33/24
+        node: r33
+      role: stub
+      type: lan
+    - bridge: workspace_34
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.33.34/24
+      linkindex: 34
+      mtu: 1500
+      name: r34 -> r35
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.33.35/24
+        node: r35
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.134
+      mac: 08:4f:a9:22:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r34
+    role: host
+    routing:
+      static: []
+  r35:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r35/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r35
+    id: 35
+    interfaces:
+    - bridge: workspace_34
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.33.35/24
+      linkindex: 34
+      mtu: 1500
+      name: r35 -> r34
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.33.34/24
+        node: r34
+      role: stub
+      type: lan
+    - bridge: workspace_35
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.34.35/24
+      linkindex: 35
+      mtu: 1500
+      name: r35 -> r36
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.34.36/24
+        node: r36
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.135
+      mac: 08:4f:a9:23:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r35
+    role: host
+    routing:
+      static: []
+  r36:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r36/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r36
+    id: 36
+    interfaces:
+    - bridge: workspace_35
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.34.36/24
+      linkindex: 35
+      mtu: 1500
+      name: r36 -> r35
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.34.35/24
+        node: r35
+      role: stub
+      type: lan
+    - bridge: workspace_36
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.35.36/24
+      linkindex: 36
+      mtu: 1500
+      name: r36 -> r37
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.35.37/24
+        node: r37
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.136
+      mac: 08:4f:a9:24:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r36
+    role: host
+    routing:
+      static: []
+  r37:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r37/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r37
+    id: 37
+    interfaces:
+    - bridge: workspace_36
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.35.37/24
+      linkindex: 36
+      mtu: 1500
+      name: r37 -> r36
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.35.36/24
+        node: r36
+      role: stub
+      type: lan
+    - bridge: workspace_37
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.36.37/24
+      linkindex: 37
+      mtu: 1500
+      name: r37 -> r38
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.36.38/24
+        node: r38
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.137
+      mac: 08:4f:a9:25:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r37
+    role: host
+    routing:
+      static: []
+  r38:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r38/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r38
+    id: 38
+    interfaces:
+    - bridge: workspace_37
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.36.38/24
+      linkindex: 37
+      mtu: 1500
+      name: r38 -> r37
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.36.37/24
+        node: r37
+      role: stub
+      type: lan
+    - bridge: workspace_38
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.37.38/24
+      linkindex: 38
+      mtu: 1500
+      name: r38 -> r39
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.37.39/24
+        node: r39
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.138
+      mac: 08:4f:a9:26:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r38
+    role: host
+    routing:
+      static: []
+  r39:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r39/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r39
+    id: 39
+    interfaces:
+    - bridge: workspace_38
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.37.39/24
+      linkindex: 38
+      mtu: 1500
+      name: r39 -> r38
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.37.38/24
+        node: r38
+      role: stub
+      type: lan
+    - bridge: workspace_39
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.38.39/24
+      linkindex: 39
+      mtu: 1500
+      name: r39 -> r40
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.38.40/24
+        node: r40
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.139
+      mac: 08:4f:a9:27:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r39
     role: host
     routing:
       static: []
@@ -7751,42 +10860,552 @@ nodes:
       kind: linux
     device: linux
     hostname: clab-workspace-r4
-    id: 5
+    id: 4
     interfaces:
     - bridge: workspace_3
       ifindex: 1
       ifname: eth1
-      ipv4: 172.16.2.5/24
+      ipv4: 10.0.2.4/24
       linkindex: 3
       mtu: 1500
       name: r4 -> r3
       neighbors:
       - ifname: eth2
-        ipv4: 172.16.2.4/24
+        ipv4: 10.0.2.3/24
         node: r3
       role: stub
       type: lan
     - bridge: workspace_4
       ifindex: 2
       ifname: eth2
-      ipv4: 172.16.3.5/24
+      ipv4: 10.0.3.4/24
       linkindex: 4
       mtu: 1500
       name: r4 -> r5
       neighbors:
       - ifname: eth1
-        ipv4: 172.16.3.6/24
+        ipv4: 10.0.3.5/24
         node: r5
       role: stub
       type: lan
     mgmt:
       ifname: eth0
-      ipv4: 192.168.121.105
-      mac: 08:4f:a9:05:00:00
+      ipv4: 192.168.121.104
+      mac: 08:4f:a9:04:00:00
     module:
     - routing
     mtu: 1500
     name: r4
+    role: host
+    routing:
+      static: []
+  r40:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r40/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r40
+    id: 40
+    interfaces:
+    - bridge: workspace_39
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.38.40/24
+      linkindex: 39
+      mtu: 1500
+      name: r40 -> r39
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.38.39/24
+        node: r39
+      role: stub
+      type: lan
+    - bridge: workspace_40
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.39.40/24
+      linkindex: 40
+      mtu: 1500
+      name: r40 -> r41
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.39.41/24
+        node: r41
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.140
+      mac: 08:4f:a9:28:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r40
+    role: host
+    routing:
+      static: []
+  r41:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r41/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r41
+    id: 41
+    interfaces:
+    - bridge: workspace_40
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.39.41/24
+      linkindex: 40
+      mtu: 1500
+      name: r41 -> r40
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.39.40/24
+        node: r40
+      role: stub
+      type: lan
+    - bridge: workspace_41
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.40.41/24
+      linkindex: 41
+      mtu: 1500
+      name: r41 -> r42
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.40.42/24
+        node: r42
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.141
+      mac: 08:4f:a9:29:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r41
+    role: host
+    routing:
+      static: []
+  r42:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r42/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r42
+    id: 42
+    interfaces:
+    - bridge: workspace_41
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.40.42/24
+      linkindex: 41
+      mtu: 1500
+      name: r42 -> r41
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.40.41/24
+        node: r41
+      role: stub
+      type: lan
+    - bridge: workspace_42
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.41.42/24
+      linkindex: 42
+      mtu: 1500
+      name: r42 -> r43
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.41.43/24
+        node: r43
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.142
+      mac: 08:4f:a9:2a:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r42
+    role: host
+    routing:
+      static: []
+  r43:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r43/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r43
+    id: 43
+    interfaces:
+    - bridge: workspace_42
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.41.43/24
+      linkindex: 42
+      mtu: 1500
+      name: r43 -> r42
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.41.42/24
+        node: r42
+      role: stub
+      type: lan
+    - bridge: workspace_43
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.42.43/24
+      linkindex: 43
+      mtu: 1500
+      name: r43 -> r44
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.42.44/24
+        node: r44
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.143
+      mac: 08:4f:a9:2b:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r43
+    role: host
+    routing:
+      static: []
+  r44:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r44/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r44
+    id: 44
+    interfaces:
+    - bridge: workspace_43
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.42.44/24
+      linkindex: 43
+      mtu: 1500
+      name: r44 -> r43
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.42.43/24
+        node: r43
+      role: stub
+      type: lan
+    - bridge: workspace_44
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.43.44/24
+      linkindex: 44
+      mtu: 1500
+      name: r44 -> r45
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.43.45/24
+        node: r45
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.144
+      mac: 08:4f:a9:2c:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r44
+    role: host
+    routing:
+      static: []
+  r45:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r45/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r45
+    id: 45
+    interfaces:
+    - bridge: workspace_44
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.43.45/24
+      linkindex: 44
+      mtu: 1500
+      name: r45 -> r44
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.43.44/24
+        node: r44
+      role: stub
+      type: lan
+    - bridge: workspace_45
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.44.45/24
+      linkindex: 45
+      mtu: 1500
+      name: r45 -> r46
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.44.46/24
+        node: r46
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.145
+      mac: 08:4f:a9:2d:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r45
+    role: host
+    routing:
+      static: []
+  r46:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r46/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r46
+    id: 46
+    interfaces:
+    - bridge: workspace_45
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.44.46/24
+      linkindex: 45
+      mtu: 1500
+      name: r46 -> r45
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.44.45/24
+        node: r45
+      role: stub
+      type: lan
+    - bridge: workspace_46
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.45.46/24
+      linkindex: 46
+      mtu: 1500
+      name: r46 -> r47
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.45.47/24
+        node: r47
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.146
+      mac: 08:4f:a9:2e:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r46
+    role: host
+    routing:
+      static: []
+  r47:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r47/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r47
+    id: 47
+    interfaces:
+    - bridge: workspace_46
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.45.47/24
+      linkindex: 46
+      mtu: 1500
+      name: r47 -> r46
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.45.46/24
+        node: r46
+      role: stub
+      type: lan
+    - bridge: workspace_47
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.46.47/24
+      linkindex: 47
+      mtu: 1500
+      name: r47 -> r48
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.46.48/24
+        node: r48
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.147
+      mac: 08:4f:a9:2f:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r47
+    role: host
+    routing:
+      static: []
+  r48:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r48/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r48
+    id: 48
+    interfaces:
+    - bridge: workspace_47
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.46.48/24
+      linkindex: 47
+      mtu: 1500
+      name: r48 -> r47
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.46.47/24
+        node: r47
+      role: stub
+      type: lan
+    - bridge: workspace_48
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.47.48/24
+      linkindex: 48
+      mtu: 1500
+      name: r48 -> r49
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.47.49/24
+        node: r49
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.148
+      mac: 08:4f:a9:30:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r48
+    role: host
+    routing:
+      static: []
+  r49:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r49/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r49
+    id: 49
+    interfaces:
+    - bridge: workspace_48
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.47.49/24
+      linkindex: 48
+      mtu: 1500
+      name: r49 -> r48
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.47.48/24
+        node: r48
+      role: stub
+      type: lan
+    - bridge: workspace_49
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.48.49/24
+      linkindex: 49
+      mtu: 1500
+      name: r49 -> r50
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.48.50/24
+        node: r50
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.149
+      mac: 08:4f:a9:31:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r49
     role: host
     routing:
       static: []
@@ -7802,42 +11421,552 @@ nodes:
       kind: linux
     device: linux
     hostname: clab-workspace-r5
-    id: 6
+    id: 5
     interfaces:
     - bridge: workspace_4
       ifindex: 1
       ifname: eth1
-      ipv4: 172.16.3.6/24
+      ipv4: 10.0.3.5/24
       linkindex: 4
       mtu: 1500
       name: r5 -> r4
       neighbors:
       - ifname: eth2
-        ipv4: 172.16.3.5/24
+        ipv4: 10.0.3.4/24
         node: r4
       role: stub
       type: lan
     - bridge: workspace_5
       ifindex: 2
       ifname: eth2
-      ipv4: 172.16.4.6/24
+      ipv4: 10.0.4.5/24
       linkindex: 5
       mtu: 1500
       name: r5 -> r6
       neighbors:
       - ifname: eth1
-        ipv4: 172.16.4.7/24
+        ipv4: 10.0.4.6/24
         node: r6
       role: stub
       type: lan
     mgmt:
       ifname: eth0
-      ipv4: 192.168.121.106
-      mac: 08:4f:a9:06:00:00
+      ipv4: 192.168.121.105
+      mac: 08:4f:a9:05:00:00
     module:
     - routing
     mtu: 1500
     name: r5
+    role: host
+    routing:
+      static: []
+  r50:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r50/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r50
+    id: 50
+    interfaces:
+    - bridge: workspace_49
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.48.50/24
+      linkindex: 49
+      mtu: 1500
+      name: r50 -> r49
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.48.49/24
+        node: r49
+      role: stub
+      type: lan
+    - bridge: workspace_50
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.49.50/24
+      linkindex: 50
+      mtu: 1500
+      name: r50 -> r51
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.49.51/24
+        node: r51
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.150
+      mac: 08:4f:a9:32:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r50
+    role: host
+    routing:
+      static: []
+  r51:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r51/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r51
+    id: 51
+    interfaces:
+    - bridge: workspace_50
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.49.51/24
+      linkindex: 50
+      mtu: 1500
+      name: r51 -> r50
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.49.50/24
+        node: r50
+      role: stub
+      type: lan
+    - bridge: workspace_51
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.50.51/24
+      linkindex: 51
+      mtu: 1500
+      name: r51 -> r52
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.50.52/24
+        node: r52
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.151
+      mac: 08:4f:a9:33:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r51
+    role: host
+    routing:
+      static: []
+  r52:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r52/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r52
+    id: 52
+    interfaces:
+    - bridge: workspace_51
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.50.52/24
+      linkindex: 51
+      mtu: 1500
+      name: r52 -> r51
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.50.51/24
+        node: r51
+      role: stub
+      type: lan
+    - bridge: workspace_52
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.51.52/24
+      linkindex: 52
+      mtu: 1500
+      name: r52 -> r53
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.51.53/24
+        node: r53
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.152
+      mac: 08:4f:a9:34:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r52
+    role: host
+    routing:
+      static: []
+  r53:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r53/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r53
+    id: 53
+    interfaces:
+    - bridge: workspace_52
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.51.53/24
+      linkindex: 52
+      mtu: 1500
+      name: r53 -> r52
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.51.52/24
+        node: r52
+      role: stub
+      type: lan
+    - bridge: workspace_53
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.52.53/24
+      linkindex: 53
+      mtu: 1500
+      name: r53 -> r54
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.52.54/24
+        node: r54
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.153
+      mac: 08:4f:a9:35:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r53
+    role: host
+    routing:
+      static: []
+  r54:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r54/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r54
+    id: 54
+    interfaces:
+    - bridge: workspace_53
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.52.54/24
+      linkindex: 53
+      mtu: 1500
+      name: r54 -> r53
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.52.53/24
+        node: r53
+      role: stub
+      type: lan
+    - bridge: workspace_54
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.53.54/24
+      linkindex: 54
+      mtu: 1500
+      name: r54 -> r55
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.53.55/24
+        node: r55
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.154
+      mac: 08:4f:a9:36:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r54
+    role: host
+    routing:
+      static: []
+  r55:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r55/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r55
+    id: 55
+    interfaces:
+    - bridge: workspace_54
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.53.55/24
+      linkindex: 54
+      mtu: 1500
+      name: r55 -> r54
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.53.54/24
+        node: r54
+      role: stub
+      type: lan
+    - bridge: workspace_55
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.54.55/24
+      linkindex: 55
+      mtu: 1500
+      name: r55 -> r56
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.54.56/24
+        node: r56
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.155
+      mac: 08:4f:a9:37:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r55
+    role: host
+    routing:
+      static: []
+  r56:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r56/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r56
+    id: 56
+    interfaces:
+    - bridge: workspace_55
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.54.56/24
+      linkindex: 55
+      mtu: 1500
+      name: r56 -> r55
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.54.55/24
+        node: r55
+      role: stub
+      type: lan
+    - bridge: workspace_56
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.55.56/24
+      linkindex: 56
+      mtu: 1500
+      name: r56 -> r57
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.55.57/24
+        node: r57
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.156
+      mac: 08:4f:a9:38:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r56
+    role: host
+    routing:
+      static: []
+  r57:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r57/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r57
+    id: 57
+    interfaces:
+    - bridge: workspace_56
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.55.57/24
+      linkindex: 56
+      mtu: 1500
+      name: r57 -> r56
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.55.56/24
+        node: r56
+      role: stub
+      type: lan
+    - bridge: workspace_57
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.56.57/24
+      linkindex: 57
+      mtu: 1500
+      name: r57 -> r58
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.56.58/24
+        node: r58
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.157
+      mac: 08:4f:a9:39:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r57
+    role: host
+    routing:
+      static: []
+  r58:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r58/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r58
+    id: 58
+    interfaces:
+    - bridge: workspace_57
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.56.58/24
+      linkindex: 57
+      mtu: 1500
+      name: r58 -> r57
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.56.57/24
+        node: r57
+      role: stub
+      type: lan
+    - bridge: workspace_58
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.57.58/24
+      linkindex: 58
+      mtu: 1500
+      name: r58 -> r59
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.57.59/24
+        node: r59
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.158
+      mac: 08:4f:a9:3a:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r58
+    role: host
+    routing:
+      static: []
+  r59:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r59/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r59
+    id: 59
+    interfaces:
+    - bridge: workspace_58
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.57.59/24
+      linkindex: 58
+      mtu: 1500
+      name: r59 -> r58
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.57.58/24
+        node: r58
+      role: stub
+      type: lan
+    - bridge: workspace_59
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.58.59/24
+      linkindex: 59
+      mtu: 1500
+      name: r59 -> r60
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.58.60/24
+        node: r60
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.159
+      mac: 08:4f:a9:3b:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r59
     role: host
     routing:
       static: []
@@ -7853,42 +11982,552 @@ nodes:
       kind: linux
     device: linux
     hostname: clab-workspace-r6
-    id: 7
+    id: 6
     interfaces:
     - bridge: workspace_5
       ifindex: 1
       ifname: eth1
-      ipv4: 172.16.4.7/24
+      ipv4: 10.0.4.6/24
       linkindex: 5
       mtu: 1500
       name: r6 -> r5
       neighbors:
       - ifname: eth2
-        ipv4: 172.16.4.6/24
+        ipv4: 10.0.4.5/24
         node: r5
       role: stub
       type: lan
     - bridge: workspace_6
       ifindex: 2
       ifname: eth2
-      ipv4: 172.16.5.7/24
+      ipv4: 10.0.5.6/24
       linkindex: 6
       mtu: 1500
       name: r6 -> r7
       neighbors:
       - ifname: eth1
-        ipv4: 172.16.5.8/24
+        ipv4: 10.0.5.7/24
         node: r7
       role: stub
       type: lan
     mgmt:
       ifname: eth0
-      ipv4: 192.168.121.107
-      mac: 08:4f:a9:07:00:00
+      ipv4: 192.168.121.106
+      mac: 08:4f:a9:06:00:00
     module:
     - routing
     mtu: 1500
     name: r6
+    role: host
+    routing:
+      static: []
+  r60:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r60/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r60
+    id: 60
+    interfaces:
+    - bridge: workspace_59
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.58.60/24
+      linkindex: 59
+      mtu: 1500
+      name: r60 -> r59
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.58.59/24
+        node: r59
+      role: stub
+      type: lan
+    - bridge: workspace_60
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.59.60/24
+      linkindex: 60
+      mtu: 1500
+      name: r60 -> r61
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.59.61/24
+        node: r61
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.160
+      mac: 08:4f:a9:3c:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r60
+    role: host
+    routing:
+      static: []
+  r61:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r61/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r61
+    id: 61
+    interfaces:
+    - bridge: workspace_60
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.59.61/24
+      linkindex: 60
+      mtu: 1500
+      name: r61 -> r60
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.59.60/24
+        node: r60
+      role: stub
+      type: lan
+    - bridge: workspace_61
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.60.61/24
+      linkindex: 61
+      mtu: 1500
+      name: r61 -> r62
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.60.62/24
+        node: r62
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.161
+      mac: 08:4f:a9:3d:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r61
+    role: host
+    routing:
+      static: []
+  r62:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r62/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r62
+    id: 62
+    interfaces:
+    - bridge: workspace_61
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.60.62/24
+      linkindex: 61
+      mtu: 1500
+      name: r62 -> r61
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.60.61/24
+        node: r61
+      role: stub
+      type: lan
+    - bridge: workspace_62
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.61.62/24
+      linkindex: 62
+      mtu: 1500
+      name: r62 -> r63
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.61.63/24
+        node: r63
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.162
+      mac: 08:4f:a9:3e:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r62
+    role: host
+    routing:
+      static: []
+  r63:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r63/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r63
+    id: 63
+    interfaces:
+    - bridge: workspace_62
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.61.63/24
+      linkindex: 62
+      mtu: 1500
+      name: r63 -> r62
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.61.62/24
+        node: r62
+      role: stub
+      type: lan
+    - bridge: workspace_63
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.62.63/24
+      linkindex: 63
+      mtu: 1500
+      name: r63 -> r64
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.62.64/24
+        node: r64
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.163
+      mac: 08:4f:a9:3f:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r63
+    role: host
+    routing:
+      static: []
+  r64:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r64/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r64
+    id: 64
+    interfaces:
+    - bridge: workspace_63
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.62.64/24
+      linkindex: 63
+      mtu: 1500
+      name: r64 -> r63
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.62.63/24
+        node: r63
+      role: stub
+      type: lan
+    - bridge: workspace_64
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.63.64/24
+      linkindex: 64
+      mtu: 1500
+      name: r64 -> r65
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.63.65/24
+        node: r65
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.164
+      mac: 08:4f:a9:40:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r64
+    role: host
+    routing:
+      static: []
+  r65:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r65/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r65
+    id: 65
+    interfaces:
+    - bridge: workspace_64
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.63.65/24
+      linkindex: 64
+      mtu: 1500
+      name: r65 -> r64
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.63.64/24
+        node: r64
+      role: stub
+      type: lan
+    - bridge: workspace_65
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.64.65/24
+      linkindex: 65
+      mtu: 1500
+      name: r65 -> r66
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.64.66/24
+        node: r66
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.165
+      mac: 08:4f:a9:41:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r65
+    role: host
+    routing:
+      static: []
+  r66:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r66/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r66
+    id: 66
+    interfaces:
+    - bridge: workspace_65
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.64.66/24
+      linkindex: 65
+      mtu: 1500
+      name: r66 -> r65
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.64.65/24
+        node: r65
+      role: stub
+      type: lan
+    - bridge: workspace_66
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.65.66/24
+      linkindex: 66
+      mtu: 1500
+      name: r66 -> r67
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.65.67/24
+        node: r67
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.166
+      mac: 08:4f:a9:42:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r66
+    role: host
+    routing:
+      static: []
+  r67:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r67/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r67
+    id: 67
+    interfaces:
+    - bridge: workspace_66
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.65.67/24
+      linkindex: 66
+      mtu: 1500
+      name: r67 -> r66
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.65.66/24
+        node: r66
+      role: stub
+      type: lan
+    - bridge: workspace_67
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.66.67/24
+      linkindex: 67
+      mtu: 1500
+      name: r67 -> r68
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.66.68/24
+        node: r68
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.167
+      mac: 08:4f:a9:43:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r67
+    role: host
+    routing:
+      static: []
+  r68:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r68/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r68
+    id: 68
+    interfaces:
+    - bridge: workspace_67
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.66.68/24
+      linkindex: 67
+      mtu: 1500
+      name: r68 -> r67
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.66.67/24
+        node: r67
+      role: stub
+      type: lan
+    - bridge: workspace_68
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.67.68/24
+      linkindex: 68
+      mtu: 1500
+      name: r68 -> r69
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.67.69/24
+        node: r69
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.168
+      mac: 08:4f:a9:44:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r68
+    role: host
+    routing:
+      static: []
+  r69:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r69/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r69
+    id: 69
+    interfaces:
+    - bridge: workspace_68
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.67.69/24
+      linkindex: 68
+      mtu: 1500
+      name: r69 -> r68
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.67.68/24
+        node: r68
+      role: stub
+      type: lan
+    - bridge: workspace_69
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.68.69/24
+      linkindex: 69
+      mtu: 1500
+      name: r69 -> r70
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.68.70/24
+        node: r70
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.169
+      mac: 08:4f:a9:45:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r69
     role: host
     routing:
       static: []
@@ -7904,42 +12543,552 @@ nodes:
       kind: linux
     device: linux
     hostname: clab-workspace-r7
-    id: 8
+    id: 7
     interfaces:
     - bridge: workspace_6
       ifindex: 1
       ifname: eth1
-      ipv4: 172.16.5.8/24
+      ipv4: 10.0.5.7/24
       linkindex: 6
       mtu: 1500
       name: r7 -> r6
       neighbors:
       - ifname: eth2
-        ipv4: 172.16.5.7/24
+        ipv4: 10.0.5.6/24
         node: r6
       role: stub
       type: lan
     - bridge: workspace_7
       ifindex: 2
       ifname: eth2
-      ipv4: 172.16.6.8/24
+      ipv4: 10.0.6.7/24
       linkindex: 7
       mtu: 1500
       name: r7 -> r8
       neighbors:
       - ifname: eth1
-        ipv4: 172.16.6.9/24
+        ipv4: 10.0.6.8/24
         node: r8
       role: stub
       type: lan
     mgmt:
       ifname: eth0
-      ipv4: 192.168.121.108
-      mac: 08:4f:a9:08:00:00
+      ipv4: 192.168.121.107
+      mac: 08:4f:a9:07:00:00
     module:
     - routing
     mtu: 1500
     name: r7
+    role: host
+    routing:
+      static: []
+  r70:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r70/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r70
+    id: 70
+    interfaces:
+    - bridge: workspace_69
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.68.70/24
+      linkindex: 69
+      mtu: 1500
+      name: r70 -> r69
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.68.69/24
+        node: r69
+      role: stub
+      type: lan
+    - bridge: workspace_70
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.69.70/24
+      linkindex: 70
+      mtu: 1500
+      name: r70 -> r71
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.69.71/24
+        node: r71
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.170
+      mac: 08:4f:a9:46:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r70
+    role: host
+    routing:
+      static: []
+  r71:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r71/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r71
+    id: 71
+    interfaces:
+    - bridge: workspace_70
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.69.71/24
+      linkindex: 70
+      mtu: 1500
+      name: r71 -> r70
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.69.70/24
+        node: r70
+      role: stub
+      type: lan
+    - bridge: workspace_71
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.70.71/24
+      linkindex: 71
+      mtu: 1500
+      name: r71 -> r72
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.70.72/24
+        node: r72
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.171
+      mac: 08:4f:a9:47:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r71
+    role: host
+    routing:
+      static: []
+  r72:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r72/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r72
+    id: 72
+    interfaces:
+    - bridge: workspace_71
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.70.72/24
+      linkindex: 71
+      mtu: 1500
+      name: r72 -> r71
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.70.71/24
+        node: r71
+      role: stub
+      type: lan
+    - bridge: workspace_72
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.71.72/24
+      linkindex: 72
+      mtu: 1500
+      name: r72 -> r73
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.71.73/24
+        node: r73
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.172
+      mac: 08:4f:a9:48:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r72
+    role: host
+    routing:
+      static: []
+  r73:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r73/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r73
+    id: 73
+    interfaces:
+    - bridge: workspace_72
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.71.73/24
+      linkindex: 72
+      mtu: 1500
+      name: r73 -> r72
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.71.72/24
+        node: r72
+      role: stub
+      type: lan
+    - bridge: workspace_73
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.72.73/24
+      linkindex: 73
+      mtu: 1500
+      name: r73 -> r74
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.72.74/24
+        node: r74
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.173
+      mac: 08:4f:a9:49:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r73
+    role: host
+    routing:
+      static: []
+  r74:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r74/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r74
+    id: 74
+    interfaces:
+    - bridge: workspace_73
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.72.74/24
+      linkindex: 73
+      mtu: 1500
+      name: r74 -> r73
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.72.73/24
+        node: r73
+      role: stub
+      type: lan
+    - bridge: workspace_74
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.73.74/24
+      linkindex: 74
+      mtu: 1500
+      name: r74 -> r75
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.73.75/24
+        node: r75
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.174
+      mac: 08:4f:a9:4a:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r74
+    role: host
+    routing:
+      static: []
+  r75:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r75/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r75
+    id: 75
+    interfaces:
+    - bridge: workspace_74
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.73.75/24
+      linkindex: 74
+      mtu: 1500
+      name: r75 -> r74
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.73.74/24
+        node: r74
+      role: stub
+      type: lan
+    - bridge: workspace_75
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.74.75/24
+      linkindex: 75
+      mtu: 1500
+      name: r75 -> r76
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.74.76/24
+        node: r76
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.175
+      mac: 08:4f:a9:4b:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r75
+    role: host
+    routing:
+      static: []
+  r76:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r76/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r76
+    id: 76
+    interfaces:
+    - bridge: workspace_75
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.74.76/24
+      linkindex: 75
+      mtu: 1500
+      name: r76 -> r75
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.74.75/24
+        node: r75
+      role: stub
+      type: lan
+    - bridge: workspace_76
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.75.76/24
+      linkindex: 76
+      mtu: 1500
+      name: r76 -> r77
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.75.77/24
+        node: r77
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.176
+      mac: 08:4f:a9:4c:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r76
+    role: host
+    routing:
+      static: []
+  r77:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r77/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r77
+    id: 77
+    interfaces:
+    - bridge: workspace_76
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.75.77/24
+      linkindex: 76
+      mtu: 1500
+      name: r77 -> r76
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.75.76/24
+        node: r76
+      role: stub
+      type: lan
+    - bridge: workspace_77
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.76.77/24
+      linkindex: 77
+      mtu: 1500
+      name: r77 -> r78
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.76.78/24
+        node: r78
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.177
+      mac: 08:4f:a9:4d:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r77
+    role: host
+    routing:
+      static: []
+  r78:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r78/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r78
+    id: 78
+    interfaces:
+    - bridge: workspace_77
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.76.78/24
+      linkindex: 77
+      mtu: 1500
+      name: r78 -> r77
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.76.77/24
+        node: r77
+      role: stub
+      type: lan
+    - bridge: workspace_78
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.77.78/24
+      linkindex: 78
+      mtu: 1500
+      name: r78 -> r79
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.77.79/24
+        node: r79
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.178
+      mac: 08:4f:a9:4e:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r78
+    role: host
+    routing:
+      static: []
+  r79:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r79/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r79
+    id: 79
+    interfaces:
+    - bridge: workspace_78
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.77.79/24
+      linkindex: 78
+      mtu: 1500
+      name: r79 -> r78
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.77.78/24
+        node: r78
+      role: stub
+      type: lan
+    - bridge: workspace_79
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.78.79/24
+      linkindex: 79
+      mtu: 1500
+      name: r79 -> r80
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.78.80/24
+        node: r80
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.179
+      mac: 08:4f:a9:4f:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r79
     role: host
     routing:
       static: []
@@ -7955,42 +13104,552 @@ nodes:
       kind: linux
     device: linux
     hostname: clab-workspace-r8
-    id: 9
+    id: 8
     interfaces:
     - bridge: workspace_7
       ifindex: 1
       ifname: eth1
-      ipv4: 172.16.6.9/24
+      ipv4: 10.0.6.8/24
       linkindex: 7
       mtu: 1500
       name: r8 -> r7
       neighbors:
       - ifname: eth2
-        ipv4: 172.16.6.8/24
+        ipv4: 10.0.6.7/24
         node: r7
       role: stub
       type: lan
     - bridge: workspace_8
       ifindex: 2
       ifname: eth2
-      ipv4: 172.16.7.9/24
+      ipv4: 10.0.7.8/24
       linkindex: 8
       mtu: 1500
       name: r8 -> r9
       neighbors:
       - ifname: eth1
-        ipv4: 172.16.7.10/24
+        ipv4: 10.0.7.9/24
         node: r9
       role: stub
       type: lan
     mgmt:
       ifname: eth0
-      ipv4: 192.168.121.109
-      mac: 08:4f:a9:09:00:00
+      ipv4: 192.168.121.108
+      mac: 08:4f:a9:08:00:00
     module:
     - routing
     mtu: 1500
     name: r8
+    role: host
+    routing:
+      static: []
+  r80:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r80/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r80
+    id: 80
+    interfaces:
+    - bridge: workspace_79
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.78.80/24
+      linkindex: 79
+      mtu: 1500
+      name: r80 -> r79
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.78.79/24
+        node: r79
+      role: stub
+      type: lan
+    - bridge: workspace_80
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.79.80/24
+      linkindex: 80
+      mtu: 1500
+      name: r80 -> r81
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.79.81/24
+        node: r81
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.180
+      mac: 08:4f:a9:50:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r80
+    role: host
+    routing:
+      static: []
+  r81:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r81/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r81
+    id: 81
+    interfaces:
+    - bridge: workspace_80
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.79.81/24
+      linkindex: 80
+      mtu: 1500
+      name: r81 -> r80
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.79.80/24
+        node: r80
+      role: stub
+      type: lan
+    - bridge: workspace_81
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.80.81/24
+      linkindex: 81
+      mtu: 1500
+      name: r81 -> r82
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.80.82/24
+        node: r82
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.181
+      mac: 08:4f:a9:51:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r81
+    role: host
+    routing:
+      static: []
+  r82:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r82/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r82
+    id: 82
+    interfaces:
+    - bridge: workspace_81
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.80.82/24
+      linkindex: 81
+      mtu: 1500
+      name: r82 -> r81
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.80.81/24
+        node: r81
+      role: stub
+      type: lan
+    - bridge: workspace_82
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.81.82/24
+      linkindex: 82
+      mtu: 1500
+      name: r82 -> r83
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.81.83/24
+        node: r83
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.182
+      mac: 08:4f:a9:52:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r82
+    role: host
+    routing:
+      static: []
+  r83:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r83/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r83
+    id: 83
+    interfaces:
+    - bridge: workspace_82
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.81.83/24
+      linkindex: 82
+      mtu: 1500
+      name: r83 -> r82
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.81.82/24
+        node: r82
+      role: stub
+      type: lan
+    - bridge: workspace_83
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.82.83/24
+      linkindex: 83
+      mtu: 1500
+      name: r83 -> r84
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.82.84/24
+        node: r84
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.183
+      mac: 08:4f:a9:53:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r83
+    role: host
+    routing:
+      static: []
+  r84:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r84/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r84
+    id: 84
+    interfaces:
+    - bridge: workspace_83
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.82.84/24
+      linkindex: 83
+      mtu: 1500
+      name: r84 -> r83
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.82.83/24
+        node: r83
+      role: stub
+      type: lan
+    - bridge: workspace_84
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.83.84/24
+      linkindex: 84
+      mtu: 1500
+      name: r84 -> r85
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.83.85/24
+        node: r85
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.184
+      mac: 08:4f:a9:54:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r84
+    role: host
+    routing:
+      static: []
+  r85:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r85/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r85
+    id: 85
+    interfaces:
+    - bridge: workspace_84
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.83.85/24
+      linkindex: 84
+      mtu: 1500
+      name: r85 -> r84
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.83.84/24
+        node: r84
+      role: stub
+      type: lan
+    - bridge: workspace_85
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.84.85/24
+      linkindex: 85
+      mtu: 1500
+      name: r85 -> r86
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.84.86/24
+        node: r86
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.185
+      mac: 08:4f:a9:55:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r85
+    role: host
+    routing:
+      static: []
+  r86:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r86/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r86
+    id: 86
+    interfaces:
+    - bridge: workspace_85
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.84.86/24
+      linkindex: 85
+      mtu: 1500
+      name: r86 -> r85
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.84.85/24
+        node: r85
+      role: stub
+      type: lan
+    - bridge: workspace_86
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.85.86/24
+      linkindex: 86
+      mtu: 1500
+      name: r86 -> r87
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.85.87/24
+        node: r87
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.186
+      mac: 08:4f:a9:56:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r86
+    role: host
+    routing:
+      static: []
+  r87:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r87/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r87
+    id: 87
+    interfaces:
+    - bridge: workspace_86
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.85.87/24
+      linkindex: 86
+      mtu: 1500
+      name: r87 -> r86
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.85.86/24
+        node: r86
+      role: stub
+      type: lan
+    - bridge: workspace_87
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.86.87/24
+      linkindex: 87
+      mtu: 1500
+      name: r87 -> r88
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.86.88/24
+        node: r88
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.187
+      mac: 08:4f:a9:57:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r87
+    role: host
+    routing:
+      static: []
+  r88:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r88/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r88
+    id: 88
+    interfaces:
+    - bridge: workspace_87
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.86.88/24
+      linkindex: 87
+      mtu: 1500
+      name: r88 -> r87
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.86.87/24
+        node: r87
+      role: stub
+      type: lan
+    - bridge: workspace_88
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.87.88/24
+      linkindex: 88
+      mtu: 1500
+      name: r88 -> r89
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.87.89/24
+        node: r89
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.188
+      mac: 08:4f:a9:58:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r88
+    role: host
+    routing:
+      static: []
+  r89:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r89/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r89
+    id: 89
+    interfaces:
+    - bridge: workspace_88
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.87.89/24
+      linkindex: 88
+      mtu: 1500
+      name: r89 -> r88
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.87.88/24
+        node: r88
+      role: stub
+      type: lan
+    - bridge: workspace_89
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.88.89/24
+      linkindex: 89
+      mtu: 1500
+      name: r89 -> r90
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.88.90/24
+        node: r90
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.189
+      mac: 08:4f:a9:59:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r89
     role: host
     routing:
       static: []
@@ -8006,42 +13665,552 @@ nodes:
       kind: linux
     device: linux
     hostname: clab-workspace-r9
-    id: 10
+    id: 9
     interfaces:
     - bridge: workspace_8
       ifindex: 1
       ifname: eth1
-      ipv4: 172.16.7.10/24
+      ipv4: 10.0.7.9/24
       linkindex: 8
       mtu: 1500
       name: r9 -> r8
       neighbors:
       - ifname: eth2
-        ipv4: 172.16.7.9/24
+        ipv4: 10.0.7.8/24
         node: r8
       role: stub
       type: lan
     - bridge: workspace_9
       ifindex: 2
       ifname: eth2
-      ipv4: 172.16.8.10/24
+      ipv4: 10.0.8.9/24
       linkindex: 9
       mtu: 1500
       name: r9 -> r10
       neighbors:
       - ifname: eth1
-        ipv4: 172.16.8.2/24
+        ipv4: 10.0.8.10/24
         node: r10
       role: stub
       type: lan
     mgmt:
       ifname: eth0
-      ipv4: 192.168.121.110
-      mac: 08:4f:a9:0a:00:00
+      ipv4: 192.168.121.109
+      mac: 08:4f:a9:09:00:00
     module:
     - routing
     mtu: 1500
     name: r9
+    role: host
+    routing:
+      static: []
+  r90:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r90/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r90
+    id: 90
+    interfaces:
+    - bridge: workspace_89
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.88.90/24
+      linkindex: 89
+      mtu: 1500
+      name: r90 -> r89
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.88.89/24
+        node: r89
+      role: stub
+      type: lan
+    - bridge: workspace_90
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.89.90/24
+      linkindex: 90
+      mtu: 1500
+      name: r90 -> r91
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.89.91/24
+        node: r91
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.190
+      mac: 08:4f:a9:5a:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r90
+    role: host
+    routing:
+      static: []
+  r91:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r91/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r91
+    id: 91
+    interfaces:
+    - bridge: workspace_90
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.89.91/24
+      linkindex: 90
+      mtu: 1500
+      name: r91 -> r90
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.89.90/24
+        node: r90
+      role: stub
+      type: lan
+    - bridge: workspace_91
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.90.91/24
+      linkindex: 91
+      mtu: 1500
+      name: r91 -> r92
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.90.92/24
+        node: r92
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.191
+      mac: 08:4f:a9:5b:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r91
+    role: host
+    routing:
+      static: []
+  r92:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r92/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r92
+    id: 92
+    interfaces:
+    - bridge: workspace_91
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.90.92/24
+      linkindex: 91
+      mtu: 1500
+      name: r92 -> r91
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.90.91/24
+        node: r91
+      role: stub
+      type: lan
+    - bridge: workspace_92
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.91.92/24
+      linkindex: 92
+      mtu: 1500
+      name: r92 -> r93
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.91.93/24
+        node: r93
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.192
+      mac: 08:4f:a9:5c:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r92
+    role: host
+    routing:
+      static: []
+  r93:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r93/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r93
+    id: 93
+    interfaces:
+    - bridge: workspace_92
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.91.93/24
+      linkindex: 92
+      mtu: 1500
+      name: r93 -> r92
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.91.92/24
+        node: r92
+      role: stub
+      type: lan
+    - bridge: workspace_93
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.92.93/24
+      linkindex: 93
+      mtu: 1500
+      name: r93 -> r94
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.92.94/24
+        node: r94
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.193
+      mac: 08:4f:a9:5d:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r93
+    role: host
+    routing:
+      static: []
+  r94:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r94/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r94
+    id: 94
+    interfaces:
+    - bridge: workspace_93
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.92.94/24
+      linkindex: 93
+      mtu: 1500
+      name: r94 -> r93
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.92.93/24
+        node: r93
+      role: stub
+      type: lan
+    - bridge: workspace_94
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.93.94/24
+      linkindex: 94
+      mtu: 1500
+      name: r94 -> r95
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.93.95/24
+        node: r95
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.194
+      mac: 08:4f:a9:5e:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r94
+    role: host
+    routing:
+      static: []
+  r95:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r95/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r95
+    id: 95
+    interfaces:
+    - bridge: workspace_94
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.93.95/24
+      linkindex: 94
+      mtu: 1500
+      name: r95 -> r94
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.93.94/24
+        node: r94
+      role: stub
+      type: lan
+    - bridge: workspace_95
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.94.95/24
+      linkindex: 95
+      mtu: 1500
+      name: r95 -> r96
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.94.96/24
+        node: r96
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.195
+      mac: 08:4f:a9:5f:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r95
+    role: host
+    routing:
+      static: []
+  r96:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r96/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r96
+    id: 96
+    interfaces:
+    - bridge: workspace_95
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.94.96/24
+      linkindex: 95
+      mtu: 1500
+      name: r96 -> r95
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.94.95/24
+        node: r95
+      role: stub
+      type: lan
+    - bridge: workspace_96
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.95.96/24
+      linkindex: 96
+      mtu: 1500
+      name: r96 -> r97
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.95.97/24
+        node: r97
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.196
+      mac: 08:4f:a9:60:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r96
+    role: host
+    routing:
+      static: []
+  r97:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r97/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r97
+    id: 97
+    interfaces:
+    - bridge: workspace_96
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.95.97/24
+      linkindex: 96
+      mtu: 1500
+      name: r97 -> r96
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.95.96/24
+        node: r96
+      role: stub
+      type: lan
+    - bridge: workspace_97
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.96.97/24
+      linkindex: 97
+      mtu: 1500
+      name: r97 -> r98
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.96.98/24
+        node: r98
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.197
+      mac: 08:4f:a9:61:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r97
+    role: host
+    routing:
+      static: []
+  r98:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r98/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r98
+    id: 98
+    interfaces:
+    - bridge: workspace_97
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.96.98/24
+      linkindex: 97
+      mtu: 1500
+      name: r98 -> r97
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.96.97/24
+        node: r97
+      role: stub
+      type: lan
+    - bridge: workspace_98
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.97.98/24
+      linkindex: 98
+      mtu: 1500
+      name: r98 -> r99
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.97.99/24
+        node: r99
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.198
+      mac: 08:4f:a9:62:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r98
+    role: host
+    routing:
+      static: []
+  r99:
+    af:
+      ipv4: true
+    box: python:3.13-alpine
+    clab:
+      binds:
+      - clab_files/r99/hosts:/etc/hosts
+      config_templates:
+      - hosts:/etc/hosts
+      kind: linux
+    device: linux
+    hostname: clab-workspace-r99
+    id: 99
+    interfaces:
+    - bridge: workspace_98
+      ifindex: 1
+      ifname: eth1
+      ipv4: 10.0.97.99/24
+      linkindex: 98
+      mtu: 1500
+      name: r99 -> r98
+      neighbors:
+      - ifname: eth2
+        ipv4: 10.0.97.98/24
+        node: r98
+      role: stub
+      type: lan
+    - bridge: workspace_99
+      ifindex: 2
+      ifname: eth2
+      ipv4: 10.0.98.99/24
+      linkindex: 99
+      mtu: 1500
+      name: r99 -> r100
+      neighbors:
+      - ifname: eth1
+        ipv4: 10.0.98.100/24
+        node: r100
+      role: stub
+      type: lan
+    mgmt:
+      ifname: eth0
+      ipv4: 192.168.121.199
+      mac: 08:4f:a9:63:00:00
+    module:
+    - routing
+    mtu: 1500
+    name: r99
     role: host
     routing:
       static: []
