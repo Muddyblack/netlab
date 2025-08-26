@@ -14,6 +14,7 @@ from ..data import append_to_list, filemaps, get_empty_box
 from ..data.types import must_be_dict
 from ..utils import linuxbridge, log, strings
 from . import _Provider, get_provider_forwarded_ports, node_add_forwarded_ports, validate_mgmt_ip
+from . import shared_hosts
 
 
 def list_bridges( topology: Box ) -> typing.Set[str]:
@@ -181,6 +182,14 @@ class Containerlab(_Provider):
   def post_configuration_create(self, topology: Box) -> None:
     if use_ovs_bridge(topology):
       check_ovs_installation()
+
+    # Generate shared hosts files per device type if enabled
+    hosts_files = shared_hosts.generate_shared_hosts_files(topology, GENERATED_CONFIG_PATH)
+    
+    if hosts_files:
+      # Update node configurations to use shared hosts files
+      shared_hosts.update_node_binds_for_shared_hosts(topology, hosts_files)
+      log.print_verbose(f"Using shared hosts files for {len(hosts_files)} device types")
 
     for n in topology.nodes.values():
       if n.get('clab.binds',None):
