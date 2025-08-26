@@ -88,7 +88,7 @@ def generate_shared_hosts_files(topology: Box, provider_folder: str = "clab_file
             
             template_found = False
             for rel_path in template_paths:
-                full_path = _files.get_moddir() + "/" + rel_path
+                full_path = os.path.join(str(_files.get_moddir()), rel_path)
                 if os.path.exists(full_path):
                     # Write the shared hosts file
                     templates.write_template(
