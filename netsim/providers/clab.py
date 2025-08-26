@@ -182,9 +182,15 @@ class Containerlab(_Provider):
     if use_ovs_bridge(topology):
       check_ovs_installation()
 
+    log.print_verbose(f"Processing {len(topology.nodes)} nodes for extra files")
     for n in topology.nodes.values():
       if n.get('clab.binds',None):
+        log.print_verbose(f"Creating extra files for node {n.name}")
         self.create_extra_files(n,topology)
+    
+    # Clean up the cache after all nodes are processed
+    if hasattr(topology.defaults, '_cache'):
+      del topology.defaults._cache
 
   def pre_start_lab(self, topology: Box) -> None:
     log.print_verbose('pre-start hook for Containerlab - create any bridges and load kernel modules')

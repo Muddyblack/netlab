@@ -161,6 +161,11 @@ class _Provider(Callback):
     sys_folder = str(_files.get_moddir())+"/"
     out_folder = f"{self.provider}_files/{node.name}"
 
+    # Check if we need to pre-compute hosts entries
+    cache_key = '_hosts_entries_cache'
+    if not hasattr(topology.defaults, '_cache'):
+      topology.defaults._cache = Box()
+    
     bind_dict = filemaps.mapping_to_dict(binds)
     for file,mapping in bind_dict.items():
       if not out_folder in file:                  # Skip files that are not mapped into the temporary provider folder
@@ -168,9 +173,29 @@ class _Provider(Callback):
       file_name = file.replace(out_folder+"/","")
       template_name = self.find_extra_template(node,file_name,topology)
       if template_name:
-        node_data = node + { 'hostvars': topology.nodes, 
-                             'hosts': get_host_addresses(topology),
-                             'addressing': topology.addressing }  # Needed for subnet prefix
+        # Check if this is a hosts file that includes hosts-common
+        is_hosts_file = file_name == 'hosts' and 'hosts-common' in open(template_name).read()
+        
+        if is_hosts_file and cache_key not in topology.defaults._cache:
+          # Pre-compute hosts entries once for all nodes
+          log.print_verbose("Pre-computing hosts entries for all nodes")
+          hosts_entries = self._compute_hosts_entries(topology)
+          topology.defaults._cache[cache_key] = hosts_entries
+          log.print_verbose(f"Pre-computed {len(hosts_entries)} hosts entries (cached for all nodes)")
+        
+        # Prepare node data - create a new Box instead of using +
+        node_data = Box({
+          **node.to_dict(),
+          'hostvars': topology.nodes, 
+          'hosts': get_host_addresses(topology),
+          'addressing': topology.addressing  # Needed for subnet prefix
+        })
+        
+        # If this is a hosts file and we have cached entries, inject them
+        if is_hosts_file and cache_key in topology.defaults._cache:
+          node_data['_hosts_entries'] = topology.defaults._cache[cache_key]
+          log.print_verbose(f"Using cached hosts entries for {node.name}")
+        
         if '/' in file_name:                      # Create subdirectory in out_folder if needed
           pathlib.Path(f"{out_folder}/{os.path.dirname(file_name)}").mkdir(parents=True,exist_ok=True)
         try:
@@ -188,6 +213,55 @@ class _Provider(Callback):
         print(f"{out_folder}/{file_name} to {node.name}:{mapping} (from {template_name.replace(sys_folder,'')})")
       else:
         log.error(f"Cannot find template for {file_name} on node {node.name}",log.MissingValue,'provider')
+
+  def _compute_hosts_entries(self, topology: Box) -> list:
+    """Pre-compute hosts entries from all nodes to avoid O(n²) template rendering"""
+    hosts_entries = []
+    underscores = {}
+    
+    for hname, hdata in topology.nodes.items():
+      intf_list = hdata.get('interfaces', [])
+      if 'loopback' in hdata:
+        intf_list = [hdata.loopback] + intf_list
+      
+      for intf in intf_list:
+        h_entry = hname
+        if 'vrf' in intf:
+          h_entry = f"{intf.vrf}.{h_entry}"
+        
+        if intf.get('type', 'loopback') != 'loopback':
+          h_entry = f"{intf.ifname.replace('/', '-')}.{h_entry}"
+        
+        underscore_fix = '_' in hname and hname not in underscores
+        need_host = 'loopback' not in hdata or underscore_fix
+        
+        if underscore_fix:
+          underscores[hname] = hname
+          display_hname = hname.replace('_', '-')
+        else:
+          display_hname = hname
+        
+        # Process IPv4 addresses
+        if isinstance(intf.get('ipv4', False), str):
+          # Extract IP address from CIDR notation
+          ip_addr = intf.ipv4.split('/')[0]
+          entry = f"{ip_addr} "
+          if need_host:
+            entry += f"{display_hname} "
+          entry += h_entry
+          hosts_entries.append(entry)
+        
+        # Process IPv6 addresses
+        if isinstance(intf.get('ipv6', False), str):
+          # Extract IP address from CIDR notation
+          ip_addr = intf.ipv6.split('/')[0]
+          entry = f"{ip_addr} "
+          if need_host:
+            entry += f"{display_hname} "
+          entry += h_entry
+          hosts_entries.append(entry)
+    
+    return hosts_entries
 
   def create(self, topology: Box, fname: typing.Optional[str]) -> None:
     self.transform(topology)
