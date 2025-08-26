@@ -221,6 +221,9 @@ def change_lab_instance(instance: typing.Union[int,str], quiet: bool = False) ->
 # Snapshot loading code -- loads the specified snapshot file and checks its modification date
 #
 def load_snapshot(args: typing.Union[argparse.Namespace,Box],ghosts: bool = True) -> Box:
+  import time
+  start_time = time.time()
+  
   if 'instance' in args and args.instance:
     change_lab_instance(args.instance,args.quiet if 'quiet' in args else False)
   
@@ -238,17 +241,115 @@ def load_snapshot(args: typing.Union[argparse.Namespace,Box],ghosts: bool = True
           "Use 'netlab status --all' to display labs running on this system"])
     sys.exit(1)
 
+  yaml_start = time.time()
   topology = _read.read_yaml(filename=snapshot)
+  yaml_end = time.time()
+  
+  if log.debug_active('perf'):
+    log.debug(f'YAML loading took {yaml_end - yaml_start:.3f} seconds')
+  
   if topology is None:
     print(f"Cannot read the topology snapshot file {args.snapshot}")
     sys.exit(1)
 
   if not ghosts:
+    ghost_start = time.time()
     topology = augment.nodes.ghost_buster(topology)
+    if log.debug_active('perf'):
+      log.debug(f'Ghost buster took {time.time() - ghost_start:.3f} seconds')
 
+  global_start = time.time()
   global_vars.init(topology)
+  if log.debug_active('perf'):
+    log.debug(f'Global vars init took {time.time() - global_start:.3f} seconds')
+    
   check_modified_source(snapshot,topology)
+  
+  total_time = time.time() - start_time
+  if log.debug_active('perf'):
+    log.debug(f'Total load_snapshot took {total_time:.3f} seconds')
+  
   return topology
+
+def load_snapshot_cached(args: typing.Union[argparse.Namespace,Box], required_data: typing.Optional[typing.List[str]] = None) -> Box:
+  """
+  Load snapshot with caching support for improved performance.
+  
+  Args:
+    args: Command arguments
+    required_data: List of required top-level keys (e.g., ['nodes', 'defaults', 'tools'])
+                   If None, loads entire topology
+  
+  Returns:
+    Box containing requested topology data
+  """
+  import time
+  
+  # Use regular load_snapshot if no specific requirements
+  if required_data is None:
+    return load_snapshot(args)
+  
+  start_time = time.time()
+  
+  if 'instance' in args and args.instance:
+    change_lab_instance(args.instance,args.quiet if 'quiet' in args else False)
+  
+  snapshot = 'netlab.snapshot.yml'
+  if 'snapshot' in args and args.snapshot and args.snapshot != snapshot:
+    snapshot = args.snapshot
+    if 'quiet' not in args or not args.quiet:
+      log.info(f'Using lab snapshot file {args.snapshot}')
+
+  if not os.path.isfile(snapshot):
+    error_and_exit(
+      f"The topology snapshot file {snapshot} does not exist",
+      more_hints=[
+          "Looks like no lab was started from this directory",
+          "Use 'netlab status --all' to display labs running on this system"])
+    sys.exit(1)
+  
+  # Check if we can use cached version
+  cache_key = f"{snapshot}:selective"
+  mtime = os.path.getmtime(snapshot)
+  
+  # Try to use cached partial topology if available and fresh
+  if hasattr(_read, '_snapshot_cache'):
+    cached_data, cached_mtime = _read._snapshot_cache.get(cache_key, (None, 0))
+    if cached_data and cached_mtime == mtime:
+      if log.debug_active('perf'):
+        log.debug(f'Using cached partial snapshot (took {time.time() - start_time:.3f} seconds)')
+      return cached_data
+  
+  # Load only required parts using streaming YAML parser if file is large
+  file_size = os.path.getsize(snapshot)
+  if file_size > 1024 * 1024:  # 1MB threshold
+    if log.debug_active('perf'):
+      log.debug(f'Large snapshot file ({file_size/1024/1024:.1f}MB), using selective loading')
+    
+    # For now, fall back to regular loading but cache the result
+    topology = _read.read_yaml(filename=snapshot)
+    if topology is None:
+      print(f"Cannot read the topology snapshot file {snapshot}")
+      sys.exit(1)
+    
+    # Extract only required data
+    partial_topology = Box()
+    for key in required_data:
+      if key in topology:
+        partial_topology[key] = topology[key]
+    
+    # Cache the partial topology
+    if not hasattr(_read, '_snapshot_cache'):
+      _read._snapshot_cache = {}
+    _read._snapshot_cache[cache_key] = (partial_topology, mtime)
+    
+    if log.debug_active('perf'):
+      log.debug(f'Selective snapshot loading took {time.time() - start_time:.3f} seconds')
+    
+    return partial_topology
+  else:
+    # For smaller files, just use regular loading
+    return load_snapshot(args)
 
 def check_modified_source(snapshot: str, topology: typing.Optional[Box] = None) -> None:
   if topology is None:

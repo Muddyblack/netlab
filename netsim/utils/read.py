@@ -81,7 +81,15 @@ def include_yaml(data: Box, source_file: str) -> None:
 #
 read_cache: dict = {}
 
-class UniqueKeyLoader(yaml.SafeLoader):
+# Try to use C-based loader for better performance
+try:
+  from yaml import CSafeLoader as SafeLoader
+  USING_C_LOADER = True
+except ImportError:
+  from yaml import SafeLoader
+  USING_C_LOADER = False
+
+class UniqueKeyLoader(SafeLoader):
   def construct_mapping(self, node : yaml.MappingNode, deep : bool = False) -> dict:
     mapping = []
     for key_node, value_node in node.value:
@@ -92,8 +100,12 @@ class UniqueKeyLoader(yaml.SafeLoader):
       mapping.append(key)
     return super().construct_mapping(node, deep)
 
+if log.debug_active('perf') and USING_C_LOADER:
+  log.debug('Using C-based YAML loader for better performance')
+
 def read_yaml(filename: typing.Optional[str] = None, string: typing.Optional[str] = None) -> typing.Optional[Box]:
   global read_cache
+  import time
 
   if string is not None:
     try:
@@ -109,15 +121,23 @@ def read_yaml(filename: typing.Optional[str] = None, string: typing.Optional[str
   if log.debug_active('defaults'):
     print(f"Reading {filename}")
 
+  # Check cache first
   if filename in read_cache:
+    if log.debug_active('perf'):
+      log.debug(f'Using cached YAML for {filename}')
     return Box(read_cache[filename],default_box=True,box_dots=True,default_box_none_transform=False)
+
+  total_start = time.time()
 
   if "package:" in filename:
     pkg_files = _files.get_traversable_path('package:')
     with pkg_files.joinpath(filename.replace("package:","")).open('r') as fid:
       pkg_data = read_yaml(string=fid.read())
       if not pkg_data is None:
+        include_start = time.time()
         include_yaml(pkg_data,filename)
+        if log.debug_active('perf'):
+          log.debug(f'Include processing for {filename} took {time.time() - include_start:.3f} seconds')
         read_cache[filename] = Box(pkg_data)
       return pkg_data
   else:
@@ -126,8 +146,18 @@ def read_yaml(filename: typing.Optional[str] = None, string: typing.Optional[str
         print("YAML file %s does not exist" % filename) # pragma: no cover -- too hard to test to bother
       return None
     try:
+      parse_start = time.time()
       yaml_data = Box().from_yaml(filename=filename,default_box=True,box_dots=True,default_box_none_transform=False,Loader=UniqueKeyLoader)
+      parse_end = time.time()
+      
+      if log.debug_active('perf'):
+        log.debug(f'YAML parsing for {filename} took {parse_end - parse_start:.3f} seconds')
+      
+      include_start = time.time()
       include_yaml(yaml_data,filename)
+      if log.debug_active('perf'):
+        log.debug(f'Include processing for {filename} took {time.time() - include_start:.3f} seconds')
+        
       read_cache[filename] = Box(yaml_data)
     except:
       log.fatal("Cannot read YAML from %s: %s " % (filename,str(sys.exc_info()[1])))
@@ -135,7 +165,51 @@ def read_yaml(filename: typing.Optional[str] = None, string: typing.Optional[str
   if log.LOGGING or log.VERBOSE:
     print("Read YAML data from %s" % (filename or "string"))
 
+  if log.debug_active('perf'):
+    log.debug(f'Total read_yaml for {filename} took {time.time() - total_start:.3f} seconds')
+
   return yaml_data
+
+def read_yaml_fast(filename: str, skip_includes: bool = False) -> typing.Optional[Box]:
+  """
+  Fast YAML reader that optionally skips include processing for better performance.
+  
+  Args:
+    filename: Path to YAML file
+    skip_includes: If True, skips _include processing
+  
+  Returns:
+    Box containing parsed YAML data
+  """
+  global read_cache
+  import time
+  
+  # Check cache first
+  cache_key = f"{filename}:fast:{skip_includes}"
+  if cache_key in read_cache:
+    if log.debug_active('perf'):
+      log.debug(f'Using cached YAML for {filename} (fast mode)')
+    return Box(read_cache[cache_key],default_box=True,box_dots=True,default_box_none_transform=False)
+  
+  if not os.path.isfile(filename):
+    return None
+  
+  try:
+    start_time = time.time()
+    yaml_data = Box().from_yaml(filename=filename,default_box=True,box_dots=True,default_box_none_transform=False,Loader=UniqueKeyLoader)
+    
+    if not skip_includes:
+      include_yaml(yaml_data,filename)
+    
+    read_cache[cache_key] = Box(yaml_data)
+    
+    if log.debug_active('perf'):
+      log.debug(f'Fast YAML read of {filename} took {time.time() - start_time:.3f} seconds')
+    
+    return yaml_data
+  except:
+    log.fatal("Cannot read YAML from %s: %s " % (filename,str(sys.exc_info()[1])))
+    return None
 
 def include_defaults(topo: Box, fname: str) -> None:
   defaults = read_yaml(fname)

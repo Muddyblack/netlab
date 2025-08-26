@@ -21,7 +21,7 @@ from box import Box
 
 from ..outputs import common as outputs_common
 from ..utils import log, strings, templates
-from . import error_and_exit, external_commands, load_snapshot, parser_add_verbose, parser_lab_location, set_dry_run
+from . import error_and_exit, external_commands, load_snapshot, load_snapshot_cached, parser_add_verbose, parser_lab_location, set_dry_run
 
 
 #
@@ -241,7 +241,8 @@ def run(cli_args: typing.List[str]) -> None:
   set_dry_run(args)
 
   rest = quote_list(rest)     # Quote arguments with whitespaces
-  topology = load_snapshot(args)
+  # Use optimized loader that only loads nodes, defaults, and tools
+  topology = load_snapshot_cached(args, required_data=['nodes', 'defaults', 'tools'])
   host = args.host
 
   try:
