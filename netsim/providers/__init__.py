@@ -54,7 +54,7 @@ class _Provider(Callback):
     return 'templates/provider/' + self.provider
 
   def get_full_template_path(self) -> str:
-    return os.path.join(str(_files.get_moddir()), self.get_template_path())
+    return str(_files.get_moddir() / self.get_template_path())
 
   def find_extra_template(self, node: Box, fname: str, topology: Box) -> typing.Optional[str]:
     """Find template with caching to avoid repeated filesystem searches"""
