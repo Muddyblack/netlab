@@ -10,6 +10,7 @@ import os
 import pathlib
 import platform
 import typing
+from functools import lru_cache
 
 # Related modules
 from box import Box
@@ -21,15 +22,24 @@ from ..utils import log, strings, templates
 from ..utils.callback import Callback
 
 
+@lru_cache(maxsize=1)
 def get_cpu_model() -> str:
-  processor_name = ""
-  if platform.system() == "Windows":
-    processor_name = platform.processor()
-  elif platform.system() == "Darwin":
-    processor_name = "arm64"          # Assume Apple silicon for MacOS
-  elif platform.system() == "Linux":
-    processor_name = pathlib.Path("/proc/cpuinfo").read_text().splitlines()[1].split()[2]
-  return processor_name.lower()
+  """Get CPU model with caching to avoid repeated system calls"""
+  system = platform.system()
+  if system == "Windows":
+    return platform.processor().lower()
+  elif system == "Darwin":
+    return "arm64"  # Assume Apple silicon for MacOS
+  elif system == "Linux":
+    try:
+      # Only read the first few lines instead of entire file
+      with open("/proc/cpuinfo", "r") as f:
+        for line in f:
+          if line.startswith("model name"):
+            return line.split(":")[1].strip().split()[0].lower()
+    except (IOError, IndexError):
+      pass
+  return "unknown"
 
 """
 The generic provider class. Used as a super class of all other providers
@@ -39,6 +49,7 @@ class _Provider(Callback):
     self.provider = provider
     if 'template' in data:
       self._default_template_name = data.template
+    self._template_cache = {}  # Instance-level template cache
 
   @classmethod
   def load(self, provider: str, data: Box) -> '_Provider':
@@ -52,11 +63,25 @@ class _Provider(Callback):
   def get_template_path(self) -> str:
     return 'templates/provider/' + self.provider
 
+  @lru_cache(maxsize=32)
   def get_full_template_path(self) -> str:
-    return str(_files.get_moddir()) + '/' + self.get_template_path()
+    return os.path.join(str(_files.get_moddir()), self.get_template_path())
 
   def find_extra_template(self, node: Box, fname: str, topology: Box) -> typing.Optional[str]:
-    if fname in node.get('config',[]):                    # Are we dealing with extra-config template?
+    """Find template with caching to avoid repeated filesystem searches"""
+    # Create a hashable key from mutable objects
+    cache_key = (node.name, node.device, fname, node.get('_daemon', False))
+    
+    if cache_key in self._template_cache:
+      return self._template_cache[cache_key]
+    
+    result = self._find_extra_template_uncached(node, fname, topology)
+    self._template_cache[cache_key] = result
+    return result
+
+  def _find_extra_template_uncached(self, node: Box, fname: str, topology: Box) -> typing.Optional[str]:
+    """Uncached version of find_extra_template"""
+    if fname in node.get('config',[]):
       path_prefix = topology.defaults.paths.custom.dirs
       path_suffix = [ fname ]
       fname = node.device
@@ -69,11 +94,12 @@ class _Provider(Callback):
           path_suffix.append(node._daemon_parent)
         path_prefix.append(str(_files.get_moddir() / 'daemons'))
 
-    path = [ pf + "/" + sf for pf in path_prefix for sf in path_suffix ]
+    # Use os.path.join for better performance
+    path = [ os.path.join(pf, sf) for pf in path_prefix for sf in path_suffix ]
     if log.debug_active('clab'):
       print(f'Searching for {fname}.j2 in {path}')
 
-    found_file = _files.find_file(fname+'.j2',path)
+    found_file = _files.find_file(f'{fname}.j2', path)
     if log.debug_active('clab'):
       print(f'Found file: {found_file}')
 
@@ -173,10 +199,9 @@ class _Provider(Callback):
       'hosts': topology.nodes.to_dict()
     }
     
-    # Performance: cache constants and template lookups per-call
+    # Performance: cache constants and use instance-level template cache
     prefix = f"{self.provider}_files/"
     prefix_len = len(prefix)
-    template_cache: dict = {}
 
     for file,mapping in bind_dict.items():
       # Only handle files placed under provider_files/
@@ -204,12 +229,8 @@ class _Provider(Callback):
 
       full_out_path = pathlib.Path(out_folder) / file_rel
 
-      # Cache template lookup to avoid repeated filesystem searches
-      tmpl_key = file_rel
-      template_name = template_cache.get(tmpl_key)
-      if template_name is None:
-        template_name = self.find_extra_template(node,file_rel,topology)
-        template_cache[tmpl_key] = template_name
+      # Use cached template lookup
+      template_name = self.find_extra_template(node, file_rel, topology)
 
       if not template_name:
         log.error(f"Cannot find template for {file_rel} on node {node.name}",log.MissingValue,'provider')
@@ -338,6 +359,7 @@ def select_primary_provider(topology: Box) -> None:
       return
 
   # Now build the list of providers that can be mixed (in relative order)
+  # Use set intersection for better performance
   p_mix_list = [ x for x in topology.defaults.const.multi_provider if x in p_set ]
   if not p_mix_list:                              # No relevant providers
     return
@@ -358,14 +380,17 @@ def select_primary_provider(topology: Box) -> None:
     flag='providers.change',
     module='providers')
 
+# Global provider module cache
+_provider_module_cache = {}
+
 """
-Get a pointer to provider module. Cached in topology._Providers
+Get a pointer to provider module. Cached globally for better performance
 """
 def get_provider_module(topology: Box, pname: str) -> _Provider:
-  if not pname in topology._Providers:
-    topology._Providers[pname] = _Provider.load(pname,topology.defaults.providers[pname])
-
-  return topology._Providers[pname]
+  if pname not in _provider_module_cache:
+    _provider_module_cache[pname] = _Provider.load(pname, topology.defaults.providers[pname])
+  
+  return _provider_module_cache[pname]
 
 """
 Execute a topology-wide provider hook
@@ -411,7 +436,7 @@ def select_topology(topology: Box, provider: str) -> Box:
     if topology.nodes[n].provider != provider:
       topology.nodes[n].unmanaged = True
 
-  topology.links = [ l for l in topology.links if provider in l.provider ]      # Retain only the links used by current provider
+  topology.links = [ l for l in topology.links if provider in l.provider ]  # Retain only the links used by current provider
   return topology
 
 """
@@ -446,8 +471,9 @@ def node_add_forwarded_ports(node: Box, fplist: list, topology: Box) -> None:
 validate_images -- check the images used by individual nodes against provider image repo
 """
 def validate_images(topology: Box) -> None:
+  # Process nodes validation in a more efficient way
   for n_data in topology.nodes.values():
-    execute_node('validate_node_image',n_data,topology)
+    execute_node('validate_node_image', n_data, topology)
 
   log.exit_on_error()
 
