@@ -5,6 +5,7 @@
 #
 import argparse
 import os
+import sys
 import typing
 
 from .. import devices
@@ -59,12 +60,77 @@ def initial_config_parse(args: typing.List[str]) -> typing.Tuple[argparse.Namesp
     '--no-message',
     dest='no_message', action='store_true',
     help=argparse.SUPPRESS)
+  parser.add_argument(
+    '--engine',
+    choices=['ansible', 'nornir'],
+    default='ansible',
+    help='Configuration deployment engine (default: ansible)')
+  parser.add_argument(
+    '--workers',
+    type=int,
+    default=100,
+    help='Number of parallel workers for Nornir (default: 100)')
   parser_lab_location(parser,instance=True,i_used=True,action='configure')
 
   return parser.parse_known_args(args)
 
 def run_initial(cli_args: typing.List[str]) -> None:
   (args,rest) = initial_config_parse(cli_args)
+  
+  # Check if using Nornir engine
+  if args.engine == 'nornir':
+    # Check for Nornir availability
+    try:
+      import nornir
+      from ..nornir.inventory import AnsibleInventoryAdapter
+      from ..nornir.tasks import deploy_custom_config
+      from .nornir_config import run_nornir_initial
+    except ImportError as e:
+      log.error(
+        f"Nornir dependencies not installed: {e}\n"
+        "Install with: pip install nornir nornir-napalm nornir-scrapli nornir-utils nornir-netmiko",
+        "initial"
+      )
+      sys.exit(1)
+    
+    # Load topology for Nornir
+    topology = load_snapshot(args)
+    
+    # Extract limit from rest arguments if present
+    limit = None
+    if '--limit' in rest:
+      idx = rest.index('--limit')
+      if idx + 1 < len(rest):
+        limit = rest[idx + 1]
+    
+    # Run Nornir initial deployment
+    if not args.no_message:
+      message = get_message(topology,'initial',False)
+      if message:
+        print(f"{message}\n")
+    
+    success = run_nornir_initial(
+      topology=topology,
+      limit=limit,
+      num_workers=args.workers,
+      verbose=args.verbose
+    )
+    
+    if success:
+      if topology and not args.no_message:
+        message = get_message(topology,'initial',True)
+        if message:
+          print(f"\n\n{message}")
+        lab_status_change(topology,'configuration deployment complete')
+    else:
+      sys.exit(1)
+    
+    if _status.is_directory_locked():
+      _status.lock_directory()
+    
+    return
+  
+  # Original Ansible implementation follows
   if args.output:
     rest = ['-e',f'config_dir="{os.path.abspath(args.output)}"' ] + rest
 

@@ -12,8 +12,15 @@ import typing
 from pathlib import Path
 
 from box import Box
-from nornir import InitNornir
-from nornir.core.inventory import Host, Groups, Hosts, Inventory
+
+# Lazy imports to avoid dependency issues
+def _get_nornir_imports():
+    try:
+        from nornir import InitNornir
+        from nornir.core.inventory import Host, Groups, Hosts, Inventory
+        return InitNornir, Host, Groups, Hosts, Inventory
+    except ImportError:
+        raise ImportError("nornir is required. Install with: pip install nornir")
 
 from ..utils import log
 
@@ -78,7 +85,7 @@ class AnsibleInventoryAdapter:
             log.error(f'Failed to get host data for {hostname}: {e}', 'nornir')
             return {}
     
-    def _create_nornir_host(self, hostname: str, host_data: dict) -> Host:
+    def _create_nornir_host(self, hostname: str, host_data: dict):
         """
         Convert Ansible host data to Nornir Host object
         """
@@ -147,6 +154,7 @@ class AnsibleInventoryAdapter:
             connection_options['ssh'] = ssh_params
         
         # Create Nornir host
+        _, Host, _, _, _ = _get_nornir_imports()
         return Host(
             name=hostname,
             hostname=ansible_host,
@@ -158,7 +166,7 @@ class AnsibleInventoryAdapter:
             connection_options=connection_options
         )
     
-    def to_nornir(self, limit: typing.Optional[typing.List[str]] = None) -> Inventory:
+    def to_nornir(self, limit: typing.Optional[typing.List[str]] = None):
         """
         Convert Ansible inventory to Nornir inventory
         
@@ -169,6 +177,7 @@ class AnsibleInventoryAdapter:
             Nornir Inventory object
         """
         ansible_inv = self._get_ansible_inventory()
+        _, _, Groups, Hosts, Inventory = _get_nornir_imports()
         hosts = Hosts()
         groups = Groups()
         
@@ -209,7 +218,7 @@ class AnsibleInventoryAdapter:
         return Inventory(hosts=hosts, groups=groups)
     
     def create_nornir_object(self, limit: typing.Optional[typing.List[str]] = None,
-                            num_workers: int = 100) -> InitNornir:
+                            num_workers: int = 100):
         """
         Create a Nornir object with the converted inventory
         
@@ -222,6 +231,7 @@ class AnsibleInventoryAdapter:
         """
         inventory = self.to_nornir(limit=limit)
         
+        InitNornir, _, _, _, _ = _get_nornir_imports()
         return InitNornir(
             inventory=inventory,
             runner={

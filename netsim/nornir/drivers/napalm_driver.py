@@ -3,7 +3,15 @@
 #
 
 import typing
-from nornir_napalm.plugins.tasks import napalm_configure, napalm_get
+
+# Lazy imports to avoid dependency issues
+def _get_napalm_tasks():
+    try:
+        from nornir_napalm.plugins.tasks import napalm_configure, napalm_get
+        return napalm_configure, napalm_get
+    except ImportError:
+        raise ImportError("nornir-napalm is required for NAPALM driver. Install with: pip install nornir-napalm")
+
 from .base import BaseDriver
 
 
@@ -32,6 +40,7 @@ class NapalmDriver(BaseDriver):
         """
         Merge configuration using NAPALM
         """
+        napalm_configure, _ = _get_napalm_tasks()
         result = self.task.run(
             task=napalm_configure,
             configuration=config,
@@ -53,6 +62,7 @@ class NapalmDriver(BaseDriver):
         """
         Replace configuration using NAPALM
         """
+        napalm_configure, _ = _get_napalm_tasks()
         result = self.task.run(
             task=napalm_configure,
             configuration=config,
@@ -80,6 +90,7 @@ class NapalmDriver(BaseDriver):
         """
         Get running configuration using NAPALM
         """
+        _, napalm_get = _get_napalm_tasks()
         result = self.task.run(
             task=napalm_get,
             getters=["config"]

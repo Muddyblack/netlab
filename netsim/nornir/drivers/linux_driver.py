@@ -7,8 +7,15 @@
 import typing
 import tempfile
 from pathlib import Path
-from nornir_utils.plugins.tasks import remote_command
-from nornir.core.exceptions import NornirExecutionError
+
+# Lazy imports to avoid dependency issues
+def _get_remote_command():
+    try:
+        from nornir_utils.plugins.tasks import remote_command
+        return remote_command
+    except ImportError:
+        raise ImportError("nornir-utils is required for Linux driver. Install with: pip install nornir-utils")
+
 from .base import BaseDriver
 
 
@@ -86,6 +93,7 @@ class LinuxDriver(BaseDriver):
         """
         Run a command on the remote host
         """
+        remote_command = _get_remote_command()
         result = self.task.run(task=remote_command, command=command)
         
         if result.failed:

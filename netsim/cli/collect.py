@@ -6,6 +6,7 @@
 import argparse
 import os
 import subprocess
+import sys
 import typing
 
 from ..utils import log
@@ -54,6 +55,16 @@ def collect_parse(args: typing.List[str]) -> typing.Tuple[argparse.Namespace, ty
     dest='cleanup',
     action='store_true',
     help='Clean up config directory and modified configuration file after creating tarball')
+  parser.add_argument(
+    '--engine',
+    choices=['ansible', 'nornir'],
+    default='ansible',
+    help='Configuration collection engine (default: ansible)')
+  parser.add_argument(
+    '--workers',
+    type=int,
+    default=100,
+    help='Number of parallel workers for Nornir (default: 100)')
   parser_lab_location(parser,instance=True,action='collect configuration from')
 
   return parser.parse_known_args(args)
@@ -68,7 +79,7 @@ def run(cli_args: typing.List[str]) -> None:
   (args,rest) = collect_parse(cli_args)
   log.set_logging_flags(args)
 
-  load_snapshot(args)
+  topology = load_snapshot(args)
 
   fs_cleanup([ args.output ])
   try:
@@ -77,24 +88,62 @@ def run(cli_args: typing.List[str]) -> None:
     log.fatal(f"Cannot create output directory {args.output}: {ex}")
 
   print(f"cwd: {os.getcwd()} output: {args.output}")
-  if args.verbose:
-    rest = ['-v'] + rest
+  
+  # Check which engine to use
+  if args.engine == 'nornir':
+    # Check for Nornir availability
+    try:
+      import nornir
+      from .nornir_config import run_nornir_collect
+    except ImportError as e:
+      log.error(
+        f"Nornir dependencies not installed: {e}\n"
+        "Install with: pip install nornir nornir-napalm nornir-scrapli nornir-utils nornir-netmiko",
+        "collect"
+      )
+      sys.exit(1)
+    
+    # Extract limit from rest arguments if present
+    limit = None
+    if '--limit' in rest:
+      idx = rest.index('--limit')
+      if idx + 1 < len(rest):
+        limit = rest[idx + 1]
+    
+    if args.tar and not args.quiet:
+      external_commands.print_step(1,"Collecting device configurations")
+    
+    # Run Nornir collection
+    success = run_nornir_collect(
+      topology=topology,
+      output_dir=args.output,
+      limit=limit,
+      num_workers=args.workers,
+      verbose=args.verbose
+    )
+    
+    if not success:
+      sys.exit(1)
+  else:
+    # Original Ansible implementation
+    if args.verbose:
+      rest = ['-v'] + rest
 
-  rest = ['-e','target='+args.output ] + rest
+    rest = ['-e','target='+args.output ] + rest
 
-  if args.suffix:
-    rest += ['-e','suffix='+args.suffix]
+    if args.suffix:
+      rest += ['-e','suffix='+args.suffix]
 
-  if args.tar and not args.quiet:
-    external_commands.print_step(1,"Collecting device configurations")
+    if args.tar and not args.quiet:
+      external_commands.print_step(1,"Collecting device configurations")
 
-  if args.verbose:
-    print("Ansible playbook args: %s" % rest)
+    if args.verbose:
+      print("Ansible playbook args: %s" % rest)
 
-  if args.quiet:
-    os.environ["ANSIBLE_STDOUT_CALLBACK"] = "dense"
+    if args.quiet:
+      os.environ["ANSIBLE_STDOUT_CALLBACK"] = "dense"
 
-  ansible.playbook('collect-configs.ansible',rest)
+    ansible.playbook('collect-configs.ansible',rest)
 
   if args.tar:
     if os.getcwd() != run_dir:

@@ -3,7 +3,15 @@
 #
 
 import typing
-from nornir_scrapli.tasks import send_config, send_command
+
+# Lazy imports to avoid dependency issues
+def _get_scrapli_tasks():
+    try:
+        from nornir_scrapli.tasks import send_config, send_command
+        return send_config, send_command
+    except ImportError:
+        raise ImportError("nornir-scrapli is required for Scrapli driver. Install with: pip install nornir-scrapli")
+
 from .base import BaseDriver
 
 
@@ -46,6 +54,7 @@ class ScrapliDriver(BaseDriver):
         }
         
         command = platform_commands.get(self.host.platform, 'show running-config')
+        _, send_command = _get_scrapli_tasks()
         result = self.task.run(task=send_command, command=command)
         
         if not result.failed:
@@ -63,6 +72,7 @@ class ScrapliDriver(BaseDriver):
         
         # Send configuration
         config_lines = config.strip().split('\n')
+        send_config, _ = _get_scrapli_tasks()
         result = self.task.run(
             task=send_config,
             config=config_lines,
@@ -120,6 +130,7 @@ class ScrapliDriver(BaseDriver):
         Get configuration using Scrapli
         """
         if command:
+            _, send_command = _get_scrapli_tasks()
             result = self.task.run(task=send_command, command=command)
         else:
             return self._get_running_config()
@@ -133,6 +144,7 @@ class ScrapliDriver(BaseDriver):
         """
         Send a command using Scrapli
         """
+        _, send_command = _get_scrapli_tasks()
         result = self.task.run(task=send_command, command=command)
         
         if not result.failed:
