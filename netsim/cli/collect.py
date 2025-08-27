@@ -99,7 +99,7 @@ def run(cli_args: typing.List[str]) -> None:
       log.error(
         f"Nornir dependencies not installed: {e}\n"
         "Install with: pip install nornir nornir-napalm nornir-scrapli nornir-utils nornir-netmiko",
-        "collect"
+        category=None
       )
       sys.exit(1)
     

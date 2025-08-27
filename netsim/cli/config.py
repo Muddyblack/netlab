@@ -99,7 +99,7 @@ def run(cli_args: typing.List[str]) -> None:
   if args.engine == 'nornir':
     # Use Nornir for deployment
     if args.reload:
-      log.error("Configuration reload is not yet supported with Nornir engine", "config")
+      log.error("Configuration reload is not yet supported with Nornir engine", category=None)
       sys.exit(1)
     
     # Check for Nornir availability
@@ -110,7 +110,7 @@ def run(cli_args: typing.List[str]) -> None:
       log.error(
         f"Nornir dependencies not installed: {e}\n"
         "Install with: pip install nornir nornir-napalm nornir-scrapli nornir-utils nornir-netmiko",
-        "config"
+        category=None
       )
       sys.exit(1)
     
