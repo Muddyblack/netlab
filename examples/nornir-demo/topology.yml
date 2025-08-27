@@ -1,0 +1,23 @@
+# Nornir Demo Topology
+# 
+# Simple topology to demonstrate Nornir configuration deployment
+#
+
+defaults:
+  device: frr
+
+nodes:
+  r1:
+    id: 1
+  r2:
+    id: 2
+  r3:
+    id: 3
+
+links:
+- r1-r2
+- r2-r3
+- r3-r1
+
+# Enable OSPF on all devices
+module: [ ospf ]
