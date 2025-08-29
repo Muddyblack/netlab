@@ -16,7 +16,6 @@ from box import Box
 
 from ..augment import devices, links
 from ..data import append_to_list, filemaps, get_box, get_empty_box
-from ..outputs.ansible import get_host_addresses
 from ..utils import files as _files
 from ..utils import log, strings, templates
 from ..utils.callback import Callback
@@ -181,9 +180,12 @@ class _Provider(Callback):
 
     bind_dict = filemaps.mapping_to_dict(binds)
     # Process other files normally
-    node_data = node + { 'hostvars': topology.nodes, 
-                          'hosts': get_host_addresses(topology),
-                          'addressing': topology.addressing } 
+    node_data = {
+      **node.to_dict(),
+      'addressing': topology.addressing.to_dict(),
+      'hostvars': topology.nodes.to_dict(),
+      'hosts': topology.nodes.to_dict()
+    }
     
     # Performance: cache constants and use instance-level template cache
     prefix = f"{self.provider}_files/"
