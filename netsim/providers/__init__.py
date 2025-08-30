@@ -16,6 +16,7 @@ from box import Box
 
 from ..augment import devices, links
 from ..data import append_to_list, filemaps, get_box, get_empty_box
+from ..outputs.ansible import get_host_addresses
 from ..utils import files as _files
 from ..utils import log, strings, templates
 from ..utils.callback import Callback
@@ -166,11 +167,11 @@ class _Provider(Callback):
     bind_dict = filemaps.mapping_to_dict(binds)
     # Process other files normally
     node_data = {
-      **node.to_dict(),
-      'addressing': topology.addressing.to_dict(),
-      'hostvars': topology.nodes.to_dict(),
-      'hosts': topology.nodes.to_dict()
-    }
+        **node.to_dict(),
+        'hostvars': topology.nodes.to_dict(),
+        'hosts': get_host_addresses(topology),
+        'addressing': topology.addressing.to_dict()
+    }  
     
     # Performance: cache constants and use instance-level template cache
     prefix = f"{self.provider}_files/"
@@ -184,7 +185,6 @@ class _Provider(Callback):
       # Derive the out_folder and the relative filename
       rel = file[prefix_len:]
       if rel.startswith('shared/'):
-        # Shared file path
         file_rel = rel[7:]  # Remove 'shared/' prefix
         is_shared = True
       else:
