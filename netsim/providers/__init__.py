@@ -130,10 +130,10 @@ class _Provider(Callback):
     for file,mapping in map_dict.items():
       file = file.replace('@','.')
       
+      # Check if mapping ends with :shared - if so, make it a shared file
       if mapping.endswith(':shared'):
-        mapping = mapping.rsplit(':shared', 1)[0] + ':ro'  # Remove ':shared' (7 chars) and add ':ro'
-        shared_device = node.get('device','shared')
-        out_folder = f"{self.provider}_files/shared/{shared_device}"
+        mapping = mapping.rsplit(':shared', 1)[0] + ':ro'
+        out_folder = f"{self.provider}_files/shared"
       else:
         out_folder = f"{self.provider}_files/{node.name}"
       
@@ -181,37 +181,36 @@ class _Provider(Callback):
       if not file.startswith(prefix):
         continue
 
-      # Derive the out_folder (either node-specific or shared per-device) and the relative filename
-      rel = file[prefix_len:]  # e.g. 'node1/etc/hosts' or 'shared/<device>/etc/hosts'
+      # Derive the out_folder and the relative filename
+      rel = file[prefix_len:]
       if rel.startswith('shared/'):
-        # expected rel: 'shared/<device>/path/to/file'
-        parts = rel.split('/',2)
-        if len(parts) < 3:
-          file_rel = parts[-1]
-        else:
-          file_rel = parts[2]
-        out_folder = f"{prefix}{parts[0]}/{parts[1]}"   # provider_files/shared/<device>
+        # Shared file path
+        file_rel = rel[7:]  # Remove 'shared/' prefix
+        is_shared = True
       else:
         parts = rel.split('/',1)
-        out_folder = f"{prefix}{parts[0]}"               # provider_files/<node.name>
         file_rel = parts[1] if len(parts) > 1 else ''
+        is_shared = False
 
       if not file_rel:
         # nothing to render
         continue
 
-      full_out_path = pathlib.Path(out_folder) / file_rel
-
       template_name = self.find_extra_template(node, file_rel, topology)
-
       if not template_name:
         log.error(f"Cannot find template for {file_rel} on node {node.name}",log.MissingValue,'provider')
         continue
 
+
+      if is_shared:
+        full_out_path = pathlib.Path(f"{prefix}shared") / file_rel
+      else:
+        full_out_path = pathlib.Path(file)
+
       # Create parent dirs if needed
       full_out_path.parent.mkdir(parents=True,exist_ok=True)
 
-      # If the shared file already exists, skip re-rendering (shared per-device)
+      # If the file already exists (either shared or node-specific), skip re-rendering
       if full_out_path.exists():
         if not log.QUIET:
           strings.print_colored_text('[MAPPED]  ','bright_cyan','Mapped ')
