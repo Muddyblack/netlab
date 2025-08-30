@@ -146,8 +146,8 @@ class _Provider(Callback):
       
       # Check if mapping ends with :shared - if so, make it a shared file
       if mapping.endswith(':shared'):
-        # Remove :shared suffix and replace with :ro
-        mapping = mapping[:-7] + ':ro'  # Remove ':shared' (7 chars) and add ':ro'
+        # Replace :shared suffix with :ro
+        mapping = mapping.rsplit(':shared', 1)[0] + ':ro'
         shared_device = node.get('device','shared')
         out_folder = f"{self.provider}_files/shared/{shared_device}"
       else:
