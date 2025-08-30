@@ -41,6 +41,7 @@ class _Provider(Callback):
     self.provider = provider
     if 'template' in data:
       self._default_template_name = data.template
+    self._shared_files_cache = {}  # Cache for shared files: template_path -> output_file_path
 
   @classmethod
   def load(self, provider: str, data: Box) -> '_Provider':
@@ -160,34 +161,83 @@ class _Provider(Callback):
 
     sys_folder = str(_files.get_moddir())+"/"
     out_folder = f"{self.provider}_files/{node.name}"
+    
+    # Pre-compute host addresses once for all nodes to avoid repeated computation
+    hosts_data = get_host_addresses(topology)
 
     bind_dict = filemaps.mapping_to_dict(binds)
+    updated_binds = {}  # Track updated bindings for shared files
+    
     for file,mapping in bind_dict.items():
       if not out_folder in file:                  # Skip files that are not mapped into the temporary provider folder
         continue
+        
+      # Check if this file should be shared (indicated by :shared in mapping)
+      is_shared = ':shared' in mapping
+      if is_shared:
+        # Replace :shared with :ro for read-only mounting
+        mapping = mapping.replace(':shared', ':ro')
+        
       file_name = file.replace(out_folder+"/","")
       template_name = self.find_extra_template(node,file_name,topology)
-      if template_name:
-        node_data = node + { 'hostvars': topology.nodes, 
-                             'hosts': get_host_addresses(topology),
-                             'addressing': topology.addressing }  # Needed for subnet prefix
-        if '/' in file_name:                      # Create subdirectory in out_folder if needed
-          pathlib.Path(f"{out_folder}/{os.path.dirname(file_name)}").mkdir(parents=True,exist_ok=True)
-        try:
-          templates.write_template(
-            in_folder=os.path.dirname(template_name),
-            j2=os.path.basename(template_name),
-            data=node_data.to_dict(),
-            out_folder=out_folder, filename=file_name)
-        except Exception as ex:
-          log.fatal(
-            text=f"Error rendering {template_name} into {file_name}\n{strings.extra_data_printout(str(ex))}",
-            module=self.provider)
-
-        strings.print_colored_text('[MAPPED]  ','bright_cyan','Mapped ')
-        print(f"{out_folder}/{file_name} to {node.name}:{mapping} (from {template_name.replace(sys_folder,'')})")
-      else:
+      
+      if not template_name:
         log.error(f"Cannot find template for {file_name} on node {node.name}",log.MissingValue,'provider')
+        continue
+        
+      # For shared files, check if we already generated it
+      if is_shared and template_name in self._shared_files_cache:
+        shared_file_path = self._shared_files_cache[template_name]
+        updated_binds[shared_file_path] = mapping
+        if not log.QUIET:
+          strings.print_colored_text('[SHARED]  ','bright_cyan','Shared ')
+          print(f"{shared_file_path} to {node.name}:{mapping} (already generated)")
+        continue
+        
+      # Determine output path - shared files go to a common location
+      if is_shared:
+        actual_out_folder = f"{self.provider}_files/shared"
+        actual_file_path = f"{actual_out_folder}/{file_name}"
+      else:
+        actual_out_folder = out_folder
+        actual_file_path = file
+        
+      # Create directories if needed
+      if '/' in file_name:
+        pathlib.Path(f"{actual_out_folder}/{os.path.dirname(file_name)}").mkdir(parents=True,exist_ok=True)
+      elif is_shared:
+        pathlib.Path(actual_out_folder).mkdir(parents=True,exist_ok=True)
+        
+      # Prepare node data - avoid multiple to_dict() calls
+      node_data = node + { 'hostvars': topology.nodes, 
+                           'hosts': hosts_data,
+                           'addressing': topology.addressing }  # Needed for subnet prefix
+      try:
+        templates.write_template(
+          in_folder=os.path.dirname(template_name),
+          j2=os.path.basename(template_name),
+          data=node_data.to_dict(),
+          out_folder=actual_out_folder, 
+          filename=file_name)
+      except Exception as ex:
+        log.fatal(
+          text=f"Error rendering {template_name} into {file_name}\n{strings.extra_data_printout(str(ex))}",
+          module=self.provider)
+
+      if not log.QUIET:
+        strings.print_colored_text('[MAPPED]  ','bright_cyan','Mapped ')
+        print(f"{actual_file_path} to {node.name}:{mapping} (from {template_name.replace(sys_folder,'')})")  
+        
+      # For shared files, cache the result
+      if is_shared:
+        self._shared_files_cache[template_name] = actual_file_path
+        updated_binds[actual_file_path] = mapping
+      else:
+        updated_binds[file] = mapping
+    
+    # Update node bindings with potentially new paths for shared files
+    if updated_binds:
+      node[self.provider][outkey] = filemaps.dict_to_mapping(updated_binds)
 
   def create(self, topology: Box, fname: typing.Optional[str]) -> None:
     self.transform(topology)
