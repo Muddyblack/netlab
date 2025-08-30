@@ -39,7 +39,6 @@ class _Provider(Callback):
     self.provider = provider
     if 'template' in data:
       self._default_template_name = data.template
-    self._template_cache = {}
 
   @classmethod
   def load(self, provider: str, data: Box) -> '_Provider':
@@ -57,19 +56,6 @@ class _Provider(Callback):
     return str(_files.get_moddir() / self.get_template_path())
 
   def find_extra_template(self, node: Box, fname: str, topology: Box) -> typing.Optional[str]:
-    """Find template with caching to avoid repeated filesystem searches"""
-    # Create a hashable key from mutable objects
-    cache_key = (node.name, node.device, fname, node.get('_daemon', False))
-    
-    if cache_key in self._template_cache:
-      return self._template_cache[cache_key]
-    
-    result = self._find_extra_template_uncached(node, fname, topology)
-    self._template_cache[cache_key] = result
-    return result
-
-  def _find_extra_template_uncached(self, node: Box, fname: str, topology: Box) -> typing.Optional[str]:
-    """Uncached version of find_extra_template"""
     if fname in node.get('config',[]):
       path_prefix = topology.defaults.paths.custom.dirs
       path_suffix = [ fname ]
