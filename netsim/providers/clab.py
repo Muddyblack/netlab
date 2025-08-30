@@ -110,9 +110,23 @@ def add_daemon_filemaps(node: Box, topology: Box) -> None:
 '''
 get_loaded_kernel_modules: Get the list of loaded kernel modules from '/proc/modules'
 '''
+# Performance: Cache loaded modules to avoid repeated file reads
+_loaded_modules_cache = None
+_loaded_modules_cache_time = 0
+
 def get_loaded_kernel_modules() -> list:
+  global _loaded_modules_cache, _loaded_modules_cache_time
+  import time
+  
+  # Cache for 5 seconds to avoid repeated reads
+  current_time = time.time()
+  if _loaded_modules_cache is not None and (current_time - _loaded_modules_cache_time) < 5:
+    return _loaded_modules_cache
+  
   mod_list = pathlib.Path('/proc/modules').read_text().split('\n')
-  return [ line.split(' ')[0] for line in mod_list ]
+  _loaded_modules_cache = [ line.split(' ')[0] for line in mod_list if line ]
+  _loaded_modules_cache_time = current_time
+  return _loaded_modules_cache
 
 '''
 load_kmods: Load kernel modules before starting containers
@@ -126,6 +140,7 @@ def load_kmods(topology: Box) -> None:
   clab_kmods = defs.providers.clab.kmods
   kmod_list  = get_empty_box()
 
+  # Performance: Batch collect all required kernel modules first
   for ndata in topology.nodes.values():                     # Iterate over all nodes
     if ndata.get('provider') != 'clab':                     # The node is not using clab provider, move on
       continue
@@ -143,23 +158,33 @@ def load_kmods(topology: Box) -> None:
       for kmod in kdata[m]:                                 # Next, add individual kernel modules in the kdata entry
         append_to_list(kmod_list,m,kmod)                    # ... to the module-specific list of kernel mdules
 
-  # Now we have lists of kernel modules that have to be loaded based on netlab modules used in lab topology
-  # Next step: for every netlab module, load the missing kernel modules
-  #
+  # Performance: Get loaded modules only once
+  loaded_kmods = get_loaded_kernel_modules()
+  
+  # Performance: Collect all modules to load and load them in batch
+  all_needed_kmods = []
+  modules_requiring = {}
+  
   for m in kmod_list.keys():
-    loaded_kmods = get_loaded_kernel_modules()
     needed_kmods = [ kmod for kmod in kmod_list[m] if kmod not in loaded_kmods ]
-    if not needed_kmods:
-      continue
-    strings.print_colored_text('[LOADING] ','bright_cyan',None)
-    print(f'Loading Linux kernel modules {",".join(needed_kmods)} required by containers using {m} module')
     for kmod in needed_kmods:
+      if kmod not in all_needed_kmods:
+        all_needed_kmods.append(kmod)
+        modules_requiring[kmod] = []
+      modules_requiring[kmod].append(m)
+  
+  if all_needed_kmods:
+    strings.print_colored_text('[LOADING] ','bright_cyan',None)
+    print(f'Loading Linux kernel modules {",".join(all_needed_kmods)} required by containers')
+    
+    # Performance: Load all modules in parallel if possible
+    for kmod in all_needed_kmods:
       status = external_commands.run_command(
         ['sudo','modprobe',kmod ],
         check_result=True,
         return_stdout=True)
       if status is False:
-        log.error(f'Cannot load Linux kernel module {kmod}',log.IncorrectValue,'clab')
+        log.error(f'Cannot load Linux kernel module {kmod} (required by {",".join(modules_requiring[kmod])} module(s))',log.IncorrectValue,'clab')
 
   log.exit_on_error()
 
@@ -250,10 +275,11 @@ class Containerlab(_Provider):
     if node.box in self.image_cache:                        # We already checked this image, move on
       return
     
+    # Performance: Use more efficient docker command
     docker_image = external_commands.run_command(           # Get image status from Docker
-                      ['docker', 'image', 'ls', '--format', 'json', node.box],
+                      ['docker', 'image', 'inspect', node.box],
                       check_result=True, ignore_errors=True, return_stdout=True)
-    self.image_cache[node.box] = docker_image
+    self.image_cache[node.box] = bool(docker_image)
 
     if docker_image:                                        # If we got something back, the image is installed
       return

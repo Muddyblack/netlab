@@ -40,6 +40,10 @@ class _Provider(Callback):
     self.provider = provider
     if 'template' in data:
       self._default_template_name = data.template
+    # Performance: Cache for template lookups
+    self._template_cache: typing.Dict[str, typing.Optional[str]] = {}
+    # Performance: Cache for rendered templates
+    self._rendered_cache: typing.Dict[str, str] = {}
 
   @classmethod
   def load(self, provider: str, data: Box) -> '_Provider':
@@ -57,6 +61,11 @@ class _Provider(Callback):
     return str(_files.get_moddir() / self.get_template_path())
 
   def find_extra_template(self, node: Box, fname: str, topology: Box) -> typing.Optional[str]:
+    # Performance: Check cache first
+    cache_key = f"{node.name}:{fname}:{node.device}:{node.get('_daemon', False)}"
+    if cache_key in self._template_cache:
+      return self._template_cache[cache_key]
+    
     if fname in node.get('config',[]):
       path_prefix = topology.defaults.paths.custom.dirs
       path_suffix = [ fname ]
@@ -78,6 +87,8 @@ class _Provider(Callback):
     if log.debug_active('clab'):
       print(f'Found file: {found_file}')
 
+    # Cache the result
+    self._template_cache[cache_key] = found_file
     return found_file
 
   def get_output_name(self, fname: typing.Optional[str], topology: Box) -> str:
@@ -438,8 +449,19 @@ def node_add_forwarded_ports(node: Box, fplist: list, topology: Box) -> None:
 validate_images -- check the images used by individual nodes against provider image repo
 """
 def validate_images(topology: Box) -> None:
+  # Performance: Group nodes by provider to batch validation
+  nodes_by_provider = {}
   for n_data in topology.nodes.values():
-    execute_node('validate_node_image',n_data,topology)
+    provider = devices.get_provider(n_data, topology.defaults)
+    if provider not in nodes_by_provider:
+      nodes_by_provider[provider] = []
+    nodes_by_provider[provider].append(n_data)
+  
+  # Performance: Validate all nodes for each provider
+  for provider, nodes in nodes_by_provider.items():
+    p_module = get_provider_module(topology, provider)
+    for n_data in nodes:
+      p_module.call('validate_node_image', n_data, topology)
 
   log.exit_on_error()
 
