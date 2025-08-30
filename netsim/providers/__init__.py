@@ -360,9 +360,64 @@ def get_provider_module(topology: Box, pname: str) -> _Provider:
   return topology._Providers[pname]
 
 """
+Batch initialize multiple provider modules at once for better performance
+"""
+def batch_init_providers(topology: Box, provider_names: typing.List[str]) -> None:
+  # Initialize _Providers if it doesn't exist
+  if not hasattr(topology, '_Providers'):
+    topology._Providers = Box()
+  
+  # Filter out already loaded providers
+  providers_to_load = [p for p in provider_names if p not in topology._Providers]
+  
+  # Load all providers in batch
+  for pname in providers_to_load:
+    if pname in topology.defaults.providers:
+      topology._Providers[pname] = _Provider.load(pname, topology.defaults.providers[pname])
+
+"""
+Get all unique providers used in the topology
+"""
+def get_all_providers(topology: Box) -> typing.Set[str]:
+  providers = {topology.provider}  # Start with the main provider
+  
+  # Add providers from all nodes
+  for node in topology.nodes.values():
+    if 'provider' in node:
+      providers.add(node.provider)
+    else:
+      providers.add(topology.provider)
+  
+  # Add any subproviders
+  if topology.provider in topology and 'providers' in topology[topology.provider]:
+    providers.update(topology[topology.provider].providers.keys())
+  
+  return providers
+
+"""
+Initialize all providers upfront for better performance
+This should be called early in the topology processing
+"""
+def init_all_providers(topology: Box) -> None:
+  # Initialize _Providers if it doesn't exist
+  if not hasattr(topology, '_Providers'):
+    topology._Providers = Box()
+  
+  # Get all providers that might be used
+  all_providers = get_all_providers(topology)
+  
+  # Batch initialize them
+  batch_init_providers(topology, list(all_providers))
+
+"""
 Execute a topology-wide provider hook
 """
 def execute(hook: str, topology: Box) -> None:
+  # Batch initialize all providers that will be needed
+  all_providers = get_all_providers(topology)
+  batch_init_providers(topology, list(all_providers))
+  
+  # Now execute hooks - providers are already loaded
   p_module = get_provider_module(topology,topology.provider)
   p_module.call(hook,topology)
 
@@ -381,6 +436,11 @@ def execute_node(hook: str, node: Box, topology: Box) -> typing.Any:
 Mark all nodes and links with relevant provider(s)
 """
 def mark_providers(topology: Box) -> None:
+  # Batch initialize all providers that will be needed
+  all_providers = get_all_providers(topology)
+  batch_init_providers(topology, list(all_providers))
+  
+  # Now mark nodes - this is fast since providers are already loaded
   for n in topology.nodes.values():                 # Set 'provider' attribute on all nodes
     if 'provider' in n:
       continue
@@ -438,6 +498,11 @@ def node_add_forwarded_ports(node: Box, fplist: list, topology: Box) -> None:
 validate_images -- check the images used by individual nodes against provider image repo
 """
 def validate_images(topology: Box) -> None:
+  # Batch initialize all providers first
+  all_providers = get_all_providers(topology)
+  batch_init_providers(topology, list(all_providers))
+  
+  # Now validate images - providers are already loaded
   for n_data in topology.nodes.values():
     execute_node('validate_node_image',n_data,topology)
 

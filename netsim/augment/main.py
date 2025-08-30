@@ -62,6 +62,9 @@ def transform_setup(topology: Box) -> None:
   providers.select_primary_provider(topology)
   log.exit_on_error()
 
+  # Batch initialize all providers for better performance
+  providers.init_all_providers(topology)
+
   augment.nodes.augment_node_provider_data(topology)
   augment.nodes.augment_node_system_data(topology)
   log.exit_on_error()
