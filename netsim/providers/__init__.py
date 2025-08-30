@@ -144,11 +144,10 @@ class _Provider(Callback):
     for file,mapping in map_dict.items():
       file = file.replace('@','.')
       
-      # If hosts template -> create shared per-device file (shared across nodes of same device)
-      if file == 'hosts':
+      if mapping.endswith(':shared'):
+        mapping = mapping.rsplit(':shared', 1)[0] + ':ro'  # Remove ':shared' (7 chars) and add ':ro'
         shared_device = node.get('device','shared')
         out_folder = f"{self.provider}_files/shared/{shared_device}"
-        mapping = mapping + ':ro'
       else:
         out_folder = f"{self.provider}_files/{node.name}"
       
