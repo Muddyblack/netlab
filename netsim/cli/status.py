@@ -228,6 +228,11 @@ def show_lab(args: argparse.Namespace,lab_states: Box) -> None:
   iid = get_instance(args,lab_states)
   lab_state = cleanup_state(lab_states[iid])
   wdir = lab_state.dir
+  try:
+    os.chdir(wdir)
+  except Exception as ex:
+    log.fatal(f'Cannot change directory to {wdir} (instance {iid}): {str(ex)}')
+
   snapshot = f'{wdir}/netlab.snapshot.pickle'
 
   topology = _read.load_pickled_data(snapshot)
