@@ -36,3 +36,4 @@ features:
   asymmetrical_irb: Support asymmetrical IRB (routing on ingress, bridging on egress)
   bundle: EVPN bundle service support
   multi_rt: Multiple import/export route targets
+  transport: Supported data-plane encapsulations
