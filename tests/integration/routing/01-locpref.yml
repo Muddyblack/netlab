@@ -158,5 +158,6 @@ validate:
 
   vrf_v4_aspath:
     description: Check for the AS path of the V1/V2 prefix preferred by DUT
+    wait: bgp_scan_time
     nodes: [ vp ]
     plugin: bgp_prefix(nodes.v1.loopback.ipv4,aspath='65000 65201 65201')
