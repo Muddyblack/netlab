@@ -46,7 +46,12 @@ updates:
         bgp:
 {%       if 'locpref' in entry.set %}
           local-preference:
+{%         if _srl_version >= [ 26, 3 ] %}
+            operation: set
+            value: {{ entry.set.locpref }}
+{%         else %}
             set: {{ entry.set.locpref }}
+{%         endif %}
 {%       endif %}
 {%       if 'med' in entry.set %}
           med:
