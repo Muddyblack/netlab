@@ -553,7 +553,9 @@ def check_node_transport(node: Box, topology: Box) -> bool:
   features = devices.get_device_features(node,topology.defaults)
   transport = node.get('evpn.transport','vxlan')            # Get configured VXLAN transport
   s_trans  = features.get('evpn.transport',[])              # Get supported transports
-  if transport not in s_trans:                              # Is the requested transport supported by the device?
+  if not s_trans:                                           # Control-plane-only node
+    node.evpn._cp_only = True
+  elif transport not in s_trans:                            # Is the requested transport supported by the device?
     log.error(
       f'Device {node.device} (node {node.name}) does not support EVPN transport {transport}',
       module='evpn',
@@ -566,6 +568,18 @@ def check_node_transport(node: Box, topology: Box) -> bool:
     node.evpn.transport = transport                         # Make sure node evpn.transport is always set
 
   return True
+
+"""
+Check if a CP-only node has any IP-VRF or MAC-VRF instances
+"""
+def check_cp_only(node: Box) -> None:
+  if not node.get('evpn._cp_only',False):
+    return
+  if node.evpn.get('vlans',[]) or node.evpn.get('vrfs',[]):
+    log.error(
+      f'Device {node.device} (node {node.name}) cannot have EVPN MAC-VRF or IP-VRF instances',
+      module='evpn',
+      category=log.IncorrectValue)
 
 class EVPN(_Module):
 
@@ -616,6 +630,7 @@ class EVPN(_Module):
     check_node_vrf_bundle(node,topology)
     check_vlan_rt_values(node,topology)
     trim_node_evpn_lists(node)
+    check_cp_only(node)
     set_local_evpn_rd(node)
 
   def node_cleanup(self, node: Box, topology: Box) -> None:
