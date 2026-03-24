@@ -13,6 +13,8 @@ message: |
   EBGP sessions
 
 defaults.sources.extra: [ ../wait_times.yml, ../warnings.yml ]
+defaults.paths.prepend.plugin: [ "topology:../plugin" ]
+plugin: [ adjust_test ]
 
 addressing:
   loopback:
@@ -34,11 +36,17 @@ groups:
 
 vrfs:
   red:
-    links: [ dut-r1, dut-r2 ]
+    links:
+    - dut.bgp.advertise: true
+      r1:
+    - dut-r2
   blue:
     links: [ dut-r3, dut-r4 ]
 
 nodes:
+  dut:
+    vrfs:
+      red.bgp.import: {}
   r1:
     bgp.as: 65101
     id: 11
@@ -51,6 +59,16 @@ nodes:
   r4:
     bgp.as: 65104
     id: 24
+
+_adjust:
+- nodes: [ dut ]              # Remove 'bgp.import' if the device does not support VRF imports
+  features:
+  - key: bgp.import
+    value: vrf
+  warning: >-
+    {device} does not support configurable redistribution into VRF BGP instances
+  remove:
+  - nodes.dut.vrfs.red.bgp
 
 validate:
   session:
@@ -67,13 +85,14 @@ validate:
     fail: DUT is not propagating BGP prefixes between R1 and R2
     nodes: [ r1 ]
     plugin: bgp_prefix(nodes.r2.loopback.ipv4)
-  pfx_red_c:
+  pfx_red_adv:
     description: Check connected subnet as BGP prefix on R1
     wait: bgp_v4_redist
     wait_msg: Waiting for BGP convergence
-    fail: DUT is not redistributing connected subnets into BGP
-    nodes: [ r1 ]
-    plugin: bgp_prefix(nodes.r2.interfaces[0].ipv4)
+    level: warning
+    fail: DUT is not advertising connected subnets into VRF BGP
+    nodes: [ r2 ]
+    plugin: bgp_prefix(nodes.r1.interfaces[0].ipv4)
   pfx_blue:
     description: Check BGP prefix on R3
     wait: bgp_scan_long
@@ -81,6 +100,13 @@ validate:
     fail: DUT is not propagating BGP prefixes between R3 and R4
     nodes: [ r3 ]
     plugin: bgp_prefix(nodes.r4.loopback.ipv4)
+  pfx_blue_c:
+    description: Check connected subnet as BGP prefix on R4
+    wait: bgp_v4_redist
+    wait_msg: Waiting for BGP convergence
+    fail: DUT is not redistributing connected subnets into VRF BGP
+    nodes: [ r4 ]
+    plugin: bgp_prefix(nodes.r3.interfaces[0].ipv4)
   ebgp_6o4:
     description: Check for invalid activation of IPv6 AF over IPv4 EBGP sessions on DUT
     nodes: [ r1, r2, r3, r4 ]
@@ -88,12 +114,12 @@ validate:
     stop_on_error: true
   red:
     description: Ping-based reachability test in VRF red
-    nodes: [ r1 ]
-    plugin: ping('r2')
+    nodes: [ r2 ]
+    plugin: ping('r1',src=nodes.r2.loopback.ipv4)
   blue:
     description: Ping-based reachability test in VRF blue
     nodes: [ r3 ]
-    plugin: ping('r4',src=nodes.r3.loopback.ipv4)
+    plugin: ping('r4')
   inter_vrf:
     description: Ping-based isolation test between blue and red VRF
     nodes: [ r1 ]
