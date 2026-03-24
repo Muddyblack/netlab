@@ -724,7 +724,7 @@ def process_imports(node: Box, proto: str, topology: Box, vrf_list: list) -> Non
         check_import_request(proto,node,vdata[proto],topology,features)
       else:
         log.error(
-          f'Route import from {s_proto} to {proto} on node {node.name} (device {node.device}) is not VRF-aware',
+          f'Route import to {proto} on node {node.name} (device {node.device}) is not VRF-aware',
           category=log.IncorrectValue,
           module=proto)
 
