@@ -16,6 +16,8 @@ message: |
   EBGP sessions
 
 defaults.sources.extra: [ defaults-ipv6-only.yml, ../wait_times.yml, ../warnings.yml ]
+defaults.paths.prepend.plugin: [ "topology:../plugin" ]
+plugin: [ adjust_test ]
 
 addressing:                         # This creates a dual-stack network to uncover the
   loopback:                         # ... extraneous activations of address families
@@ -39,7 +41,10 @@ groups:
 
 vrfs:
   red:
-    links: [ dut-r1, dut-r2 ]
+    links:
+    - dut.bgp.advertise: true
+      r1:
+    - dut-r2
   blue:
     links:
     - interfaces: [ dut, r3 ]
@@ -50,7 +55,9 @@ vrfs:
 nodes:
   dut:
     vrfs:
-      red.loopback.ipv6: 2001:db8:c001:cafe::/64
+      red:
+        loopback.ipv6: 2001:db8:c001:cafe::/64
+        bgp.import: {}
       blue.loopback.ipv6: 2001:db8:c001:cafe::/64
   r1:
     bgp.as: 65101
@@ -62,6 +69,16 @@ nodes:
   r4:
     bgp.as: 65104
     loopback.pool: vrf_lb_v6only
+
+_adjust:
+- nodes: [ dut ]              # Remove 'bgp.import' if the device does not support VRF imports
+  features:
+  - key: bgp.import
+    value: vrf
+  warning: >-
+    {device} does not support configurable redistribution into VRF BGP instances
+  remove:
+  - nodes.dut.vrfs.red.bgp
 
 validate:
   session:
@@ -77,6 +94,14 @@ validate:
     wait: bgp_scan_long
     nodes: [ r1 ]
     plugin: bgp_prefix(nodes.r2.loopback.ipv6.replace('::1','::'),af='ipv6')
+  pfx_red_adv:
+    description: Check connected subnet as BGP prefix on R1
+    wait: bgp_v6_redist
+    wait_msg: Waiting for BGP convergence
+    level: warning
+    fail: DUT is not advertising connected subnets into VRF BGP
+    nodes: [ r2 ]
+    plugin: bgp_prefix(nodes.r1.interfaces[0].ipv6,af='ipv6')
   pfx_blue:
     description: Check IPv6 BGP prefix on R3
     wait_msg: Waiting for BGP convergence
@@ -104,8 +129,8 @@ validate:
   red:
     description: Ping-based reachability test in VRF red
     wait: ping
-    nodes: [ r1 ]
-    plugin: ping('r2',af='ipv6')
+    nodes: [ r2 ]
+    plugin: ping('r1',src=nodes.r2.loopback.ipv6,af='ipv6')
   ping:
     description: Ping-based reachability test in VRF blue
     wait: ping
