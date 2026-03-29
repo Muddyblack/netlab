@@ -330,6 +330,17 @@ Netlab enables VRRPv3 by default on Dell OS10, overriding any platform defaults.
 
 * You have to build the *dnsmasq* container image with the **netlab clab build dnsmasq** command.
 
+(caveats-exos)=
+## Extreme Networks EXOS
+
+* The only way to configure EXOS devices with Ansible is the now-deprecated **community.network.exos_config** Ansible module. This collection is no longer actively maintained. To install it, you can still run:
+
+```shell
+ansible-galaxy collection install community.network
+```
+
+* EXOS does not support the same VRRP group for IPv4 and IPv6
+
 (caveats-fortios)=
 ## Fortinet FortiOS
 
