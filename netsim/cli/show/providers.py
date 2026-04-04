@@ -9,7 +9,7 @@ from box import Box
 from ... import data
 from ...utils import log, strings
 from ..external_commands import test_probe
-from . import show_common_parser
+from .utils import show_common_parser
 
 
 def parse() -> argparse.ArgumentParser:

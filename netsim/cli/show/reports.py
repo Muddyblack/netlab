@@ -11,7 +11,7 @@ from box import Box
 from ... import data
 from ...utils import files as _files
 from ...utils import strings
-from . import show_common_parser
+from .utils import show_common_parser
 
 
 def parse() -> argparse.ArgumentParser:

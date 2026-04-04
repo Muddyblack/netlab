@@ -8,7 +8,7 @@ import typing
 from box import Box
 
 from ...utils import log, strings
-from . import show_common_parser
+from .utils import show_common_parser
 
 
 def parse() -> argparse.ArgumentParser:
