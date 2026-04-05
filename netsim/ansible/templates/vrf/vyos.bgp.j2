@@ -25,9 +25,9 @@ set protocols bgp address-family {{ af }}-unicast redistribute {{ s_proto }}{%
 {%   endfor %}
 {% endif %}
 
-# Define networks for VRF Loopback
-{%   for n in vdata.networks|default([]) if af in n %}
-{{     bgpcfg.bgp_network(af,n[af]) }}
+# Configure advertised BGP networks
+{%   for pfx in vdata.bgp.advertise|default([]) if af in pfx %}
+{{     bgpcfg.bgp_network(af,pfx[af]) }}
 {%   endfor %}
 {% endfor %}
 
