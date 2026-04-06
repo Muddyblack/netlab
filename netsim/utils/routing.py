@@ -85,14 +85,19 @@ def clear_bgp_session(node: Box, ngb: Box) -> None:
 '''
 rp_data: iterate over routing protocol instances (global and VRF)
 '''
+def rp_active(data: typing.Any) -> bool:
+  return isinstance(data,Box) or bool(data)
+
 def rp_data(node: Box, proto: str, select: list = ['global','vrf']) -> typing.Generator:
   if 'global' in select:
-    if proto in node:
-      yield(node[proto],[ intf for intf in node.interfaces if proto in intf ],None)
+    node_data = node.get(proto,None)
+    if rp_active(node_data):
+      yield(node_data,[ intf for intf in node.interfaces if proto in intf ],None)
 
   if 'vrf' in select:
     for vname,vdata in node.get('vrfs',{}).items():
-      if proto in vdata:
+      vrf_data = vdata.get(proto,None)
+      if rp_active(vrf_data):
         yield(vdata[proto],vdata[proto].get('interfaces',[]),vname)
 
 '''
