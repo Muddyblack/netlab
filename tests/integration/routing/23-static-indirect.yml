@@ -28,7 +28,13 @@ nodes:
   x2:
     loopback.ipv6: 2001:db8:cafe:43::1/64
 
-links: [ dut-x1, dut-x1, x1-x2 ]
+links:
+- dut-x1
+- dut-x1
+- interfaces: [ x1, x2 ]
+  ospf.timers:
+    hello: 1
+    dead: 4
 
 validate:
   ospfv2_adj:
