@@ -1,7 +1,7 @@
 {% macro ebgp_session(n,af,bgp) -%}
 {%   if n.tcp_ao is defined %}
 {%     set idx = bgp._ao_algo_secrets.index(n.tcp_ao + ":" + n.password) + 1 %}
-  neighbor {{ n[af] }} ao tcp-ao-{{ idx }}
+  neighbor {{ n[af] }} ao tcp-ao-{{ idx }} include-tcp-options
 {%   elif n.password is defined %}
   neighbor {{ n[af] }} password {{ n.password }}
 {%   endif %}
