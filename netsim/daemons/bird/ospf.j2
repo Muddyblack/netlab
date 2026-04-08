@@ -49,7 +49,6 @@ protocol ospf {{ ver }} ospf_{{ ver }} {
       {{ r_data[af] }} hidden;
 {%     endfor %}
     };
-{%     set ext_list = adata.external_range %}
 {%     for l in netlab_interfaces if af in l and l.ospf.area|default('') == adata.area %}
 {%       if l.ifname == 'lo' and af == 'ipv6' %}
     stubnet {{ loopback.ipv6 | ipaddr('address') }}/128;
