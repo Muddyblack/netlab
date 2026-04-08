@@ -1,5 +1,4 @@
-# See https://documentation.nokia.com/sr/23-7-1/books/system-management/security-system-management.html?hl=tcp%20enhanced%20authentication%20option
-
+---
 {% macro ebgp_neighbor(n,af,vrf) -%}
 {% set path = "router[router-name=Base]" if not vrf else "service/vprn[service-name="+vrf+"]" %}
 - path: configure/{{ path }}/bgp
@@ -26,7 +25,7 @@
 {%   if n.password is defined %}
 {%     if not n.tcp_ao|default(False) %}
      authentication-key: "{{ n.password }}"
-{%    else %}
+{%     else %}
      authentication-keychain: "peer-{{n.name}}"
 
 - path: configure/system/security/keychains/keychain[keychain-name=peer-{{n.name}}]
@@ -36,11 +35,11 @@
     - keychain-entry-index: 0
       authentication-key: "{{ n.password }}"
       algorithm: "{{ n.tcp_ao }}-96"
-      begin-time: 2000-01-01T00:00:00
+      begin-time: "2000-01-01 00:00:00"
    tcp-option-number:
     receive: tcp-ao
     send: tcp-ao
-{%    endif %}
+{%     endif %}
 {%   endif %}
 {%- endmacro %}
 
