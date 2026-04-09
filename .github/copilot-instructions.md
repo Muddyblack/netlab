@@ -51,3 +51,5 @@ Do not comment on:
 - **Suggestions to add comments** - for self-documenting code
 - **Multiple issues in one comment** - choose the single most critical issue
 - **Pedantic accuracy in text** - unless it would cause actual confusion or errors. No one likes a reply guy
+
+Also, read AGENTS.md for further instructions.
