@@ -1,9 +1,5 @@
 ---
 description: Juniper cRPD container
-support:
-  level: best-effort
-  caveats:
-  - cRPD gets most control-plane Junos features, but we don't test them on cRPD
 parent: junos
 group_vars:
   ansible_user: root
