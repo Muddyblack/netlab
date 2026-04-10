@@ -1,5 +1,5 @@
 {% macro policy(sp_data,af) -%}
-  {% if 'policy' in sp_data %} route-map {{ sp_data.policy }}-{{ af }}{% endif +%}
+  {% if 'policy' in sp_data %} route-policy {{ sp_data.policy }}{% endif +%}
 {%- endmacro %}
 {% macro config(pdata,af='ipv4',t_proto='',ospf_pid=1,vrf='default') -%}
 {%   set isis_name = isis.instance|default('isis_'+vrf) %}
