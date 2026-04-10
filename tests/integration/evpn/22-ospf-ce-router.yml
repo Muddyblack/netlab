@@ -41,6 +41,11 @@ links:
   mtu: 1600
 
 validate:
+  clear_bgp:
+    description: Clear BGP sessions on s2
+    devices: [ frr ]
+    nodes: [ s2 ]
+    exec: 'vtysh -c "clear bgp *"'
   ospf_s1:
     description: Check OSPF sessions with DUT
     wait: ospfv2_adj_p2p

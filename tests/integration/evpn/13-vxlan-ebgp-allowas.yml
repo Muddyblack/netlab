@@ -59,6 +59,12 @@ links:
   mtu: 1600
 
 validate:
+  clear_bgp:
+    description: Clear BGP sessions on spine
+    devices: [ frr ]
+    nodes: [ spine ]
+    exec: 'vtysh -c "clear bgp *"'
+
   ebgp_adj:
     description: Check EBGP adjacencies with DUT
     wait: ebgp_session
