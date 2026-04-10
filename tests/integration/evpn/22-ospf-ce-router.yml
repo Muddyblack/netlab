@@ -85,9 +85,11 @@ validate:
     stop_on_error: True
   ping_ce2:
     description: Ping-based CE-to-CE reachability test (CE2)
+    wait: ping
     nodes: [ ce1 ]
     plugin: ping('ce2')
   ping_ce1:
     description: Ping-based CE-to-CE reachability test (CE1)
+    wait: ping
     nodes: [ ce2 ]
     plugin: ping('ce1')
