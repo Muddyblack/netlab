@@ -19,7 +19,6 @@ routing:
   policy:
     i_beacon:
       match.prefix: p_beacon
-      set.med: 50
 
 nodes:
   dut:
