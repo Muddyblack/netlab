@@ -77,6 +77,9 @@ router bgp {{ bgp.as }}
   neighbor {{ n[n.evpn] }} next-hop-unchanged
   neighbor {{ n[n.evpn] }} route-map evpn_nh_unchanged out
 {% endfor %}
+{% for n in bgp.neighbors if n.evpn|default(False) and n.type == 'ibgp' and evpn.transport == 'mpls' %}
+  neighbor {{ n[n.evpn] }} next-hop-self
+{% endfor %}
 {% if vrfs is defined %}
 {%   for vname,vdata in vrfs.items() if vdata.evpn.evi is defined %}
 {%     for af in ('ipv4','ipv6') if af in vdata.af|default({}) %}
