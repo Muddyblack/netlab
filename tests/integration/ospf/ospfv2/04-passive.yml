@@ -42,10 +42,11 @@ links:
   mtu: 1500
 
 validate:
-  clear_x2:
+  reset_ospf:
     description: Cleanup after leaky OSPFv2 implementations (IOS XR)
-    nodes: [ x2 ]
-    exec.frr: vtysh -c 'clear ip ospf neighbor'
+    nodes: [ x1, x2 ]
+    exec.frr: >-
+      vtysh -c 'clear ip ospf process'
   adj_x1:
     description: Is DUT a neigbor of X1?
     wait: ospfv2_adj_p2p
