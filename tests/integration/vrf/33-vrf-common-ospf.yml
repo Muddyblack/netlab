@@ -82,10 +82,12 @@ validate:
     plugin: ospf_prefix(nodes.r2.loopback.ipv4,state='missing')
   ping_red:
     description: r1 trying to reach srv
+    wait: ping
     nodes: [ r1 ]
     plugin: ping('srv')
   ping_blue:
     description: r2 trying to reach srv
+    wait: ping
     nodes: [ r2 ]
     plugin: ping('srv')
   ping_s2s:
