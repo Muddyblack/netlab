@@ -63,7 +63,7 @@ validate:
     plugin: ping('h2')
   ping_blue:
     description: Ping-based reachability test in VLAN blue
-    wait: ping_long
+    wait: ping_stp
     wait_msg: Waiting for STP to enable the ports
     nodes: [ h3 ]
     plugin: ping('h4')
