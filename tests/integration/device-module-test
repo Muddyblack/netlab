@@ -353,6 +353,8 @@ def run_test(test: str, args: argparse.Namespace,first: bool) -> None:
     if args.quiet or args.batch:
       print_fail("validate")
     log_result(test,'validate',False)
+    if os.environ.get('NETLAB_TEST_INTERACTIVE',None):
+      _strings.confirm('Validation failed, do you want to continue',blank_line=True)
     run_cleanup(args)
     return
 
