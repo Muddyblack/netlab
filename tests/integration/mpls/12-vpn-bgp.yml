@@ -35,6 +35,7 @@ groups:
   pe_probes:
     members: [ pe2 ]
     device: eos
+    provider: clab
 
 nodes:
   ce1:
