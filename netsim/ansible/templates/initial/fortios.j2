@@ -2,9 +2,15 @@
 {% set multi_vdom = vdom_traffic != vdom %}
 
 {% if multi_vdom %}
+config vdom
+    edit {{ vdom_traffic }}
+    next
+end
+
 config global
 {% endif %}
 config system global
+    set management-vdom {{vdom}}
     set hostname {{ inventory_hostname.replace("_","-") }}
 end
 
