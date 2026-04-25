@@ -1,0 +1,95 @@
+---
+message: |
+  This scenario checks whether the device under test needs normalized
+  configuration (all interfaces shut down, no bridging across interfaces).
+
+  When checking whether a device needs 'normalize' config, run:
+
+  * netlab up --no-config
+  * netlab initial -l h1,h2,rtr
+  * netlab validate
+
+  If the test fails, the device as booted leaks traffic between its
+  Ethernet ports
+
+  When checking the normalized configuration, run:
+
+  * netlab up --no-config
+  * netlab initial --normalize
+  * netlab initial -l h1,h2,rtr
+  * netlab validate
+
+plugin: [ files ]
+
+files:
+  config.sh: |
+    set -e
+    netlab initial --normalize
+    netlab initial -l h1,h2,rtr
+
+defaults.netlab.integration:            # Do not configure dut
+  initial: bash config.sh
+
+defaults.sources.extra: [ ../wait_times.yml, ../warnings.yml ]
+
+addressing:
+  loopback:
+    ipv4: False
+    ipv6: 2001:db8:0::/48
+  lan:
+    ipv4: False
+    ipv6: 2001:db8:1::/48
+
+groups:
+  _auto_create: True
+  hosts:
+    members: [ h1, h2 ]
+    device: linux
+    role: host
+    provider: clab
+
+nodes:
+  dut:
+  rtr:
+    device: frr
+    provider: clab
+
+links:
+- name: IPv6 link
+  dut:
+  rtr:
+  h1:
+    ipv6: True
+- name: Isolated segment
+  dut:
+  h2:
+    ipv6: True
+
+# Expected results
+#
+# H1: SLAAC address, default route
+# H2: No SLAAC address, no default route, no prefix
+
+validate:
+  ra:
+    description: Check RA-generated default route
+    wait: ra_send
+    wait_msg: Waiting for RA message to generate the default route
+    nodes: [ h1 ]
+    plugin: default6()
+    stop_on_error: True
+  onlink:
+    description: Check for onlink prefix
+    wait: ra_send
+    devices: [ linux ]
+    nodes: [ h1 ]
+    exec: ip -6 route
+    valid: >-
+      '2001:db8' in stdout
+  isolated:
+    description: Check for lack of onlink prefix
+    devices: [ linux ]
+    nodes: [ h2 ]
+    exec: ip -6 route
+    valid: >-
+      '2001:db8' not in stdout
