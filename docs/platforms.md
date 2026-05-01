@@ -34,6 +34,7 @@
 | FRRouting (FRR) [❗](caveats-frr) | frr     | full          |
 | [Generic Linux host](generic-linux-devices) | linux | full          |
 | Juniper cRPD | crpd | full |
+| Juniper cSRX [❗](caveats-csrx) | csrx | minimal |
 | Juniper vMX [❗](caveats-vmx) | vmx         | best effort   |
 | Juniper vPTX (vJunos EVO) [❗](caveats-vptx) | vptx | full  |
 | Juniper vSRX 3.0 [❗](caveats-vsrx) | vsrx  | best effort   |
@@ -131,6 +132,7 @@ You cannot use all supported network devices with all virtualization providers. 
 | FRR | [✅](build-frr)[❗](caveats-frr) | ✅[❗](caveats-frr) | ✅ |
 | Generic Linux (Ubuntu/Alpine) [❗](labs/linux.md) | ✅  | ✅  | ✅  |
 | Juniper cRPD       |  ❌  |  ❌  | ✅  |
+| Juniper cSRX       |  ❌  |  ❌  | ✅  |
 | Juniper vMX        |  ❌  |  ❌  | ✅[❗](clab-vrnetlab)   |
 | Juniper vPTX       | [✅](build-vptx)  |  ❌  | ✅[❗](clab-vrnetlab)  |
 | Juniper vSRX 3.0   | [✅](build-vsrx)  | ✅  | ✅[❗](caveats-vsrx)  |
@@ -201,6 +203,7 @@ Ansible playbooks included with **netlab** can deploy and collect device configu
 | Fortinet FortiOS      | ✅ | ✅ |
 | FRR                   | ✅ [❗](caveats-frr)  | ✅[❗](caveats-frr) |
 | Generic Linux         | ✅ | ❌  |
+| Juniper cSRX         | ✅ | ❌  |
 | Junos[^Junos]         | ✅ | ✅ |
 | Mikrotik RouterOS 6   | ✅ | ✅ |
 | Mikrotik RouterOS 7   | ✅ | ✅ |
@@ -217,7 +220,7 @@ Ansible playbooks included with **netlab** can deploy and collect device configu
 
 [^XE]: Includes Cisco CSR 1000v, Cisco Catalyst 8000v, Cisco IOS-on-Linux (IOL) and IOL Layer-2 image
 
-[^Junos]: Includes cRPD, vMX, vSRX, vPTX, vJunos-switch, and vJunos-router
+[^Junos]: Includes cRPD, vMX, vSRX, vPTX, vJunos-switch, and vJunos-router but not cSRX
 
 [^SROS]: Includes the Nokia SR-SIM container and the Virtualized 7750 SR and 7950 XRS Simulator (vSIM) virtual machine
 
@@ -286,6 +289,7 @@ The following system-wide features are configured on supported network operating
 | Fortinet FortiOS         | ✅  |  ❌  | ✅  | ✅  | ✅  |
 | FRR                      | ✅  | ✅[^HIF]  |  ❌  | ✅  | ✅  |
 | Generic Linux            | ✅  | ✅[^HIF]  |  ✅[❗](linux-lldp) | ✅  | ✅  |
+| Juniper cSRX            | ✅  | ✅  |  ❌  |  ❌  |  ❌  |
 | Junos[^Junos]            | ✅  |  ❌  | ✅  | ✅  | ✅  |
 | Mikrotik RouterOS 6      | ✅  | ✅  | ✅[❗](caveats-routeros6) | ✅ | ✅ |
 | Mikrotik RouterOS 7      | ✅ | ✅ | ✅[❗](caveats-routeros7) | ✅ | ✅ |
@@ -317,6 +321,7 @@ The following interface parameters are configured on supported network operating
 | Fortinet FortiOS      | ✅  | ✅  |  ✅[❗](caveats-fortios)  |  ❌  |
 | FRR                   | ✅  | ✅  | ✅  | ✅  |
 | Generic Linux         |  ❌  |  ❌  | ✅  |  ❌  |
+| Juniper cSRX         | ✅  |  ❌  | ✅  |  ❌  |
 | Junos[^Junos]         | ✅  | ✅  | ✅  |  ❌  |
 | Mikrotik RouterOS 6   | ✅  |  ❌  | ✅  |  ❌  |
 | Mikrotik RouterOS 7   | ✅  |  ❌  | ✅  | ✅  |
@@ -345,6 +350,7 @@ The following interface addresses are supported on various platforms; most daemo
 | Fortinet FortiOS      | ✅  | ✅  |  ❌  |  ❌  |
 | FRR                   | ✅  | ✅  | ✅  | ✅  |
 | Generic Linux         | ✅  | ✅  |  ❌  |  ❌  |
+| Juniper cSRX         | ✅  | ✅  |  ❌  |  ❌  |
 | Junos[^Junos]         | ✅  | ✅  | ✅  |  ❌  |
 | Mikrotik RouterOS 6   | ✅  | ✅  |  ❌  |  ❌  |
 | Mikrotik RouterOS 7   | ✅  | ✅  |  ❌  |  ❌  |
@@ -470,8 +476,8 @@ The data plane [configuration modules](module-reference.md) are supported on the
 | Extreme Networks EXOS | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | FRR                   | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Juniper cRPD          |  ❌ |  ❌ |   ❌ | ✅ | ✅ |  ❌ |
-| Juniper vMX           | ✅ | ✅ |  ❌ | ✅ | ✅ |  ❌ | 
-| Juniper vPTX          | ✅ | ✅ | ✅ [❗](caveats-vptx) | ✅ | ✅ |  ❌ | 
+| Juniper vMX           | ✅ | ✅ |  ❌ | ✅ | ✅ |  ❌ |
+| Juniper vPTX          | ✅ | ✅ | ✅ [❗](caveats-vptx) | ✅ | ✅ |  ❌ |
 | Juniper vSRX 3.0      | ❌  | ✅ |  ❌ |  ❌ |  ❌ |  ❌ |
 | vJunos-switch         | ✅ | ✅ | ✅ |  ❌ |  ❌ |  ❌ |
 | vJunos-router         | ❌  | ✅ |  ❌ |  ❌ |  ❌ |  ❌ |

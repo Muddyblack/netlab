@@ -449,6 +449,14 @@ Implementation limitations in import/export route filters (reported as errors th
 * VRRPv3 for IPv4 implementation uses the [checksum calculation that is incompatible with most other VRRP implementations](https://blog.ipspace.net/2025/01/sturgeon-law-vrrp-edition/). The `checksum-without-pseudoheader` configuration command does not seem to be available.
 * Anycast gateway is unsupported
 
+(caveats-csrx)=
+## Juniper cSRX
+
+* cSRX is a native container and should not be confused with vSRX which is a vrnetlab VM in a container. See [Juniper's cSRX documentation](https://www.juniper.net/documentation/us/en/software/csrx/csrx-consolidated-deployment-guide/topics/concept/security-csrx-docker-feature-support.html) for more details.
+* cSRX might require a license file to unlock additional features. You can specify the location of the license file with the **clab.license** node parameter or **defaults.devices.csrx.clab.node.license** [device default](topo-defaults).
+* cSRX supports up to 17 interfaces: 1 out-of-band management Interface (eth0) and 16 in-band interfaces (ge-0/0/0 to ge-0/0/15).
+* Since cSRX does not support any dynamic routing protocols, use the **routing** module and static routes.
+
 (caveats-vmx)=
 ## Juniper vMX
 

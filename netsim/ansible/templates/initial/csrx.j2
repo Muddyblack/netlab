@@ -1,0 +1,15 @@
+{% include 'junos/hosts.j2' %}
+
+{% include 'junos/container_interfaces.j2' %}
+
+security {
+    zones {
+        security-zone default {
+            interfaces {
+                {% for l in netlab_interfaces|default([]) %}
+                {{ l.ifname }}.0;
+                {% endfor %}
+            }
+        }
+    }
+}
