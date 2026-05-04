@@ -58,7 +58,8 @@ def set_initial_args(args: argparse.Namespace, initial: bool = False) -> None:
   setattr(args,'custom',True)                     # Tell 'netlab initial' code to deploy custom configs only
   setattr(args,'initial',initial)                 # We might need initial config for configuration reload
   setattr(args,'module',None)                     # ... but definitely no modules
-  setattr(args,'generate',None)                   # ... and internally-generated configs
+  setattr(args,'generate',None)                   # ... internally-generated configs
+  setattr(args,'normalize',None)                  # ... or standalone configuration normalization
 
 def set_custom_config(
       topology: Box,
