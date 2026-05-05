@@ -21,6 +21,7 @@ from . import (
   parser_lab_location,
 )
 from .initial import configs as i_configs
+from .initial import ready as i_ready
 from .initial import utils as i_utils
 
 
@@ -160,6 +161,11 @@ def reload_node_configs(topology: Box,nodeset: list,args: argparse.Namespace, re
     nodeset = [ n for n in nodeset if n not in no_config ]
     if not nodeset:                                   # Any nodes left to work on?
       error_and_exit('Found no nodes with saved configuration, exiting')
+
+  # Check that the devices are ready before trying to reload the config
+  #
+  ready_args = argparse.Namespace(limit=None,ready=None,fast=False)
+  i_ready.run(topology,ready_args,rest=[],nodeset=nodeset)
 
   """
   Now prepare the environment for the "netlab initial" processing
