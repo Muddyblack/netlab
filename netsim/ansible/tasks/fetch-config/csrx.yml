@@ -1,0 +1,20 @@
+# fetch cSRX configuration with a SSH command
+#
+---
+- name: Check if 'sshpass' is installed
+  local_action:
+    module: shell
+    cmd: which sshpass
+  changed_when: False
+  run_once: True
+  any_errors_fatal: True
+
+- name: Fetch cSRX configuration
+  delegate_to: localhost
+  command:
+    sshpass -p '{{ ansible_ssh_pass }}'
+    ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
+    {{ ansible_user }}@{{ ansible_host }} 'cli show configuration'
+  register: config
+
+- set_fact: ansible_net_config={{ config.stdout }}
