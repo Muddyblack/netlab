@@ -9,7 +9,7 @@ import subprocess
 import typing
 
 from ..utils import log
-from . import ansible, external_commands, fs_cleanup, parser_lab_location
+from . import ansible, external_commands, fs_cleanup, parser_add_verbose, parser_lab_location
 
 
 #
@@ -21,16 +21,7 @@ def collect_parse(args: typing.List[str]) -> typing.Tuple[argparse.Namespace, ty
     description='Collect device configurations',
     epilog='All other arguments are passed directly to ansible-playbook')
 
-  parser.add_argument(
-    '-v','--verbose',
-    dest='verbose',
-    action='store_true',
-    help='Verbose logging')
-  parser.add_argument(
-    '-q','--quiet',
-    dest='quiet',
-    action='store_true',
-    help='Run Ansible playbook and tar with minimum output')
+  parser_add_verbose(parser,verbose=True,quiet=True)
   parser.add_argument(
     '-o','--output',
     dest='output',
@@ -76,7 +67,7 @@ def run(cli_args: typing.List[str]) -> None:
 
   print(f"cwd: {os.getcwd()} output: {args.output}")
   if args.verbose:
-    rest = ['-v'] + rest
+    rest = ['-' + 'v' * args.verbose ] + rest
 
   rest = ['-e','target='+args.output ] + rest
 
