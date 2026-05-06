@@ -1,5 +1,6 @@
-# fetch Cisco IOS configuration using ios_facts module
+# fetch Junos configuration using junos_facts module
 #
 ---
-- junipernetworks.junos.junos_facts:
+- name: Fetch Junos configuration
+  junipernetworks.junos.junos_facts:
     gather_subset: config

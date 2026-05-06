@@ -1,0 +1,10 @@
+# fetch Junos configuration using junos_facts module
+#
+---
+- name: Fetch cRPD configuration
+  junipernetworks.junos.junos_command:
+    commands: [ show configuration ]
+    display: text
+  register: config
+
+- set_fact: ansible_net_config={{ config.stdout[0] }}
