@@ -1,0 +1,5 @@
+- name: "iosxr_config: deploying {{ netsim_action }} from {{ config_template }}"
+  iosxr_config:
+    src: "{{ config_template }}"
+    replace: "config"
+  tags: [ print_action, always ]
