@@ -18,11 +18,13 @@ files:
   start_and_save.sh: |
     set -e
     netlab up --snapshot
-    netlab collect -o saved
+    netlab collect -o saved -l dut
     netlab down
   reload.sh: |
-    netlab up --snapshot --reload-config saved
-    netlab initial -l x1
+    set -e
+    netlab up --snapshot --no-config
+    netlab config -l dut --reload saved
+    netlab initial -l x1 --no-message
 
 defaults.netlab.integration:
   up: bash start_and_save.sh                    # Go through up/collect/down/restart cycle
