@@ -11,6 +11,19 @@ from ..utils import files as _files
 from ..utils import log, strings
 from . import _TopologyOutput, check_writeable
 
+"""
+We have to remove sets from the topology when rendering into JSON. YAML
+can take them, JSON can't.
+"""
+def transform_sets(d: typing.Any) -> typing.Any:
+  if isinstance(d,set):
+    return BoxList([transform_sets(v) for v in list(d)])
+  if isinstance(d,dict):
+    return Box({ k:transform_sets(v) for k,v in d.items()})
+  elif isinstance(d,list):
+    return BoxList([transform_sets(v) for v in d])
+  else:
+    return d
 
 class YAML(_TopologyOutput):
 
@@ -52,7 +65,7 @@ class YAML(_TopologyOutput):
       r_txt = strings.get_yaml_string(cleantopo)
     else:
       r_fmt = 'json'
-      r_txt = cleantopo.to_json(indent=2,sort_keys=True)
+      r_txt = transform_sets(cleantopo).to_json(indent=2,sort_keys=True)
 
     if outfile != '-':
       output.write(r_txt)
