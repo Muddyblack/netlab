@@ -6,7 +6,7 @@
 When selecting data from an individual node, _netlab_ adds group variables to node data, effectively displaying what you would see in the Ansible inventory.
 
 ```{note}
-The **netlab inspect** command is replicating the functionality of the **netlab create -o yaml:_expression_** command with a more convenient user interface. 
+The **netlab inspect** command enhances the functionality of the [YAML or JSON](output-yaml-json) [output modules](output-formats) with a more convenient user interface. 
 ```
 
 ## Usage
@@ -46,7 +46,18 @@ The **netlab inspect** command gets its data from:
 
 The `netlab.snapshot.pickle` snapshot file is created when a lab is started and deleted when you shut down the lab with the `netlab down --cleanup` command.
 
-## Topology Inspection Examples
+## Transformed Topology Inspection
+
+You can use the optional _expression_ CLI argument to select a subset of the transformed topology data. The _expression_ can be a simple selection of an element in the topology data structure (for example, `nodes.r1`) or a Python expression (for example, `links[0]` or `len(links)`). **netlab inspect** also recognizes two special expressions:
+
+| expression | meaning |
+|------------|---------|
+| nodefault  | Transformed topology data without netlab **defaults** |
+| noaddr     | Transformed topology data without address pools |
+
+### Transformed Topology Inspection Examples
+
+You can inspect the whole transformed topology or just one of its components:
 
 | To display this information... | ...use this command |
 |--------------------------------|---------------------|

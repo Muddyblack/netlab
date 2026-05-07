@@ -1,3 +1,4 @@
+(output-yaml-json)=
 # YAML and JSON Output Modules
 
 *yaml* and *json* output modules display transformed lab topology in YAML or JSON format. You can invoke them by specifying `-o yaml` or `-o json` parameter in **netlab create** command.
