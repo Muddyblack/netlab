@@ -20,7 +20,7 @@ _es_supported_on = [ 'lag', # LAG interfaces
                     ]
 
 ID_SET = 'esi_auto_id'
-_auto_segments = {}
+_auto_segments: dict = {}
 
 # structure used to report used ESI, to generate user warnings
 _esi_stats = data.get_empty_box()
