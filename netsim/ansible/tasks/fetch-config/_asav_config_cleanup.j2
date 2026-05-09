@@ -1,0 +1,4 @@
+{% for line in ansible_net_config.split('\n') 
+     if 'Cryptochecksum' not in line %}
+{{   line }}
+{% endfor %}
