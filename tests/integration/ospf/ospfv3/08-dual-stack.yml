@@ -1,0 +1,89 @@
+---
+message: |
+  This lab tests the dual-stack multi-area OSPFv2/OSPFv3 deployments. The device under test has
+  an IPv4 stub interface, an IPv6 stub interface, a dual-stack stub interface, an IPv4-only link,
+  and a dual-stack link.
+
+defaults.sources.extra: [ ../../wait_times.yml, ../../warnings.yml ]
+module: [ ospf ]
+
+groups:
+  probes:
+    device: frr
+    provider: clab
+    members: [ x1, x2 ]
+
+nodes:
+  dut:
+  x1:
+    ospf.area: 0
+  x2:
+    ospf.area: 2
+
+prefix:
+  bcn_v4.ipv4: 10.42.1.0/24
+  bcn_v6.ipv6: 2001:db8:cafe:2::/64
+  bcn_ds:
+    ipv4: 10.42.2.0/24
+    ipv6: 2001:db8:cafe:3::/64
+
+links:
+- dut:
+  x1:
+  prefix.ipv4: 10.1.0.0/30
+  mtu: 1500
+
+- dut:
+  x2:
+  ospf.area: 2
+  prefix:
+    ipv4: 10.1.0.4/30
+    ipv6: True
+  mtu: 1500
+
+- dut:
+  prefix: bcn_v4
+
+- dut:
+  prefix: bcn_v6
+
+- dut:
+  prefix: bcn_ds
+
+validate:
+  adj_v2:
+    description: Check OSPFv2 adjacencies
+    wait_msg: Waiting for OSPFv2 adjacencies to come up
+    wait: ospfv2_adj_p2p
+    nodes: [ x1, x2 ]
+    plugin: ospf_neighbor(nodes.dut.ospf.router_id)
+  adj_v3:
+    description: Check OSPFv3 adjacencies
+    wait_msg: Waiting for OSPFv3 adjacencies to come up
+    wait: ospfv3_adj_p2p
+    nodes: [ x2 ]
+    plugin: ospf6_neighbor(nodes.dut.ospf.router_id)
+  stub_v4:
+    description: Check for DUT IPv4 stub prefix
+    wait: ospfv2_spf
+    wait_msg: Waiting for DUT and SPF to do their magic
+    nodes: [ x1, x2 ]
+    plugin: ospf_prefix(prefix.bcn_v4.ipv4)
+  stub_v6:
+    description: Check for DUT IPv6 stub prefix
+    wait: ospfv3_spf
+    wait_msg: Waiting for DUT and SPF to do their magic
+    nodes: [ x2 ]
+    plugin: ospf6_prefix(prefix.bcn_v6.ipv6)
+  stub_ds_v4:
+    description: Check for DUT dual-stack IPv4 stub prefix
+    wait: ospfv2_spf
+    wait_msg: Waiting for DUT and SPF to do their magic
+    nodes: [ x1, x2 ]
+    plugin: ospf_prefix(prefix.bcn_ds.ipv4)
+  stub_ds_v6:
+    description: Check for DUT dual-stack IPv6 stub prefix
+    wait: ospfv3_spf
+    wait_msg: Waiting for DUT and SPF to do their magic
+    nodes: [ x2 ]
+    plugin: ospf6_prefix(prefix.bcn_ds.ipv6)
