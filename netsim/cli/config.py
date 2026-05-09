@@ -176,11 +176,14 @@ def reload_node_configs(topology: Box,nodeset: list,args: argparse.Namespace, re
   """
   Now prepare the environment for the "netlab initial" processing
 
+  * Set the "we're doing initial configuration for reload" node flag
   * Limit the custom template search path to the config directory
   * Create initial- and custom config files
   * Change the node "config" parameter to request configuration reload
   """
   topology.defaults.paths.custom.dirs = [ str(cfg_path.parent) ]
+  for n in nodeset:
+    topology.nodes[n].netlab_initial_reload = True
   create_node_files(topology,nodeset,args,str(cfg_path.name),initial=True,cfg_suffix='.cfg')
 
   # Run the Ansible playbook with modified path variables and an adjusted nodeset
