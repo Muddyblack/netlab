@@ -28,6 +28,7 @@ from . import (
   lab_status_update,
   load_snapshot,
   set_dry_run,
+  set_env_args,
 )
 
 
@@ -187,11 +188,12 @@ Execute provider probes
 """
 def provider_probes(topology: Box) -> None:
   p_provider = topology.provider
+  defaults = topology.defaults
 
   log.section_header('Checking','virtualization provider installation')
-  external_commands.run_probes(topology.defaults,p_provider)
+  external_commands.run_probes(defaults,p_provider)
   for s_provider in topology[p_provider].providers:
-    external_commands.run_probes(topology.defaults,s_provider)
+    external_commands.run_probes(defaults,s_provider)
 
 """
 Start lab topology for a single provider
@@ -206,11 +208,14 @@ def start_provider_lab(topology: Box, pname: str, sname: typing.Optional[str] = 
     p_topology = topology
 
   status_start_provider(topology,p_name)
+  defaults = topology.defaults
+  external_commands.run_cli_hooks(defaults,'up',f'pre_start_{p_name}')
+
   p_module.call('pre_start_lab',p_topology)
   if sname is not None:
-    exec_command = topology.defaults.providers[pname][sname].start
+    exec_command = defaults.providers[pname][sname].start
   else:
-    exec_command = topology.defaults.providers[pname].start
+    exec_command = defaults.providers[pname].start
 
   exec_list = exec_command if isinstance(exec_command,list) else [ exec_command ]
   for cmd in exec_list:
@@ -219,6 +224,7 @@ def start_provider_lab(topology: Box, pname: str, sname: typing.Optional[str] = 
       log.fatal(f"{cmd} failed, aborting...","netlab up")
 
   p_module.call('post_start_lab',p_topology)
+  external_commands.run_cli_hooks(defaults,'up',f'post_start_{p_name}')
 
   lab_status_change(topology,f'{p_name} workload started')
 
@@ -248,7 +254,9 @@ def deploy_initial_config(args: argparse.Namespace, topology: Box) -> None:
 
   lab_status_change(topology,f'deploying initial configuration')
   log.section_header('Deploying','initial device configurations')
+  external_commands.run_cli_hooks(topology.defaults,'up','pre_initial_config')
   external_commands.deploy_configs("netlab up",args.fast_config,deploy_only=not args.snapshot)
+  external_commands.run_cli_hooks(topology.defaults,'up','post_initial_config')
   lab_status_change(topology,f'initial configuration complete')
 
   message = get_message(topology,'initial',True)
@@ -261,9 +269,11 @@ Reload saved configurations
 def reload_saved_config(args: argparse.Namespace, topology: Box) -> None:
   lab_status_change(topology,f'reloading saved initial configurations')
   log.section_header('Reloading','saved initial device configurations')
+  external_commands.run_cli_hooks(topology.defaults,'up','pre_reload_config')
   cmd = external_commands.set_ansible_flags(['netlab','config','--reload',args.reload])
   if not external_commands.run_command(cmd):
     log.fatal("netlab config --reload failed, aborting...",'netlab up')
+  external_commands.run_cli_hooks(topology.defaults,'up','post_reload_config')
   lab_status_change(topology,f'saved initial configurations reloaded')
   log.status_success()
   print("Saved configurations reloaded",flush=True)
@@ -299,6 +309,7 @@ def start_external_tools(args: argparse.Namespace, topology: Box) -> None:
     return
 
   lab_status_change(topology,f'starting external tools')
+  external_commands.run_cli_hooks(topology.defaults,'up','pre_tools_start')
   log.section_header('Starting','external tools')
   t_count = 0
   t_success = 0
@@ -324,6 +335,7 @@ def start_external_tools(args: argparse.Namespace, topology: Box) -> None:
       else:
         print(f"{msg}\n",flush=True)
 
+  external_commands.run_cli_hooks(topology.defaults,'up','post_tools_start')
   lab_status_change(topology,f'{t_success}/{t_count} external tools started')
   if not is_dry_run():
     log.partial_success(t_success,t_count)
@@ -343,6 +355,8 @@ def run_up(cli_args: typing.List[str]) -> None:
     check_existing_lab()
 
   topology = get_topology(args,cli_args)
+
+  set_env_args(args,topology)
   if not is_dry_run():
     check_lab_instance(topology)
 
@@ -350,6 +364,7 @@ def run_up(cli_args: typing.List[str]) -> None:
     os.environ["ANSIBLE_STDOUT_CALLBACK"] = "selective"
 
   external_commands.LOG_COMMANDS = True
+  external_commands.run_cli_hooks(topology.defaults,'up','pre_probe')
   provider_probes(topology)
   if not args.no_config:
     process_config_sw_check(topology)
@@ -369,6 +384,7 @@ def run_up(cli_args: typing.List[str]) -> None:
     _status.lock_directory()
 
   log.section_header('Starting',f'{p_provider} nodes')
+  external_commands.run_cli_hooks(topology.defaults,'up',f'pre_start_lab')
   start_provider_lab(topology,p_provider)
 
   for s_provider in topology[p_provider].providers:
@@ -379,6 +395,7 @@ def run_up(cli_args: typing.List[str]) -> None:
   if topology.get('defaults.tc.enable',True):
     providers.execute_tc_commands(topology)
 
+  external_commands.run_cli_hooks(topology.defaults,'up',f'post_start_lab')
   try:
     if args.reload:
       reload_saved_config(args,topology)
