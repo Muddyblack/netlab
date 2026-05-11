@@ -1,0 +1,11 @@
+defaults.device: none
+defaults.vrf.warnings.link_no_nodes: error
+
+module: [ vrf ]
+vrfs:
+  red:
+    links: [ a-b ]
+
+nodes:
+  a.module: []
+  b.module: []
