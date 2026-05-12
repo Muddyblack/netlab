@@ -8,16 +8,9 @@ provider: clab
 
 module: [ ospf ]
 
-plugin: [ files ]
-
-files:
-  restart.sh: |
-    set -e
-    netlab restart
-
 defaults.netlab.integration:
   up: netlab up --snapshot
-  initial: bash restart.sh                       # Try to restart the lab
+  initial: netlab restart                     # Try to restart the lab
 
 nodes:
   dut:
