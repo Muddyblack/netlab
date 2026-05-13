@@ -110,6 +110,18 @@ validate:
     nodes: [ pe2 ]
     plugin: bgp_neighbor(node.bgp.neighbors,'dut',af='ipv6')
     stop_on_error: true
+  pfx_ce1:
+    description: Did CE1 prefix propagate to CE2?
+    wait_msg: Waiting for BGP convergence
+    wait: bgp_scan_long
+    nodes: [ ce2 ]
+    plugin: bgp_prefix(nodes.ce1.loopback.ipv6,af='ipv6')
+  pfx_ce2:
+    description: Did CE2 prefix propagate to CE1?
+    wait_msg: Waiting for BGP convergence
+    wait: bgp_scan_long
+    nodes: [ ce1 ]
+    plugin: bgp_prefix(nodes.ce2.loopback.ipv6,af='ipv6')
   ping_hh:
     description: Ping-based host-to-host reachability test
     wait_msg: We might have to wait a bit longer
