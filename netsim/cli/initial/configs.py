@@ -118,7 +118,13 @@ def create_node_configs(
             config_mode='cfg' if flatten_output_fname else config_mode):
         created_list.append(module)
       if config_mode in ('sh','cp_sh'):
-        (abs_path / o_fname).chmod(0o755)
+        try:
+          (abs_path / o_fname).chmod(0o755)
+        except Exception as ex:
+          log.error(
+            f'Cannot change permissions of {o_fname}',
+            category=log.FatalError,
+            more_data=[str(ex)])
     if not log.VERBOSE and created_list:
       strings.print_colored_text(strings.pad_err_code('CREATED',10),'green')
       print(f"{n_name}: {','.join(created_list)}")
