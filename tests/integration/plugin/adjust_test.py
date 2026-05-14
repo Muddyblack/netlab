@@ -109,6 +109,11 @@ def adjust_topology(a_entry: Box, topology: Box) -> None:
 
   # n_data contain the first node that triggered adjustment
   #
+  e_text = a_entry.get('error','')                # Should we throw an error?
+  if e_text:
+    log.error(e_text,category=log.IncorrectValue,module='validate')
+    return
+
   w_text = a_entry.get('warning','')              # Do we have to add a warning?
   if w_text:                                      # Print the formatted warning
     w_fmt_text = strings.eval_format(w_text,n_data)

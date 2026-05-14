@@ -10,9 +10,11 @@ message: |
   * Validate the results with "netlab validate"
 
 defaults.sources.extra: [ ../wait_times.yml, ../warnings.yml ]
+defaults.paths.prepend.plugin: [ "topology:../plugin" ]
+
 module: [ ospf ]
 
-plugin: [ files ]
+plugin: [ files, adjust_test ]
 
 files:
   start_and_save.sh: |
@@ -29,6 +31,11 @@ files:
 defaults.netlab.integration:
   up: bash start_and_save.sh                    # Go through up/collect/down/restart cycle
   initial: bash reload.sh                       # Try to reload device configuration
+
+_adjust:
+- nodes: [ dut ]
+  features: [ initial.reload ]
+  error: We cannot reload device configuration for the tested device
 
 groups:
   probes:
