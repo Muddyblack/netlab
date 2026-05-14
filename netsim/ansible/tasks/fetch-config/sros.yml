@@ -10,7 +10,7 @@
    backup: yes
    backup_options:
     dir_path: "{{ config_dir }}"
-    filename: "{{ inventory_hostname+'.config' }}"
+    filename: "{{ inventory_hostname }}.{{ cfg_suffix }}"
   register: backup_info
   changed_when: no
 
