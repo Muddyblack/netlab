@@ -92,9 +92,9 @@ features:
   sr:
     af: [ ipv4, ipv6 ]
     protocol: [ isis ]
-  srv6:
-    bgp: True
-    isis: True
+#  srv6:
+#    bgp: True
+#    isis: True
   vlan:
     model: router
     svi_interface_name: "svi.{vlan}"
