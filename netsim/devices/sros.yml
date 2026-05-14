@@ -37,7 +37,7 @@ features:
     min_phy_mtu: 1500
     max_mtu: 9782
     collect: true
-    reload: true
+    reload: false             # We're too stupid to reload config file to SR OS
   bfd: True
   bgp:
     advertise: true
