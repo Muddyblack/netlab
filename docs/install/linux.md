@@ -1,7 +1,7 @@
 (install-linux-server)=
 # Running *netlab* on a Linux Server
 
-This page describes generic installation steps for creating a virtual lab environment on any Linux distribution ([follow these instructions](ubuntu.md) if you plan to run your labs on an Ubuntu server).
+This page describes generic installation steps for creating a virtual lab environment on any Linux distribution ([follow these instructions](ubuntu.md) if you plan to run your labs on a Debian or Ubuntu server, including Windows Subsystem for Linux).
 
 ```{warning}
 We test _netlab_ on Ubuntu to ensure we provide a reasonably hassle-free experience to networking engineers without Linux sysadmin skills. Unfortunately, we cannot help you if you run _netlab_ on another Linux distribution (dealing with one distro is more than enough pain). Still, please try to make it work; we would appreciate it if you could add your findings to this document. Thank you!
@@ -9,18 +9,13 @@ We test _netlab_ on Ubuntu to ensure we provide a reasonably hassle-free experie
 
 ## Prerequisite Software Installation
 
-*netlab* is a Python package that uses KVM to run virtual machines and Docker to run containers. Virtual machines in the KVM environment and the associated Linux bridges are created with Vagrant using libvirt API. Ansible is used to configure the network devices.
+*netlab* is a Python package that uses KVM to run virtual machines and Docker to run containers. Virtual machines in the KVM environment and the associated Linux bridges are created with Vagrant using libvirt API. Ansible is used to configure most network devices.
 
 ![netlab on Linux](linux-architecture.png)
 
 To build a Linux environment needed to run network devices as virtual machines or containers:
 
-* Install Python 3.8 or later (use the latest Python version supported by your Linux distribution)
-* Install Ansible 2.9.1 or later and any Ansible networking dependencies (example: paramiko)
-
-```{warning}
-At the moment, _netlab_ does not work with Ansible release 12.x. Install the latest Ansible 11.x release.
-```
+* Install Python 3.10 or later (use the latest Python version supported by your Linux distribution)
 
 If you want to run network devices as virtual machines with KVM:
 
@@ -30,7 +25,13 @@ If you want to run network devices as virtual machines with KVM:
 
 If you want to run network devices as containers (or virtual machines in *vrnetlab* containers), install Docker and containerlab.
 
+```{tip}
+If possible, [use containerlab](lab-clab) and package the virtual machines you need in [_vrnetlab_ containers](clab-vrnetlab). Getting Vagrant to work on some Linux distributions could be a bit challenging.
+```
+
 [^CSV]: We must change the recommended Vagrant release every few months. Please check the [libvirt installation script](https://github.com/ipspace/netlab/blob/dev/netsim/install/libvirt.sh) for details.
+
+Finally, install Ansible 2.9.1 or later and any Ansible networking dependencies (example: paramiko). We recommend using the latest Ansible 11.x release. You _might_ be able to use the **netlab install ansible** command (after [installing netlab](install-linux-netlab)) instead of manual installation.
 
 (linux-commands-mandatory)=
 *netlab* also needs (at least) these Linux commands to provide its full functionality:
@@ -49,6 +50,7 @@ If you want to run network devices as containers (or virtual machines in *vrnetl
 
 To see the Linux commands executed by various _netlab_ commands, use the `--dry-run` option of **netlab up**, **netlab down**, or **netlab connect**.
 
+(install-linux-netlab)=
 ## netlab Installation
 
 Install the Python package with `sudo python3 -m pip install networklab` or your preferred Python package installation procedure.
