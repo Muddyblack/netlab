@@ -14,7 +14,7 @@ features:
     ra: true
     normalize: true
     collect: true
-    reload: true
+    reload: false
   ospf:
     loopback:
       passive: true

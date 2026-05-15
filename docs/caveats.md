@@ -339,6 +339,7 @@ ansible-galaxy collection install community.network
 ```
 
 * EXOS does not support the same VRRP group for IPv4 and IPv6
+* Saved EXOS device configuration includes commands that cannot be configured on the EXOS VM. _netlab_ therefore cannot do a configuration reload for EXOS devices.
 
 (caveats-fortios)=
 ## Fortinet FortiOS
