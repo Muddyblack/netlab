@@ -126,6 +126,7 @@ ip link set {{ i.ifname }} {{ "down" if i.shutdown|default(False) else "up" }}
 # Add vtysh.conf file
 echo "service integrated-vtysh-config" >/etc/frr/vtysh.conf
 
+{% if not netlab_initial_reload|default(False) %}
 #
 # Rest of initial configuration done through VTYSH
 #
@@ -212,5 +213,6 @@ interface {{ i.ifname }}
 do write
 CONFIG
 vtysh -f /tmp/config
+{% endif %}{# not netlab_initial_reload #}
 !
 exit 0
