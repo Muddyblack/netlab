@@ -5,12 +5,7 @@ fi
 DIRNAME=`dirname "$0"`
 echo "Executing CI/CD tests in $DIRNAME"
 cd "$DIRNAME"
-PYTHONPATH="../" python3 -m pytest -vvv -k 'xform_ or error_cases'
-#
-# Remove files unnecessarily created by various provider modules
-# (until we fix that)
-#
-rm -fr *files
+PYTHONPATH="../" python3 -m pytest -v -k 'xform_ or error_cases'
 set -e
 cd ..; python3 -m mypy -p netsim
 for file in netsim/extra/*/plugin.py; do
