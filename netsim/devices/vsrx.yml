@@ -27,7 +27,7 @@ libvirt:
   create_iso: vsrx
   create:
     virt-install --connect=qemu:///system --name=vm_box --os-variant=freebsd10.0
-      --arch=x86_64 --cpu host --vcpus=2 --hvm
+      --arch=x86_64 --machine pc-i440fx-6.2 --cpu host --vcpus=2 --hvm
       --ram=4096 --disk path=vm.qcow2,bus=ide,format=qcow2
       --disk path=bootstrap.iso,device=cdrom,bus=ide
       --boot hd --network=network:vagrant-libvirt,model=virtio
