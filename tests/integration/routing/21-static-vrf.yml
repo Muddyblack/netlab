@@ -57,6 +57,7 @@ validate:
     plugin: ping(nodes.dut.interfaces[1].ipv4,src=nodes.x1.loopback.ipv4,af='ipv4')
   ping_x1_v6:
     description: Ping DUT from loopback IPv6 address of X1
+    wait: ping_long
     nodes: [ x1 ]
     plugin: ping(nodes.dut.interfaces[1].ipv6,src=nodes.x1.loopback.ipv6,af='ipv6')
   ping_x2_v4:
