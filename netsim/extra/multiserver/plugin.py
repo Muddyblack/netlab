@@ -2,55 +2,7 @@
 multiserver plugin — split a netlab topology across multiple physical servers.
 
 Generates per-server containerlab topology files with cross-server VXLAN links.
-Requires containerlab >= 0.46 for native VXLAN link support.
-
-Cross-server links:
-
-  * P2P links (2 endpoints) → containerlab native VXLAN (type: vxlan in clab.yml)
-  * Multi-access links (3+ endpoints, bridge) → local bridge + host-level VXLAN tunnel
-    created by a generated vxlan-setup.sh script
-
-Server assignment modes:
-
-  * explicit (default) — user assigns nodes via groups/members, unassigned nodes cause
-    an error.  Best when you need precise control over placement.
-  * auto — unassigned nodes are distributed round-robin across servers.  Use this for
-    automatic splitting: just define the servers and let the plugin balance the nodes.
-
-Group granularity (auto mode):
-
-  Auto mode keeps entire netlab groups together on one server. Define groups at
-  the smallest unit you want to keep on a single server. Parent/aggregate groups
-  are fine — child groups defined first will claim their members before the parent
-  is reached.  See docs/plugins/multiserver.md for details and examples.
-
-Explicit assignment example:
-
-    plugin: [ multiserver ]
-
-    multiserver:
-      servers:
-        - id: 1
-          host: 192.168.168.128
-          groups: [ hubs ]
-          members: [ extra-node ]
-        - id: 2
-          host: 10.0.0.67
-          groups: [ spines, leaves ]
-      assignment: explicit
-
-Automatic splitting example (no groups/members needed):
-
-    plugin: [ multiserver ]
-
-    multiserver:
-      servers:
-        - id: 1
-          host: 192.168.168.128
-        - id: 2
-          host: 10.0.0.67
-      assignment: auto
-      replicate: [ prometheus, grafana ]
+See docs/plugins/multiserver.md for usage, examples, and configuration reference.
 """
 
 import os
@@ -60,12 +12,12 @@ from pathlib import Path
 
 import yaml
 from box import Box
-from packaging import version as _pv
 
 from netsim.data import append_to_list
 from netsim.utils import log
 
 _execute_after = ["fabric", "node.clone"]
+
 
 # ---------------------------------------------------------------------------
 #  Hook: init — validate config + register output hook
@@ -80,12 +32,9 @@ def init(topology: Box) -> None:
   # Merge plugin defaults with user config (user values take priority)
   defaults = topology.defaults.get("multiserver", Box({}))
   topology.multiserver = defaults + ms
-
   ms = topology.multiserver
   servers = ms.get("servers", [])
 
-  # Currently only containerlab is supported — generating per-server Vagrantfiles
-  # for libvirt/virtualbox would require reimplementing the Vagrant Ruby DSL
   provider = topology.get("provider", "") or topology.defaults.get("provider", "")
   if provider and provider != "clab":
     log.error(
@@ -93,19 +42,6 @@ def init(topology: Box) -> None:
       log.IncorrectValue,
       "multiserver",
       more_hints=["libvirt and virtualbox support may be added in a future release"],
-    )
-    return
-
-  # Cross-server P2P links use containerlab native VXLAN endpoints (type: vxlan),
-  # available since containerlab 0.46.  netlab already requires >= 0.75 so this
-  # should always pass, but check explicitly in case the requirement is relaxed.
-  clab_min = "0.46.0"
-  clab_ver = str(topology.defaults.providers.clab.get("version", "0.0.0"))
-  if _pv.Version(clab_ver) < _pv.Version(clab_min):
-    log.error(
-      f"multiserver plugin requires containerlab >= {clab_min} for VXLAN links (netlab targets {clab_ver})",
-      log.IncorrectValue,
-      "multiserver",
     )
     return
 
@@ -117,18 +53,7 @@ def init(topology: Box) -> None:
     log.error("multiserver plugin requires at least 2 servers", log.IncorrectValue, "multiserver")
     return
 
-  seen_ids: set = set()
-  for idx, s in enumerate(servers):
-    if "id" not in s:
-      log.error(f'Server entry #{idx + 1} missing required "id" field', log.MissingValue, "multiserver")
-      continue
-    if "host" not in s:
-      log.error(f'Server {s.id} missing required "host" field', log.MissingValue, "multiserver")
-      continue
-    if s.id in seen_ids:
-      log.error(f"Duplicate server id {s.id}", log.IncorrectValue, "multiserver")
-    seen_ids.add(s.id)
-
+  _validate_servers(servers)
   log.exit_on_error()
 
   # Register the output hook so netlab create calls our output() function
@@ -145,54 +70,13 @@ def post_transform(topology: Box) -> None:
   if not ms:
     return
 
-  servers = ms.servers
-  server_map = {s.id: s for s in servers}
-  assignment: dict = {}  # node_name -> server_id
-  # --- Resolve replicated nodes (present on every server) ---
-  replicated: set = set()
-  for entry in ms.get("replicate", []):
-    if entry in topology.nodes:
-      replicated.add(entry)
-    elif entry in topology.get("groups", {}):
-      for member in topology.groups[entry].get("members", []):
-        replicated.add(member)
-    else:
-      log.error(f'multiserver.replicate: "{entry}" is not a node or group', log.IncorrectValue, "multiserver")
+  server_map = {s.id: s for s in ms.servers}
+  replicated = _resolve_replicated(ms, topology)
+  assignment = _resolve_assignments(ms.servers, topology)
 
-  # --- Resolve assignments from server groups + members ---
-  for server in servers:
-    for gname in server.get("groups", []):
-      grp = topology.get("groups", {}).get(gname, None)
-      if grp is None:
-        log.error(f'Server {server.id} references unknown group "{gname}"', log.IncorrectValue, "multiserver")
-        continue
-      for member in grp.get("members", []):
-        if member in assignment and assignment[member] != server.id:
-          log.error(
-            f"Node {member} assigned to both server {assignment[member]} and {server.id}",
-            log.IncorrectValue,
-            "multiserver",
-          )
-        assignment[member] = server.id
-
-    for member in server.get("members", []):
-      if member not in topology.nodes:
-        log.error(f'Server {server.id} references unknown node "{member}"', log.IncorrectValue, "multiserver")
-        continue
-      if member in assignment and assignment[member] != server.id:
-        log.error(
-          f"Node {member} assigned to both server {assignment[member]} and {server.id}",
-          log.IncorrectValue,
-          "multiserver",
-        )
-      assignment[member] = server.id
-
-  # --- Handle unassigned nodes (replicated nodes are exempt) ---
-  unassigned = set(n for n in topology.nodes if n not in assignment and n not in replicated)
-
-  mode = ms.get("assignment", "explicit")
+  unassigned = {n for n in topology.nodes if n not in assignment and n not in replicated}
   if unassigned:
-    if mode == "explicit":
+    if ms.get("assignment", "explicit") == "explicit":
       log.error(
         f"Nodes not assigned to any server: {', '.join(sorted(unassigned))}",
         log.MissingValue,
@@ -203,112 +87,21 @@ def post_transform(topology: Box) -> None:
         ],
       )
     else:
-      sorted_sids = sorted(server_map.keys())
-
-      # Distribute by netlab group to keep related nodes on the same server.
-      # Groups are assigned round-robin by size (largest first) for balance.
-      # Ungrouped nodes are distributed individually at the end.
-      group_buckets: list = []  # [(group_name, [members])]
-      claimed = set()
-      for gname, gdata in topology.get("groups", {}).items():
-        members = [m for m in gdata.get("members", []) if m in unassigned and m not in claimed]
-        if members:
-          group_buckets.append((gname, members))
-          claimed.update(members)
-
-      # Sort groups largest-first for better balance
-      group_buckets.sort(key=lambda g: -len(g[1]))
-
-      # Track node counts per server for balanced distribution
-      counts = {sid: sum(1 for s in assignment.values() if s == sid) for sid in sorted_sids}
-
-      for gname, members in group_buckets:
-        # Assign entire group to the server with the fewest nodes
-        target = min(sorted_sids, key=lambda s: counts[s])
-        for m in members:
-          assignment[m] = target
-        counts[target] += len(members)
-
-      # Remaining ungrouped nodes: round-robin to least-loaded server
-      ungrouped = sorted(unassigned - claimed)
-      for name in ungrouped:
-        target = min(sorted_sids, key=lambda s: counts[s])
-        assignment[name] = target
-        counts[target] += 1
+      _auto_distribute(unassigned, server_map, assignment, topology)
 
   log.exit_on_error()
 
-  # --- Classify links: local vs cross-server ---
   vni_base = ms.vxlan.get("vni_base", 10000)
-  vni = vni_base
-  cross_count = 0
-
-  for link in topology.links:
-    link_servers = set()
-    for intf in link.get("interfaces", []):
-      if intf.node in replicated:
-        continue
-      sid = assignment.get(intf.node)
-      if sid is not None:
-        link_servers.add(sid)
-
-    if len(link_servers) > 1:
-      link._ms = Box({"cross": True, "vni": vni, "servers": sorted(link_servers)})
-      vni += 1
-      cross_count += 1
-    else:
-      link._ms = Box(
-        {
-          "cross": False,
-          "servers": sorted(link_servers),
-        }
-      )
-
-  if vni > 16777215:
-    log.error(f"VXLAN VNI overflow: {vni} exceeds 24-bit maximum (16777215)", log.IncorrectValue, "multiserver")
-
+  cross_count = _classify_links(topology, assignment, replicated, vni_base)
   log.exit_on_error()
 
-  # Store state for output hook
-  topology._multiserver = Box(
-    {
-      "assignment": assignment,
-      "server_map": server_map,
-      "replicated": sorted(replicated),
-    }
-  )
+  topology._multiserver = Box({
+    "assignment": assignment,
+    "server_map": server_map,
+    "replicated": sorted(replicated),
+  })
 
-  # Summary — show which groups and nodes landed on each server
-  for server in servers:
-    sid = server.id
-    server_nodes = sorted(n for n, s in assignment.items() if s == sid)
-
-    # Figure out which netlab groups are fully on this server
-    server_groups = []
-    for gname, gdata in topology.get("groups", {}).items():
-      members = gdata.get("members", [])
-      if not members:
-        continue
-      on_this = [m for m in members if assignment.get(m) == sid]
-      if on_this and len(on_this) == len([m for m in members if m in assignment]):
-        server_groups.append(gname)
-
-    n = len(server_nodes)
-    log.info(f"Server {sid} ({server.host}): {n} nodes", module="multiserver")
-    if server_groups:
-      preview = server_groups[:8]
-      suffix = f" ... +{len(server_groups) - 8} more" if len(server_groups) > 8 else ""
-      log.info(f"  groups: {', '.join(preview)}{suffix}", module="multiserver")
-    if n <= 20:
-      log.info(f"  nodes:  {', '.join(server_nodes)}", module="multiserver")
-    else:
-      preview = server_nodes[:6]
-      log.info(f"  nodes:  {', '.join(preview)} ... +{n - 6} more", module="multiserver")
-
-  if replicated:
-    log.info(f"Replicated on all servers: {', '.join(sorted(replicated))}", module="multiserver")
-  if cross_count:
-    log.info(f"{cross_count} cross-server links (VNI {vni_base}–{vni - 1})", module="multiserver")
+  _log_assignment_summary(ms, assignment, replicated, topology, vni_base, cross_count)
 
 
 # ---------------------------------------------------------------------------
@@ -380,13 +173,11 @@ def output(topology: Box) -> None:
 
 
 def _distribute_files_atexit(lab_folder: str, server_folders: list) -> None:
-  """Distribute generated files (node_files, host_vars, ansible.cfg, hosts.yml)
-  to each server folder. Registered via atexit so it runs AFTER netlab has
-  written all output files.
-  """
+  """Distribute generated files"""
   lab_path = Path(lab_folder)
   nf_dir = lab_path / "node_files"
   hv_dir = lab_path / "host_vars"
+  server_names = {Path(sf).name for sf, _ in server_folders}
 
   for sf, local_nodes in server_folders:
     sf_path = Path(sf)
@@ -399,15 +190,7 @@ def _distribute_files_atexit(lab_folder: str, server_folders: list) -> None:
       dst_nf.mkdir(exist_ok=True)
       for item in nf_dir.iterdir():
         if item.name in local_nodes or item.name.startswith("-"):
-          dst = dst_nf / item.name
-          if not dst.exists():
-            try:
-              if item.is_dir():
-                shutil.copytree(item, dst)
-              else:
-                shutil.copy2(item, dst)
-            except Exception:
-              pass
+          _copy_if_missing(item, dst_nf / item.name)
 
     # host_vars: per-node only
     if hv_dir.is_dir():
@@ -415,48 +198,189 @@ def _distribute_files_atexit(lab_folder: str, server_folders: list) -> None:
       dst_hv.mkdir(exist_ok=True)
       for item in hv_dir.iterdir():
         if item.name in local_nodes:
-          dst = dst_hv / item.name
-          if not dst.exists():
-            try:
-              if item.is_dir():
-                shutil.copytree(item, dst)
-              else:
-                shutil.copy2(item, dst)
-            except Exception:
-              pass
+          _copy_if_missing(item, dst_hv / item.name)
 
     # Copy all other subdirectories (e.g. group_vars, templates, monitoring)
     # excluding server folders, node_files, host_vars, and python/git metadata.
-    server_names = {Path(sf).name for sf, _ in server_folders}
+    skip = server_names | {"node_files", "host_vars", "__pycache__", ".git"}
     for item in lab_path.iterdir():
-      if item.is_dir():
-        if item.name in server_names or item.name in ("node_files", "host_vars", "__pycache__", ".git"):
-          continue
-
-        # Optimization: only copy grafana directory if this server hosts the grafana node
-        if item.name == "grafana" and "grafana" not in local_nodes:
-          continue
-
-        dst_dir = sf_path / item.name
-        if not dst_dir.exists():
-          try:
-            shutil.copytree(item, dst_dir)
-          except Exception:
-            pass
+      if not item.is_dir() or item.name in skip:
+        continue
+      # Only copy grafana directory if this server hosts the grafana node
+      if item.name == "grafana" and "grafana" not in local_nodes:
+        continue
+      _copy_if_missing(item, sf_path / item.name)
 
     # Ansible inventory and config
     for fname in ("ansible.cfg", "hosts.yml"):
       src = lab_path / fname
-      dst = sf_path / fname
-      if src.exists() and not dst.exists():
-        try:
-          shutil.copy2(src, dst)
-        except Exception:
-          pass
+      if src.exists():
+        _copy_if_missing(src, sf_path / fname)
+
+
+def _copy_if_missing(src: Path, dst: Path) -> None:
+  if dst.exists():
+    return
+  try:
+    if src.is_dir():
+      shutil.copytree(src, dst)
+    else:
+      shutil.copy2(src, dst)
+  except Exception:
+    pass
 
 
 # ===========================================================================
-#  Internal helpers
+#  Internal helpers — post_transform
+# ===========================================================================
+
+
+def _validate_servers(servers: list) -> None:
+  seen_ids: set = set()
+  for idx, s in enumerate(servers):
+    if "id" not in s:
+      log.error(f'Server entry #{idx + 1} missing required "id" field', log.MissingValue, "multiserver")
+      continue
+    if "host" not in s:
+      log.error(f'Server {s.id} missing required "host" field', log.MissingValue, "multiserver")
+      continue
+    if s.id in seen_ids:
+      log.error(f"Duplicate server id {s.id}", log.IncorrectValue, "multiserver")
+    seen_ids.add(s.id)
+
+
+def _resolve_replicated(ms: Box, topology: Box) -> set:
+  replicated: set = set()
+  for entry in ms.get("replicate", []):
+    if entry in topology.nodes:
+      replicated.add(entry)
+    elif entry in topology.get("groups", {}):
+      for member in topology.groups[entry].get("members", []):
+        replicated.add(member)
+    else:
+      log.error(f'multiserver.replicate: "{entry}" is not a node or group', log.IncorrectValue, "multiserver")
+  return replicated
+
+
+def _resolve_assignments(servers: list, topology: Box) -> dict:
+  assignment: dict = {}
+  for server in servers:
+    for gname in server.get("groups", []):
+      grp = topology.get("groups", {}).get(gname, None)
+      if grp is None:
+        log.error(f'Server {server.id} references unknown group "{gname}"', log.IncorrectValue, "multiserver")
+        continue
+      for member in grp.get("members", []):
+        if member in assignment and assignment[member] != server.id:
+          log.error(
+            f"Node {member} assigned to both server {assignment[member]} and {server.id}",
+            log.IncorrectValue,
+            "multiserver",
+          )
+        assignment[member] = server.id
+
+    for member in server.get("members", []):
+      if member not in topology.nodes:
+        log.error(f'Server {server.id} references unknown node "{member}"', log.IncorrectValue, "multiserver")
+        continue
+      if member in assignment and assignment[member] != server.id:
+        log.error(
+          f"Node {member} assigned to both server {assignment[member]} and {server.id}",
+          log.IncorrectValue,
+          "multiserver",
+        )
+      assignment[member] = server.id
+
+  return assignment
+
+
+def _auto_distribute(unassigned: set, server_map: dict, assignment: dict, topology: Box) -> None:
+  """Distribute unassigned nodes across servers, keeping netlab groups together."""
+  sorted_sids = sorted(server_map.keys())
+  counts = {sid: sum(1 for s in assignment.values() if s == sid) for sid in sorted_sids}
+
+  # Build group buckets: keep group members together, distribute largest groups first
+  claimed: set = set()
+  group_buckets: list = []
+  for gdata in topology.get("groups", {}).values():
+    members = [m for m in gdata.get("members", []) if m in unassigned and m not in claimed]
+    if members:
+      group_buckets.append(members)
+      claimed.update(members)
+  group_buckets.sort(key=lambda g: -len(g))
+
+  for members in group_buckets:
+    target = min(sorted_sids, key=lambda s: counts[s])
+    for m in members:
+      assignment[m] = target
+    counts[target] += len(members)
+
+  # Remaining ungrouped nodes: one by one to least-loaded server
+  for name in sorted(unassigned - claimed):
+    target = min(sorted_sids, key=lambda s: counts[s])
+    assignment[name] = target
+    counts[target] += 1
+
+
+def _classify_links(topology: Box, assignment: dict, replicated: set, vni_base: int) -> int:
+  """Assign _ms metadata to each link; return the number of cross-server links."""
+  vni = vni_base
+  for link in topology.links:
+    link_servers = {
+      assignment[i.node]
+      for i in link.get("interfaces", [])
+      if i.node not in replicated and i.node in assignment
+    }
+    if len(link_servers) > 1:
+      link._ms = Box({"cross": True, "vni": vni, "servers": sorted(link_servers)})
+      vni += 1
+    else:
+      link._ms = Box({"cross": False, "servers": sorted(link_servers)})
+
+  if vni > 16777215:
+    log.error(f"VXLAN VNI overflow: {vni} exceeds 24-bit maximum (16777215)", log.IncorrectValue, "multiserver")
+
+  return vni - vni_base
+
+
+def _log_assignment_summary(
+  ms: Box, assignment: dict, replicated: set, topology: Box, vni_base: int, cross_count: int
+) -> None:
+  for server in ms.servers:
+    sid = server.id
+    server_nodes = sorted(n for n, s in assignment.items() if s == sid)
+    n = len(server_nodes)
+
+    server_groups = []
+    for gname, gdata in topology.get("groups", {}).items():
+      members = gdata.get("members", [])
+      if not members:
+        continue
+      on_this = [m for m in members if assignment.get(m) == sid]
+      assigned = [m for m in members if m in assignment]
+      if on_this and len(on_this) == len(assigned):
+        server_groups.append(gname)
+
+    log.info(f"Server {sid} ({server.host}): {n} nodes", module="multiserver")
+    if server_groups:
+      preview = server_groups[:8]
+      suffix = f" ... +{len(server_groups) - 8} more" if len(server_groups) > 8 else ""
+      log.info(f"  groups: {', '.join(preview)}{suffix}", module="multiserver")
+    if n <= 20:
+      log.info(f"  nodes:  {', '.join(server_nodes)}", module="multiserver")
+    else:
+      log.info(f"  nodes:  {', '.join(server_nodes[:6])} ... +{n - 6} more", module="multiserver")
+
+  if replicated:
+    log.info(f"Replicated on all servers: {', '.join(sorted(replicated))}", module="multiserver")
+  if cross_count:
+    log.info(
+      f"{cross_count} cross-server links (VNI {vni_base}–{vni_base + cross_count - 1})", module="multiserver"
+    )
+
+
+# ===========================================================================
+#  Internal helpers — clab.yml generation
 # ===========================================================================
 
 
@@ -727,12 +651,7 @@ def _render_bridge_vxlan(
     )
 
   # VXLAN tunnels to each remote server that has endpoints on this link
-  remote_sids: set = set()
-  for intf in link.get("interfaces", []):
-    s = assignment.get(intf.node)
-    if s is not None and s != local_sid:
-      remote_sids.add(s)
-
+  remote_sids = {assignment[i.node] for i in link.get("interfaces", []) if assignment.get(i.node) not in (None, local_sid)}
   for rsid in sorted(remote_sids):
     vxlan_tunnels.append(
       {
@@ -751,16 +670,11 @@ def _render_bridge_vxlan(
 
 
 def _write_server_snapshot(topology: Box, local_nodes: set, out_dir: str) -> None:
-  """Write a filtered netlab snapshot containing only this server's nodes.
+  """Write a filtered netlab snapshot for this server's nodes only.
 
-  This allows 'netlab up --snapshot' to work correctly from a per-server
-  directory — only local nodes will be targeted for configuration deployment.
-
-  Note: make_paths_absolute() must be called on the copy before pickling so
-  that the computed f_files / f_tasks / f_dirs keys are present in the
-  snapshot.  The main netlab snapshot (outputs/pickle.py) is written *after*
-  create.py calls make_paths_absolute(), so it already contains those keys.
-  Plugin output() hooks run *before* that call, so we have to do it ourselves.
+  Allows 'netlab up --snapshot' to work from a per-server directory.
+  make_paths_absolute() is called here explicitly because output() hooks run
+  before create.py does it — without it the snapshot is missing f_files/f_tasks/f_dirs.
   """
   from netsim import __version__
   from netsim.augment.config import make_paths_absolute
@@ -775,10 +689,6 @@ def _write_server_snapshot(topology: Box, local_nodes: set, out_dir: str) -> Non
   topo_copy.links = [l for l in topo_copy.links if any(i.node in local_nodes for i in l.get("interfaces", []))]
 
   # Expand paths (add f_files / f_tasks / f_dirs computed keys).
-  # create.py calls make_paths_absolute() AFTER plugin output() hooks, so the
-  # main snapshot has these keys but our per-server copies don't yet.
-  # netlab initial relies on topology.defaults.paths.t_files.f_files, so we
-  # must add them before pickling.
   make_paths_absolute(topo_copy.defaults.paths)
 
   # Remove prefix generators and serialize
