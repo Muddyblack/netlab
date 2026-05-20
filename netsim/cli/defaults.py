@@ -5,6 +5,7 @@ import argparse
 import fnmatch
 import pathlib
 import re
+import shlex
 import typing
 
 import yaml
@@ -71,6 +72,12 @@ def defaults_parse(args: typing.List[str]) -> argparse.Namespace:
     dest='yaml',
     action='store_true',
     help='Store changed defaults in expanded YAML format')
+  parser.add_argument(
+    '--format',
+    dest='format',
+    action='store',
+    choices=['yaml','env','export'],
+    help='Alternate output format of the "show" action')
   parser.add_argument(
     dest='setting',
     action='store',
@@ -221,10 +228,12 @@ def get_re_pattern(txt: str, regex: bool = False) -> re.Pattern:
   
   return reobj
 
-def print_def_list(def_expanded: Box, show_source: bool) -> None:
+def print_def_list(def_expanded: Box, args: argparse.Namespace) -> None:
+  def_dict = def_expanded.to_dict()
+  to_yaml = args.format == 'yaml'
   for k in sorted(def_expanded):
     ns_list = list(def_expanded[k])
-    if show_source:
+    if args.source and not args.format:
       for ns in ns_list:
         txt = f'{k} = {def_expanded[k][ns]} ({ns})'
         if ns != ns_list[-1] and strings.rich_color:
@@ -232,7 +241,18 @@ def print_def_list(def_expanded: Box, show_source: bool) -> None:
         else:
           print(txt)
     else:
-      print(f'{k} = {def_expanded[k][ns_list[-1]]}')
+      v = def_dict[k][ns_list[-1]]
+      is_obj = isinstance(v,(dict,list))
+      v_txt = yaml.dump(v,default_flow_style=True,width=9999).split("\n")[0] if is_obj or to_yaml else str(v)
+      if not args.format:
+        print(f'{k} = {v_txt}')
+      elif args.format == 'yaml':
+        print(f'{k}: {v_txt}')
+      else:
+        key = 'NETLAB_'+k.replace('_','__').replace('.','_').upper()
+        if args.format == 'export':
+          key = 'export '+key
+        print(f'{key}={shlex.quote(v_txt)}')
 
 def default_show(args: argparse.Namespace) -> None:
   global D_SOURCES
@@ -242,7 +262,7 @@ def default_show(args: argparse.Namespace) -> None:
   def_expanded = build_defaults_sources(reobj,d_sources)
   
   if def_expanded:
-    print_def_list(def_expanded,args.source)
+    print_def_list(def_expanded,args)
   else:
     d_src_txt = '' if d_sources == D_SOURCES else f' in {",".join(d_sources)} defaults'
     error_and_exit(f'{args.setting}{" regular expression" if args.regex else ""} not found{d_src_txt}',module='-')
