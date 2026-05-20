@@ -60,6 +60,8 @@ Global VXLAN settings are specified in the **multiserver.vxlan** dictionary:
 | **dstport** | integer | UDP destination port for VXLAN traffic (default: `4789`) |
 | **dev** | string | Default physical interface to bind VXLAN tunnels (default: `ens33`) |
 
+By default, VXLAN tunnels bind to the global default interface specified in **multiserver.vxlan.dev** (which falls back to `ens33` if not configured). If your physical servers use different interface names, you can override this interface per-server using the **vxlan_dev** parameter under each server in the **multiserver.servers** list.
+
 (multiserver-assignment)=
 ## Assignment Modes
 
@@ -194,12 +196,14 @@ multiserver:
     - id: 1
       host: 192.168.168.128
       groups: [ spines ]
+      vxlan_dev: ens33          # Override per-server (optional)
     - id: 2
       host: 192.168.168.129
       groups: [ leaves ]
+      vxlan_dev: eth0           # Override per-server (optional)
   vxlan:
     vni_base: 10000
-    dev: ens33
+    dev: ens33                  # Global default interface
 ```
 
 This places spines on server 1 and leaves on server 2. All four links cross servers and are provisioned as containerlab native VXLAN endpoints.
