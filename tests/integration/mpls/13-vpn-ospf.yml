@@ -1,4 +1,4 @@
-message:
+message: |
   The tested device (DUT) is a PE-router running MPLS/VPN with a simple VRF. Two
   OSPF-speaking CE-routers are attached to the VRF (one per PE-router)
 
