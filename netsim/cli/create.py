@@ -104,7 +104,7 @@ def http_fetch_content(url: str, args: typing.Union[argparse.Namespace,Box]) -> 
 
   log.info(f'Downloaded the lab topology into {fname}')
   for d_file in Path('.').glob('*'):
-    if d_file != fname:
+    if str(d_file) != fname:
       log.info('The "netlab up" or "netlab create" command with a URL should be executed in an empty directory')
       if not strings.confirm('\nThe current directory is not empty. Do you want to continue'):
         error_and_exit('User decided to abort the request')
