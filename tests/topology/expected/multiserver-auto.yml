@@ -104,15 +104,23 @@ links:
   type: p2p
 multiserver:
   assignment: auto
-  output_dir: server-{server_id}
+  copy_dirs:
+  - group_vars
+  - templates
+  copy_files:
+  - ansible.cfg
+  output_dir: server-{server_name}
   replicate:
   - mon_srv
   servers:
-  - host: 192.168.128.1
-    id: 1
-  - host: 192.168.128.2
-    id: 2
+    srv1:
+      host: 192.168.128.1
+      id: 1
+    srv2:
+      host: 192.168.128.2
+      id: 2
   vxlan:
+    auto_start: true
     dev: ens33
     dstport: 4789
     vni_base: 10000

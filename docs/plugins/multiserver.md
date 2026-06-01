@@ -11,18 +11,16 @@ The *multiserver* plugin distributes a single *netlab* topology across multiple 
 ```
 
 ```{warning}
-* The *multiserver* plugin requires the **containerlab** provider on all servers.
-* Containerlab version >= `0.46` is required for native VXLAN link endpoint support.
 * All physical servers must have direct IP reachability (e.g. over a management network or dedicated interconnect).
 ```
 
 ## Using the Plugin
 
 * Add `plugin: [ multiserver ]` to lab topology.
-* Define target servers in the **multiserver.servers** list.
+* Define target servers in the **multiserver.servers** dictionary.
 * Choose an assignment mode (`explicit` or `auto`) with **multiserver.assignment**.
 
-The plugin runs during `netlab create` and generates self-contained per-server directories (e.g. `server-1/`, `server-2/`) with tailored `clab.yml` files, node configs, and VXLAN scripts ready for deployment.
+The plugin runs during `netlab create` and generates self-contained per-server directories (e.g. `server-srv1/`, `server-srv2/`) with tailored `clab.yml` files, node configs, and VXLAN scripts ready for deployment.
 
 ## Configuring Plugin Parameters
 
@@ -31,23 +29,28 @@ The plugin is configured with the **multiserver** topology-level dictionary that
 | Parameter | Type | Meaning |
 |-----------|------|---------|
 | **assignment** | string | How to assign nodes to servers: `explicit` (default) or `auto` |
-| **servers** | list | List of target physical servers |
+| **servers** | dictionary | Target physical servers, keyed by server name |
 | **vxlan** | dictionary | Global settings for VXLAN tunnels |
 | **replicate** | list | Nodes or groups that must be duplicated on all servers |
-| **output_dir** | string | Template for per-server directory names (default: `server-{server_id}`) |
+| **output_dir** | string | Template for per-server directory names (default: `server-{server_name}`); supports `{server_name}`, `{server_id}`, and `{name}` (topology name) |
+| **copy_dirs** | list | Subdirectories copied into every server directory (default: `[group_vars, templates]`); overrides the default list |
+| **copy_files** | list | Top-level files copied into every server directory (default: `[ansible.cfg]`); overrides the default list |
+| **extra_copy_dirs** | list | Additional subdirectories to copy on top of **copy_dirs** |
+| **extra_copy_files** | list | Additional top-level files to copy on top of **copy_files** |
 
 (multiserver-servers)=
 ### Server Parameters
 
-Each entry in the **multiserver.servers** list supports these parameters:
+The **multiserver.servers** dictionary is keyed by server name (e.g. `srv1`, `dc-east`). The name is used for per-server directory names and log messages, and because servers are a dictionary, duplicate server names are impossible. Each entry supports these parameters:
 
 | Parameter | Type | Meaning |
 |-----------|------|---------|
-| **id** | integer | Unique identifier for the server (e.g. `1`, `2`) |
+| **id** | integer | Numeric identifier used for VXLAN bookkeeping; auto-assigned if omitted |
 | **host** | string | IP address or hostname of the remote server |
 | **groups** | list | *netlab* groups whose members are assigned to this server |
 | **members** | list | Individual node names assigned to this server |
 | **vxlan_dev** | string | Physical interface to bind VXLAN tunnels to on this server |
+| **weight** | integer | Relative capacity for auto-assignment (default: `1`); a server with `weight: 2` absorbs twice as many nodes before being considered as loaded as a server with `weight: 1` |
 
 (multiserver-vxlan)=
 ### VXLAN Parameters
@@ -60,7 +63,7 @@ Global VXLAN settings are specified in the **multiserver.vxlan** dictionary:
 | **dstport** | integer | UDP destination port for VXLAN traffic (default: `4789`) |
 | **dev** | string | Default physical interface to bind VXLAN tunnels (default: `ens33`) |
 
-By default, VXLAN tunnels bind to the global default interface specified in **multiserver.vxlan.dev** (which falls back to `ens33` if not configured). If your physical servers use different interface names, you can override this interface per-server using the **vxlan_dev** parameter under each server in the **multiserver.servers** list.
+By default, VXLAN tunnels bind to the global default interface specified in **multiserver.vxlan.dev** (which falls back to `ens33` if not configured). If your physical servers use different interface names, you can override this interface per-server using the **vxlan_dev** parameter under each server in the **multiserver.servers** dictionary.
 
 (multiserver-assignment)=
 ## Assignment Modes
@@ -75,11 +78,11 @@ plugin: [ multiserver ]
 multiserver:
   assignment: explicit
   servers:
-    - id: 1
+    srv1:
       host: 192.168.168.128
       groups: [ core ]
       members: [ edge-node ]
-    - id: 2
+    srv2:
       host: 192.168.168.129
       groups: [ spines, leaves ]
 ```
@@ -88,10 +91,10 @@ multiserver:
 
 In `auto` mode, nodes that are not explicitly pinned to a server are distributed automatically using a greedy balancing algorithm:
 
-1. Nodes belonging to a *netlab* group are kept together — the entire group is placed on the server that currently has the fewest nodes. Larger groups are placed first for better balance.
+1. Nodes belonging to a *netlab* group are kept together — the entire group is placed on the server with the lowest current load. Larger groups are placed first for better balance.
 2. Remaining ungrouped nodes are assigned one at a time to the least-loaded server.
 
-Nodes already pinned via **groups** or **members** attributes count toward server load, so the algorithm balances around any explicit assignments.
+**Load** is defined as `(assigned node count) / weight`, where **weight** defaults to `1`. Nodes already pinned via **groups** or **members** attributes count toward server load, so the algorithm balances around any explicit assignments.
 
 ```yaml
 plugin: [ multiserver ]
@@ -99,10 +102,24 @@ plugin: [ multiserver ]
 multiserver:
   assignment: auto
   servers:
-    - id: 1
+    srv1:
       host: 192.168.168.128
-    - id: 2
+    srv2:
       host: 192.168.168.129
+```
+
+Use **weight** to account for servers with different capacities. A server with `weight: 2` is treated as twice as capable and absorbs proportionally more nodes before being considered equally loaded:
+
+```yaml
+multiserver:
+  assignment: auto
+  servers:
+    srv1:
+      host: 192.168.168.128
+      weight: 1          # smaller server
+    srv2:
+      host: 192.168.168.129
+      weight: 2          # larger server — gets roughly twice as many nodes
 ```
 
 ```{tip}
@@ -152,9 +169,9 @@ Links connecting to replicated nodes are always treated as local, so traffic bet
 multiserver:
   assignment: auto
   servers:
-    - id: 1
+    srv1:
       host: 192.168.168.128
-    - id: 2
+    srv2:
       host: 192.168.168.129
   replicate: [ prometheus, grafana ]
 ```
@@ -193,11 +210,11 @@ links:
 multiserver:
   assignment: explicit
   servers:
-    - id: 1
+    spine-host:
       host: 192.168.168.128
       groups: [ spines ]
       vxlan_dev: ens33          # Override per-server (optional)
-    - id: 2
+    leaf-host:
       host: 192.168.168.129
       groups: [ leaves ]
       vxlan_dev: eth0           # Override per-server (optional)
@@ -206,7 +223,7 @@ multiserver:
     dev: ens33                  # Global default interface
 ```
 
-This places spines on server 1 and leaves on server 2. All four links cross servers and are provisioned as containerlab native VXLAN endpoints.
+This places spines on `spine-host` and leaves on `leaf-host`. All four links cross servers and are provisioned as containerlab native VXLAN endpoints.
 
 ## Behind the Scenes
 
@@ -220,11 +237,17 @@ Each per-server directory is self-contained and includes:
 
 * A tailored `clab.yml` with only the relevant nodes and cross-server VXLAN interfaces
 * A filtered `netlab.snapshot.pickle` for use with `netlab up --snapshot`
-* Copies of `node_files/`, `host_vars/`, and Ansible config for only the nodes on that server
-* `vxlan-setup.sh` and `vxlan-teardown.sh` scripts (when multi-access VXLAN tunnels are needed)
+* A filtered `hosts.yml` containing only the nodes assigned to that server, so `netlab initial` does not attempt to configure nodes on other servers
+* Copies of `node_files/` and `host_vars/` for only the nodes on that server
+* Copies of the directories and files listed in **multiserver.copy_dirs** and **multiserver.copy_files**
+* Per-server `vxlan-setup.sh` and `vxlan-teardown.sh` scripts (when multi-access VXLAN tunnels are needed), registered in that server's snapshot as [CLI hooks](dev-cli-hooks) (`netlab.up.post_start_clab` / `netlab.down.pre_stop_clab`) so `netlab up` and `netlab down` run them automatically on the remote host
 
 (multiserver-deployment)=
 ## Deployment Workflow
+
+```{note}
+The plugin does **not** orchestrate remote servers. It runs only on the control node during `netlab create`, where it generates a self-contained directory per server. It never opens SSH connections, runs commands remotely, or copies files to other hosts. You copy each directory to its server yourself (Step 2), and `netlab` then runs **independently on each server** (Step 3) — the per-server VXLAN CLI hooks fire locally on that server, not from the control node.
+```
 
 **Step 1: Generate configurations** on your workstation:
 
@@ -237,16 +260,17 @@ The plugin automatically copies all required files into each server directory �
 **Step 2: Copy server directories to remote hosts** (e.g. via rsync):
 
 ```bash
-rsync -avz server-1/ user@192.168.168.128:~/lab/server-1/
-rsync -avz server-2/ user@192.168.168.129:~/lab/server-2/
+rsync -avz server-spine-host/ user@192.168.168.128:~/lab/server-spine-host/
+rsync -avz server-leaf-host/ user@192.168.168.129:~/lab/server-leaf-host/
 ```
 
 **Step 3: Deploy on each server** by running the following on each remote host:
 
 ```bash
 sudo netlab up --snapshot -vv
-sudo ./vxlan-setup.sh    # only if multi-access VXLAN tunnels are present
 ```
+
+When multi-access VXLAN tunnels are present, `netlab up` runs `vxlan-setup.sh` automatically via a [CLI hook](dev-cli-hooks) registered by the plugin.
 
 ```{important}
 **Why is `--snapshot` required on remote servers?**
@@ -258,12 +282,33 @@ Running with `topology.yml` directly on remote servers will fail because:
 2. **Recursion**: Running `netlab create` on `topology.yml` on the remote hosts would execute the `multiserver` plugin again, causing it to split the topology recursively and generate nested server subdirectories.
 ```
 
-**Teardown** in reverse order:
+**Teardown** on each server:
 
 ```bash
-sudo ./vxlan-teardown.sh
-sudo clab destroy -t clab.yml
+sudo netlab down
 ```
+
+When multi-access VXLAN tunnels are present, `netlab down` runs `vxlan-teardown.sh` automatically via a CLI hook registered by the plugin.
+
+## Customising What Gets Copied
+
+By default, the plugin copies `group_vars/` and `templates/` subdirectories, plus `ansible.cfg`, into every server directory. To add extra items on top of the defaults, use **extra_copy_dirs** and **extra_copy_files**:
+
+```yaml
+multiserver:
+  extra_copy_dirs: [ monitoring ]
+  extra_copy_files: [ netlab.lock ]
+```
+
+To replace the defaults entirely, use **copy_dirs** and **copy_files**:
+
+```yaml
+multiserver:
+  copy_dirs: [ group_vars, templates, monitoring ]
+  copy_files: [ ansible.cfg, netlab.lock ]
+```
+
+The Ansible inventory (`hosts.yml`) is always written into each server directory and is automatically filtered to contain only the nodes assigned to that server.
 
 ## Limitations
 

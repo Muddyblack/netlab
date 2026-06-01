@@ -6,10 +6,10 @@ plugin: [ multiserver ]
 
 multiserver:
   servers:
-  - id: 1
-    host: 192.168.128.1
-  - id: 2
-    host: 192.168.128.2
+    srv1:
+      host: 192.168.128.1
+    srv2:
+      host: 192.168.128.2
   assignment: auto
   replicate: [ mon_srv ]
 

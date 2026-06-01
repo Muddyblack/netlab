@@ -15,33 +15,54 @@ attributes:
   global:
     multiserver:
       servers:
-        type: list
+        type: dict
         _subtype:
           id:
             type: int
-            _required: True
           host:
             type: str
             _required: True
-          groups: list
-          members: list
+          groups:
+            type: list
+            _subtype: group_id
+          members:
+            type: list
+            _subtype: node_id
           vxlan_dev: str
+          weight:
+            type: int
+            _min: 1
       vxlan:
         vni_base: int
         dstport: int
         dev: str
+        auto_start: bool
       assignment:
         type: str
         valid_values: [explicit, auto]
-      replicate: list
+      replicate:
+        type: list
+        _subtype: node_or_group
       output_dir:
         type: str
+      copy_dirs: list
+      copy_files: list
+      extra_copy_dirs: list
+      extra_copy_files: list
 
 multiserver:
   vxlan:
     vni_base: 10000
     dstport: 4789
     dev: ens33
+    # When true, 'netlab up --snapshot' auto-runs vxlan-setup.sh via a CLI hook.
+    # Set false to keep cross-server tunnels inactive until you run the script
+    # manually (e.g. to stage convergence or connect servers on your own schedule).
+    auto_start: true
   assignment: explicit
   replicate: []
-  output_dir: "server-{server_id}"
+  output_dir: "server-{server_name}"
+  # Subdirectories always copied into every server directory
+  copy_dirs: [ group_vars, templates ]
+  # Top-level files always copied into every server directory
+  copy_files: [ ansible.cfg ]
