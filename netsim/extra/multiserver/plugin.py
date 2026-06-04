@@ -13,8 +13,13 @@ from pathlib import Path
 import yaml
 from box import Box
 
+from netsim import __version__
+from netsim.augment.config import make_paths_absolute
+from netsim.augment.topology import cleanup_topology
+from netsim.cli.external_commands import run_command
 from netsim.data import append_to_list
 from netsim.modules import _dataplane
+from netsim.outputs import _TopologyOutput
 from netsim.utils import files as _files
 from netsim.utils import log, templates
 
@@ -46,6 +51,9 @@ def init(topology: Box) -> None:
 
   # Register the output hook so netlab create calls our output() function
   append_to_list(topology.defaults.netlab.create, "plugin", "multiserver")
+  append_to_list(topology.defaults.netlab.up, "plugin", "multiserver")
+  append_to_list(topology.defaults.netlab.down, "plugin", "multiserver")
+
 
 
 # ---------------------------------------------------------------------------
@@ -162,16 +170,9 @@ def output(topology: Box) -> None:
         )
         continue
       _write_vxlan_scripts(out_dir, vxlan_tunnels, dev)
-      # Auto-run the tunnel scripts via CLI hooks unless the user opted out.
-      # When auto_start is false the scripts are still written, but the user
-      # must run them manually (e.g. to stage cross-server convergence).
-      if vxlan_cfg.get("auto_start", True):
-        topo_copy.defaults.netlab.up.post_start_clab = "bash vxlan-setup.sh"
-        topo_copy.defaults.netlab.down.pre_stop_clab = "bash vxlan-teardown.sh"
-
     # Write filtered snapshot so 'netlab up --snapshot' works per-server.
-    # Done after the hooks above so they are baked into the snapshot.
     _write_server_snapshot(topo_copy, out_dir)
+
 
     link_count = len(topo_copy.get("links", []))
     vx_count = len(vxlan_tunnels)
@@ -550,83 +551,9 @@ def _build_server_topo(topology: Box, local_nodes: set, sid: int, server_map: di
 # ---------------------------------------------------------------------------
 
 
-def _cwd_relative(entry: str) -> str:
-  """Mark a search-path entry as explicitly current-directory-relative.
-
-  A bare relative dir like 'templates' is ambiguous to netlab's render_template():
-  when such a dir becomes the in_folder of the template being rendered, the
-  path[0] not in ('.', '/') branch re-bases it onto the netlab install dir
-  (get_moddir() / 'templates/...'), so '{% import %}' / '{% include %}' lookups
-  inside that template fail. A bare relative entry also breaks find_file()'s
-  os.path.join() the moment netlab is run from a different cwd. make_paths_absolute()
-  normally fixes this during 'netlab create', but a loaded snapshot skips it, so we
-  anchor relative entries with './' here: render_template() then treats them as
-  cwd-relative (correct per-server dir) and they stay portable across hosts.
-
-  '~' / absolute / already-'.'-prefixed entries are returned unchanged. An empty
-  string (from a bare 'topology:') becomes '.'.
-  """
-  if not entry:
-    return "."
-  if entry[0] in (".", "/", "~"):
-    return entry
-  return "./" + entry
-
-
-def _resolve_snapshot_paths(paths: Box) -> None:
-  """Make defaults.paths self-contained for 'netlab up --snapshot'.
-
-  netlab's make_paths_absolute() runs in 'netlab create' but NOT when a snapshot
-  is loaded (load_snapshot just deserializes). Our per-server snapshot is written
-  in the 'output' plugin hook, which fires BEFORE that step — so without this the
-  snapshot has unresolved search paths and no f_files, and 'netlab initial' fails
-  ("list + Box", then "Cannot find ... template").
-
-  We resolve only what find_file() can't handle at runtime, keeping the snapshot
-  portable across hosts:
-    - files/tasks lists -> f_<key> template-name lists ({{ }} -> { }).
-    - 'package:' -> absolute install path (get_moddir); portable when netlab is
-      installed at the same location on every server (the usual case).
-    - 'topology:' / plain relative -> './' + path via _cwd_relative(), anchoring it
-      to the per-server working dir (templates/ is copied into each server dir).
-      The explicit './' is required so render_template() treats it as cwd-relative
-      instead of re-basing it onto the netlab install dir (see _cwd_relative).
-    - absolute / '~' entries are left as-is: they resolve identically on any host.
-  """
-  moddir = _files.get_moddir()
-  for k in list(paths.keys()):
-    v = paths[k]
-    if (k.startswith("files") or k.startswith("tasks")) and isinstance(v, list):
-      paths[f"f_{k}"] = [fn.replace("{{", "{").replace("}}", "}") for fn in v]
-    elif isinstance(v, list):
-      resolved = []
-      for entry in v:
-        if "package:" in entry:
-          resolved.append(str(moddir / entry.replace("package:", "")))
-        elif "topology:" in entry:
-          resolved.append(_cwd_relative(entry.replace("topology:", "")))
-        else:
-          resolved.append(_cwd_relative(entry))
-      paths[k] = resolved
-    elif isinstance(v, Box):
-      _resolve_snapshot_paths(v)
-
-
 def _write_server_snapshot(topo_copy: Box, out_dir: str) -> None:
-  """Write a filtered netlab snapshot for this server's nodes only.
-
-  Allows 'netlab up --snapshot' to work from a per-server directory. Search paths
-  are made self-contained via _resolve_snapshot_paths() (see there for why and how
-  portability is preserved).
-  """
-  from netsim import __version__
-  from netsim.augment.topology import cleanup_topology
-
+  """Write a filtered netlab snapshot for this server's nodes only."""
   snap = Box(topo_copy, box_dots=True)
-
-  # Snapshot load doesn't rebuild search paths / f_files, so resolve them now.
-  if "paths" in snap.get("defaults", {}):
-    _resolve_snapshot_paths(snap.defaults.paths)
 
   # Remove prefix generators and serialize
   cleaned = cleanup_topology(snap)
@@ -635,6 +562,48 @@ def _write_server_snapshot(topo_copy: Box, out_dir: str) -> None:
 
   with open(Path(out_dir) / "netlab.snapshot.pickle", "wb") as f:
     pickle.dump(topodict, f)
+
+
+def pre_shell_pre_up(topology: Box) -> None:
+  """Run early on the remote host when 'netlab up' starts from a snapshot.
+
+  Resolves search paths to local absolute paths, then updates the snapshot
+  pickle and Ansible inventory files to use them.
+  """
+  if "paths" in topology.get("defaults", {}):
+    make_paths_absolute(topology.defaults.paths)
+
+  # Re-write the updated snapshot to the current directory (which is where we started)
+  _write_server_snapshot(topology, ".")
+
+  # Re-create the Ansible inventory to populate group_vars with the local paths
+  ansible_settings = topology.defaults.outputs.get("ansible", Box({}))
+  output_module = _TopologyOutput.load("ansible", ansible_settings)
+  if output_module:
+    output_module.write(topology)
+
+
+
+def pre_shell_post_start_lab(topology: Box) -> None:
+  """Post start lab hook: run VXLAN setup script if auto_start is enabled."""
+  ms = topology.get("multiserver", None)
+  if ms and not ms.vxlan.get("auto_start", True):
+    return
+
+  if os.path.exists("vxlan-setup.sh"):
+    run_command("bash vxlan-setup.sh")
+
+
+def pre_shell_pre_stop_lab(topology: Box) -> None:
+  """Pre stop lab hook: run VXLAN teardown script if auto_start is enabled."""
+  ms = topology.get("multiserver", None)
+  if ms and not ms.vxlan.get("auto_start", True):
+    return
+
+  if os.path.exists("vxlan-teardown.sh"):
+    run_command("bash vxlan-teardown.sh")
+
+
 
 
 def _write_vxlan_scripts(out_dir: str, tunnels: list, dev: str) -> None:
