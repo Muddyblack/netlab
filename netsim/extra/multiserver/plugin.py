@@ -55,7 +55,6 @@ def init(topology: Box) -> None:
   append_to_list(topology.defaults.netlab.down, "plugin", "multiserver")
 
 
-
 # ---------------------------------------------------------------------------
 #  Hook: post_transform — resolve server assignments, classify links
 # ---------------------------------------------------------------------------
@@ -172,7 +171,6 @@ def output(topology: Box) -> None:
       _write_vxlan_scripts(out_dir, vxlan_tunnels, dev)
     # Write filtered snapshot so 'netlab up --snapshot' works per-server.
     _write_server_snapshot(topo_copy, out_dir)
-
 
     link_count = len(topo_copy.get("links", []))
     vx_count = len(vxlan_tunnels)
@@ -583,7 +581,6 @@ def pre_shell_pre_up(topology: Box) -> None:
     output_module.write(topology)
 
 
-
 def pre_shell_post_start_lab(topology: Box) -> None:
   """Post start lab hook: run VXLAN setup script if auto_start is enabled."""
   ms = topology.get("multiserver", None)
@@ -602,8 +599,6 @@ def pre_shell_pre_stop_lab(topology: Box) -> None:
 
   if os.path.exists("vxlan-teardown.sh"):
     run_command("bash vxlan-teardown.sh")
-
-
 
 
 def _write_vxlan_scripts(out_dir: str, tunnels: list, dev: str) -> None:
