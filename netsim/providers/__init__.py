@@ -115,9 +115,12 @@ class _Provider(Callback):
         j2_file=tname,
         extra_path=search_path)
     except Exception as ex:
-      log.fatal(
-        text=f"Error rendering {fname} from {tname}\n{strings.extra_data_printout(str(ex))}",
-        module=self.provider)
+      log.error(
+        text=f"Error rendering {fname} from {tname}",
+        more_data=templates.template_error_data(tname,ex),
+        module=self.provider,
+        category=log.FatalError,
+        exit_on_error=True)
 
     _files.create_file_from_text(fname,r_text)
     if fname != '-':
