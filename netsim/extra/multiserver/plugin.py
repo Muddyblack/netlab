@@ -562,7 +562,7 @@ def _write_server_snapshot(topo_copy: Box, out_dir: str) -> None:
     pickle.dump(topodict, f)
 
 
-def pre_shell_pre_up(topology: Box) -> None:
+def pre_shell_pre_probe(topology: Box) -> None:
   """Run early on the remote host when 'netlab up' starts from a snapshot.
 
   Resolves search paths to local absolute paths, then updates the snapshot
