@@ -306,7 +306,6 @@ def run_test(test: str, args: argparse.Namespace,first: bool) -> None:
 
   if "initial" not in args.steps or "initial" in test_skip:
     print("config(skip)",end=" ",flush=True)
-    return
   else:
     os.environ['ANSIBLE_ANY_ERRORS_FATAL'] = 'True'
     cmd  = "netlab initial" if 'up' in test_exec else "netlab initial -o config"
@@ -326,7 +325,7 @@ def run_test(test: str, args: argparse.Namespace,first: bool) -> None:
     print("validate(skip)",end=" ",flush=True)
     run_cleanup(args)
     return
-  if "up" not in test_exec or "initial" not in test_exec:
+  if ("up" not in test_exec or "initial" not in test_exec) and 'validate' not in test_def:
     print("validate(unavailable)",end=" ",flush=True)
     run_cleanup(args)
     return
