@@ -142,10 +142,17 @@ def write_template(
   out_file = f"{out_folder}/{filename}"
   create_file_from_text(out_file,r_text)
 
-"""
-template_error_location: extract the exact location of the template error from the exception traceback
-"""
+
+def template_short_path(p: str) -> str:
+  """
+  Return the path of a template, replacing package directory with 'package:'
+  """
+  return p.replace(str(get_moddir()),'package:')
+
 def template_error_location(exc: Exception) -> list:
+  """
+  template_error_location: extract the exact location of the template error from the exception traceback
+  """
   loc_list = []
   tb = exc.__traceback__
   while tb:
@@ -158,6 +165,12 @@ def template_error_location(exc: Exception) -> list:
 
   loc_list.reverse()
   return loc_list
+
+def template_error_data(p: str, exc: Exception) -> list:
+  """
+  Create the "more data" list from a template error condition
+  """
+  return [f'Template source: {p}',f'error: {str(exc)}'] + template_error_location(exc)
 
 """
 Build a list of potential directories in which we might find a configuration template
