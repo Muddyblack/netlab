@@ -508,10 +508,14 @@ quick_commands = {
   'alias': lambda x: help.print_usage('alias.txt')
 }
 
+def main() -> None:
+  script = sys.argv[0]                                      # Find how netlab was executed
+  script = shutil.which(script) or script                   # Find the actual command if no directory was specified
+  lab_commands(os.path.realpath(script))                    # Turn that into real path so 'netlab' can be called even after cwd()
+
 def lab_commands(script: str) -> None:
   global NETLAB_SCRIPT,NETLAB_COMMAND
   NETLAB_SCRIPT = script
-
   if len(sys.argv) < 2:
     help.run([])
     sys.exit()
