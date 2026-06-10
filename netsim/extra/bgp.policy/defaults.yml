@@ -6,29 +6,42 @@
 # extra settings you can specify here are 'bandwidth' and '_default_locpref'
 #
 
+attributes:                   # User-defined data types (see dev/validation.md#validate-user-types)
+  bgp_role:
+    name:
+      type: str
+      valid_values: [ provider, customer, peer, rs-server, rs-client ]
+      _required: True
+    strict: bool
+    _value_to_dict:
+      name: '{value}'
+
 bgp:
+  no_propagate:
+    role:
   attributes:
     p_attr:                                               # BGP policy attributes
-      direct: [ weight, prefix_filter, as_filter ]        # Things that can be applied directly to a neighbor
+      direct: [ weight, prefix_filter, as_filter, role ] # Things that can be applied directly to a neighbor
       node: [ locpref ]
-      link: [ locpref, med ]
-      interface: [ locpref, med, prepend, weight ]
+      link: [ locpref, med, role ]
+      interface: [ locpref, med, prepend, weight, role ]
       compound:                                           # Things that have to be applied to in/out policy
         locpref: in
         med: out
         prepend: out
         bandwidth: both
 
-    interface:
-      policy:
-        in: str
-        out: str
-      bandwidth:
-        _alt_types: [ autobw ]
-        in: autobw
-        out: autobw
-
+    global:
+      role:
+        _description: |
+          RFC 9234 strict mode for EBGP sessions. Use **defaults.bgp.role.strict** (or **bgp.role.strict**
+          in lab topology settings) to enable strict mode globally. Per-neighbor roles are set with
+          **bgp.role** on links or interfaces.
+        strict:
+          type: bool
+          _required: True
     node:
+      role: bgp_role
       aggregate:
         type: list
         _subtype:
@@ -38,6 +51,18 @@ bgp:
           suppress_policy: str
           attributes: str
           _alt_types: [ prefix_str ]
+    link:
+      role: bgp_role
+    interface:
+      policy:
+        in: str
+        out: str
+      bandwidth:
+        _alt_types: [ autobw ]
+        in: autobw
+        out: autobw
+      role:
+        copy: link
     vrf:
       aggregate:
         copy: node
