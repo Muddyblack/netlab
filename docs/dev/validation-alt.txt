@@ -95,3 +95,63 @@ attributes:
         ibgp: '{value}'
         ebgp: '{value}'
 ```
+
+### Dictionaries Specified as True/False Values
+
+Sometimes we want an attribute that is expected to be a dictionary specified as *True* (enable the functionality with no extra parameters) or *False* (disable the functionality). You could achieve that with `_alt_types` (see above) and custom code transforming *True*/*False* values into desired attribute values, or you could get the job done with a slightly more convoluted data type definition.
+
+To use the *True* value for a dictionary attribute, specify its `true_value`. That value will be used (and checked for validity) whenever the dictionary attribute has a *True* value in the lab topology.
+
+Consider, for example, the (imaginary) **ospf.gr** node attribute that has a single optional parameter (**timer**). You could define it like this:
+
+```
+defaults.ospf.attributes.node:
+  gr:
+    timer: int
+```
+
+However, this definition would not allow you to use `ospf.gr: True` to enable the feature (you could use `ospf.gr: {}`, but that looks awkward). Using the `true_value: {}`, we could specify that `ospf.gr: True` really means `ospf.gr: {}`.
+
+**Note:** You have to use `type: dict` with `_keys`, otherwise the `true_value` becomes another valid dictionary key.
+
+```
+defaults.ospf.attributes.node:
+  gr:
+    type: dict
+    _keys:
+      timer: int
+    true_value: {}
+```
+
+However, the value we get when setting `ospf.gr: True` is indistinguishable from the value we get when setting `ospf.gr: False`. _netlab_ data validation code transforms a *False* value of an attribute that should be a list or a dictionary into an empty list/dictionary. That behavior is hard-coded too deeply in the code to be changed; we have to live with it, but you can use the `_remove_when_false` flag to force the removal of the attribute before it's type-checked.
+
+The final definition of our attribute is thus:
+
+```
+defaults.ospf.attributes.node:
+  gr:
+    type: dict
+    _keys:
+      timer: int
+    true_value: {}
+    _remove_when_false: True
+```
+
+Using that definition, the transformed **ospf.gr** attribute gets these values based on its initial value:
+
+| Initial value | Transformed value |
+|---------------|-------------------|
+| `False`       | not present       |
+| `True`        | `{}`              |
+| `timer: 3`    | `{ timer: 3 }`    |
+
+You can use these values to differentiate the scenarios in your Jinja2 template:
+
+```
+{% if ospf.gr is defined %}
+... enable ospf.gr functionality
+{%   if ospf.gr.timer is defined %}
+... set ospf.gr.timer value
+{%   endif %}
+{% endif %}
+```
