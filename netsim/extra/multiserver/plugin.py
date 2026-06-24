@@ -315,8 +315,6 @@ def _validate_servers(servers: Box) -> None:
   for name, s in servers.items():
     if "id" not in s:
       s.id = _dataplane.get_next_id("multiserver_server")
-    if "host" not in s:
-      log.error(f'Server "{name}" missing required "host" field', log.MissingValue, "multiserver")
 
 
 def _resolve_replicated(ms: Box, topology: Box) -> set:
