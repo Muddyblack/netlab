@@ -179,17 +179,43 @@ def output(topology: Box) -> None:
       parts.append(f"{vx_count} VXLAN tunnels")
     log.info(f'Server "{sname}": {out_dir}/ — {", ".join(parts)}', module="multiserver")
 
-  # Register atexit handler to copy node_files, host_vars, etc. into each server
-  # folder after netlab writes all output files.
+  # Stash the folder list for post_output(), which copies node_files/host_vars/
+  # hosts.yml into each server folder after netlab has written them.
   if server_folders:
-    import atexit
+    topology._multiserver.server_folders = [[out_dir, sorted(nodes)] for out_dir, nodes in server_folders]
 
-    copy_dirs = list(ms.get("copy_dirs", [])) + list(ms.get("extra_copy_dirs", []))
-    copy_files = list(ms.get("copy_files", [])) + list(ms.get("extra_copy_files", []))
-    atexit.register(_distribute_files_atexit, os.getcwd(), server_folders, copy_dirs, copy_files)
+  # Flag the control node so the pre_probe hook aborts 'netlab up' instead of
+  # starting the unsplit topology locally. Set after the loop, so worker snapshots
+  # don't capture it; workers run --snapshot and never reach output().
+  topology.defaults.multiserver._control_node_abort = [out_dir for out_dir, _ in server_folders]
 
 
-def _distribute_files_atexit(lab_folder: str, server_folders: list, copy_dirs: list, copy_files: list) -> None:
+# ---------------------------------------------------------------------------
+#  Hook: post_output — distribute generated files into per-server folders
+# ---------------------------------------------------------------------------
+
+
+def post_output(topology: Box) -> None:
+  """Copy netlab-generated files into each server folder.
+
+  Runs after 'netlab create' has written node_files/, host_vars/, hosts.yml, etc.
+  netlab fires this hook for us, so there is no need for an atexit handler.
+  """
+  ms = topology.get("multiserver", None)
+  ms_data = topology.get("_multiserver", None)
+  if not ms or not ms_data:
+    return
+
+  server_folders = [(out_dir, set(nodes)) for out_dir, nodes in ms_data.get("server_folders", [])]
+  if not server_folders:
+    return
+
+  copy_dirs = list(ms.get("copy_dirs", [])) + list(ms.get("extra_copy_dirs", []))
+  copy_files = list(ms.get("copy_files", [])) + list(ms.get("extra_copy_files", []))
+  _distribute_files(os.getcwd(), server_folders, copy_dirs, copy_files)
+
+
+def _distribute_files(lab_folder: str, server_folders: list, copy_dirs: list, copy_files: list) -> None:
   """Distribute generated files into per-server directories."""
   lab_path = Path(lab_folder)
   nf_dir = lab_path / "node_files"
@@ -561,11 +587,24 @@ def _write_server_snapshot(topo_copy: Box, out_dir: str) -> None:
 
 
 def pre_shell_pre_probe(topology: Box) -> None:
-  """Run early on the remote host when 'netlab up' starts from a snapshot.
+  """pre_probe hook fired by 'netlab up' before it probes providers.
 
-  Resolves search paths to local absolute paths, then updates the snapshot
-  pickle and Ansible inventory files to use them.
+  On the control node the flag is set (output() ran during create), so we abort
+  before starting the unsplit topology. On a remote server it's absent, and we
+  resolve search paths and refresh the snapshot/inventory as before.
   """
+  abort = topology.defaults.get("multiserver", {}).get("_control_node_abort", None)
+  if abort:
+    folders = "\n".join(f"  - {f}/" for f in abort)
+    log.fatal(
+      "multiserver: per-server configurations have been generated; "
+      "'netlab up' will not start the merged topology on the control node.\n"
+      f"Generated server folders:\n{folders}\n"
+      "Copy each folder to its server and run 'netlab up --snapshot' there "
+      "(see docs/plugins/multiserver.md, Deployment Workflow).",
+      "multiserver",
+    )
+
   if "paths" in topology.get("defaults", {}):
     make_paths_absolute(topology.defaults.paths)
 
