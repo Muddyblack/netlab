@@ -14,6 +14,8 @@ group_vars:
   ansible_connection: netconf
   netlab_console_connection: ssh
   netlab_ready: [ ansible ]
+  netlab_check_retries: 60
+  netlab_check_delay: 10
 
 features:
   initial:
@@ -38,7 +40,7 @@ features:
     multihop.vrf: true
     password: true
     passive: true
-    remove_private_as: true
+    remove_private_as.valid: [ 'on', all, replace ]
     timers: true
     vrf_local_as: true
     _default_locpref: false

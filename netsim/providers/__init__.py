@@ -109,15 +109,18 @@ class _Provider(Callback):
     fname = self.get_output_name(fname,topology)
     tname = self.get_root_template()
     try:
-      search_path = _files.get_search_path(self.provider,pkg_path_component=self.get_template_path())
+      search_path = _files.get_search_path(self.provider,pkg_path_component=self.get_template_path(),topology=topology)
       r_text = templates.render_template(
         data=topology.to_dict(),
         j2_file=tname,
         extra_path=search_path)
     except Exception as ex:
-      log.fatal(
-        text=f"Error rendering {fname} from {tname}\n{strings.extra_data_printout(str(ex))}",
-        module=self.provider)
+      log.error(
+        text=f"Error rendering {fname} from {tname}",
+        more_data=templates.template_error_data(tname,ex),
+        module=self.provider,
+        category=log.FatalError,
+        exit_on_error=True)
 
     _files.create_file_from_text(fname,r_text)
     if fname != '-':

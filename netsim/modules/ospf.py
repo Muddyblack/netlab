@@ -128,16 +128,38 @@ def adjust_interface_timers(node: Box) -> None:
 
     if 'hello' in timers and 'dead' not in timers:
       timers.dead = timers.hello * 4                  # Missing dead timer: 4 times the hello timer
-    
+
     if 'dead' in timers and 'hello' not in timers:    # Missing hello timer?
       timers.hello = max(round(timers.dead / 4),1)    # ... a quarter of the dead timer, but at least one
 
     if timers.hello >= timers.dead:                   # Sanity check...
       log.error(                                      # ... Dead timer must be higher than the hello timer
-        f'OSPF interface hello timer is greater or equal to dead timer',
+        'OSPF interface hello timer is greater or equal to dead timer',
         more_data=f'Node {node.name} interface {intf.ifname} ({intf.name})',
         module='ospf',
         category=log.IncorrectValue)
+
+def check_gr(node: Box, features: Box) -> None:
+  """
+  Check device support for OSPF Graceful Restart when restart or helper mode is configured.
+  """
+  gr_af = features.get('ospf.gr', [])
+
+  for (o_data,_,vrf) in _ospf.rp_data(node,'ospf'):
+    if 'gr' not in o_data:
+      continue
+
+    if len(gr_af) == 2:                               # Both IPv4 and IPv6 are supported -> ok
+      continue
+
+    vrf_info = f' in VRF {vrf}' if vrf else ''
+
+    for af in o_data.af:
+      if af not in gr_af:                             # Technically it could be gr.restart: False
+        log.error(                                    # ... but we still call foul on that
+          f'Device {node.device} does not support OSPF Graceful Restart for {af} (node {node.name}{vrf_info})',
+          log.IncorrectValue,
+          'ospf')
 
 class OSPF(_Module):
 
@@ -146,7 +168,7 @@ class OSPF(_Module):
     adjust_interface_timers(node)
 
     _routing.router_id(node,'ospf',topology.pools)
-    
+
     # If strict BFD is requested, check if the node supports it
     if isinstance(node.get('ospf.bfd',None),Box) and node.get('ospf.bfd.strict',False):
       if features.get('ospf.strict_bfd',False):
@@ -182,6 +204,7 @@ class OSPF(_Module):
     _routing.check_vrf_protocol_support(node,'ospf','ipv4','ospfv2',topology)
     _routing.check_vrf_protocol_support(node,'ospf','ipv6','ospfv3',topology)
     _routing.check_intf_support(node,'ospf',topology)
-    
+    check_gr(node,features)
+
     # Collect OSPF areas from interfaces (similar to ospf.areas plugin but without extra attributes)
     collect_ospf_areas(node)

@@ -12,8 +12,19 @@ $SUDO apt-get install -y $FLAG_APT ebtables dnsmasq-base sshpass tree jq bridge-
 echo ".. common libraries installed"
 echo
 echo "Install libvirt packages"
-$SUDO apt-get install -y $FLAG_APT libvirt-dev qemu-kvm cpu-checker virtinst
-$SUDO apt-get install -y $FLAG_APT libvirt-daemon-system libvirt-clients
+QEMU_SUFFIX=""
+QEMU_PACKAGE="qemu-kvm"
+if dpkg -s qemu-system-x86-hwe >/dev/null 2>&1; then
+  echo "Detected existing qemu-system-x86-hwe package"
+  QEMU_PACKAGE="qemu-system-x86-hwe"
+  QEMU_SUFFIX="-hwe"
+elif apt-cache show qemu-system-x86 >/dev/null 2>&1; then
+  echo "Using qemu-system-x86 instead of qemu-kvm"
+  QEMU_PACKAGE="qemu-system-x86"
+fi
+$SUDO apt-get install -y $FLAG_APT $QEMU_PACKAGE libvirt-dev${QEMU_SUFFIX}
+$SUDO apt-get install -y $FLAG_APT libvirt-daemon-system${QEMU_SUFFIX} libvirt-clients${QEMU_SUFFIX}
+$SUDO apt-get install -y cpu-checker virtinst
 echo ".. libvirt packages installed"
 echo
 echo "Install vagrant"
@@ -24,6 +35,14 @@ $SUDO rm /etc/apt/sources.list.d/vagrant.list 2>/dev/null
 set -e
 # add-apt-repository has been deprecated, doesn't work on Debian 11 and will be removed from Ubuntu 22
 # changed to new method - ghostinthenet - 20220417
+#
+# First, install GPG if it's missing
+if ! command -v gpg >/dev/null; then
+  echo "Installing GPG"
+  $SUDO apt-get install -y gnupg2
+fi
+#
+# Next, add Vagrant repository
 curl -fsSL https://apt.releases.hashicorp.com/gpg | $SUDO gpg --dearmor -o /etc/apt/trusted.gpg.d/hashicorp-security.gpg
 $SUDO sh -c 'echo "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" > /etc/apt/sources.list.d/vagrant.list'
 #
@@ -37,11 +56,11 @@ cat <<FILE | $SUDO tee /etc/apt/preferences.d/vagrant
 # https://github.com/ipspace/netlab/issues/2436 for details
 #
 Package: vagrant
-Pin: version 2.4.3-1
+Pin: version 2.4.9-1
 Pin-Priority: 1000
 FILE
 . apt-get-update.sh
-$SUDO apt-get install -y --allow-downgrades $FLAG_APT ruby-dev ruby-libvirt vagrant=2.4.3-1
+$SUDO apt-get install -y --allow-downgrades $FLAG_APT ruby-dev ruby-libvirt vagrant
 vagrant plugin install vagrant-libvirt --plugin-version=0.12.2
 echo ".. vagrant installed"
 echo

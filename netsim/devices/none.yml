@@ -9,8 +9,6 @@ interface_name: eth{ifindex}
 lag_interface_name: bond{lag.ifindex}
 loopback_interface_name: Loopback{ifindex}
 tunnel_interface_name: Tunnel{ifindex}
-virtualbox:
-  image: none
 libvirt:
   image: none
 clab:
@@ -29,6 +27,7 @@ features:
     local_as: True
     vrf_local_as: True
     local_as_ibgp: True
+    role: True
     ipv6_lla: True
     rfc8950: True
     bandwidth: True
@@ -38,13 +37,14 @@ features:
     bfd: True
     default_originate: True
     description: True
+    gr: True
     gtsm: True
     passive: True
     password: True
     remove_private_as: True
     rs_client: True
     rs: True
-    tcp_ao: [ libvirt, virtualbox, external ]
+    tcp_ao: [ libvirt, external ]
     timers: True
     import: [ ospf, isis, ripv2, connected, static, vrf ]
     confederation: True
@@ -95,6 +95,7 @@ features:
     unnumbered: True
     import: [ bgp, isis, ripv2, connected, static, vrf ]
     default.policy: true
+    gr: [ ipv4, ipv6 ]
     password: true
     priority: true
     timers: true

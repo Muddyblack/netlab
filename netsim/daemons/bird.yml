@@ -13,6 +13,7 @@ daemon_config:
   bfd: /etc/bird/bfd.conf
   bgp: /etc/bird/bgp.mod.conf
   bgp@session: /etc/bird/bgp.session.conf
+  bgp@policy: /etc/bird/bgp.policy.conf
   ospf@areas: /etc/bird/ospf.areas.conf
   ospf: /etc/bird/ospf.mod.conf
   routing: /etc/bird/routing.mod.conf
@@ -21,12 +22,18 @@ clab:
     netlab_show_command: [ birdc, 'show $@' ]
     docker_shell: bash -il
     netlab_config_mode: sh
+    netlab_start_daemon: "/usr/sbin/bird -d -c /etc/bird/bird.conf"
   image: netlab/bird:latest
   build: True
+  sw_version: 2.19.1
+  sw_download_url: https://bird.nic.cz/download/bird-{sw_version}.tar.gz
   features:
     initial:
       roles: [ host, router ]
       config_mode: [ sh ]
+      dataplane_config: [ vxlan, vrf ]
+      extra_daemon_config:
+        vrf: /etc/bird/vrf.mod.conf
 libvirt:                        # Not yet available on libvirt or virtualbox
   image:
 virtualbox:
@@ -54,6 +61,8 @@ features:
     remove_private_as: true
     rs: true
     rs_client: true
+    role: true
+    confederation: true
     timers: true
   ospf:
     import: [ bgp, connected, static ]
@@ -65,6 +74,8 @@ features:
   routing:
     static.discard: true
   dhcp: false
+  gateway:
+    protocol: [ anycast ]
   initial:
     ipv4:
       unnumbered: peer
@@ -72,3 +83,6 @@ features:
       lla: true
     reload: false
     roles: [ host, router ]
+  vxlan:
+    vtep6: true
+#  vrf: {}                           # Placeholder, has to be replaced with the real VRF code

@@ -1,0 +1,157 @@
+(validation-alt-types)=
+## Alternate Data Types
+
+Some *netlab* attributes could take a dictionary value, alternate values (*True* usually meaning *use default*, or *None* meaning *I don't care, do what you want*), or a list of keys.
+
+### Specifying Alternate Data Types
+
+**_alt_types** list (commonly used within a dictionary of valid attributes) specifies alternate data types that can be used instead of the primary data type.
+
+**Example:** ***igp*.af** attribute can take a dictionary of address families, or it could be left empty (*None*) to tell *netlab* to use the address families defined on the node:
+
+```
+ospf:
+  attributes:
+    global:
+      af:
+        _alt_types: [ NoneType ]
+        ipv4: bool
+        ipv6: bool
+```
+
+**Example:** A link prefix could be a dictionary (containing IPv4/IPv6 values checked elsewhere), a string that could be an IPv4 or IPv6 prefix, or a boolean value.
+
+```
+attributes:
+  link:
+    prefix:
+      type: dict
+      _alt_types: [ bool, prefix_str ]
+```
+
+(validation-list-to-dict)=
+### Dictionary Specified As a List
+
+Some _netlab_ attributes that are supposed to be a dictionary can take a list value. That list value is transformed into a dictionary: list elements become dictionary keys, and a default value is used for the dictionary values. Add the **_list_to_dict** key to the attribute specification to validate such attributes. The **_list_to_dict** key specifies the default value used when converting a list into a dictionary.
+
+**_list_to_dict** parameter is commonly used with address family parameters. For example, OSPF allows **ospf.af** parameter to be a list of enabled address families or a dictionary of address families with True/False values, for example:
+
+```
+nodes:
+- name: c_nxos
+  device: nxos
+  ospf.af: [ ipv4 ]
+- name: c_csr
+  device: csr
+  ospf.af.ipv4: True
+```
+
+The attribute definition for **ospf.af** attribute uses **_list_to_dict** to cope with both:
+
+```
+ospf:
+  attributes:
+    global:
+      af:
+        _list_to_dict: True
+        _alt_types: [ NoneType ]
+        ipv4: bool
+        ipv6: bool
+```
+
+(validation-value-to-dict)=
+### Dictionary Specified As a Single Value
+
+Some _netlab_ attributes that are supposed to be dictionaries can accept non-dictionary values. You can use the **_value_to_dict** type definition key to specify a template dictionary that is used to create a replacement dictionary. The values of the replacement dictionary can be f-strings with `{value}` representing the original value.
+
+```{warning}
+The `{value}` string could be interpreted as a YAML dictionary and MUST therefore be quoted.
+```
+
+For example, to transform a BGP role specified as a string into a dictionary with the role name and `strict` flag, use this type definition:
+
+```
+attributes:
+  node:
+    role:
+      name:
+        type: str
+        valid_values: [ provider, customer, peer, rs-server, rs-client ]
+      strict: bool
+      _value_to_dict:
+        name: '{value}'
+        strict: False
+```
+
+You can often use the `_value_to_dict` functionality instead of `_alt_types` or custom data transformation. For example, the following data type definition for the BGP community attribute replaced a chunk of somewhat convoluted Python code:
+
+```
+attributes:
+  global:
+    community:
+      ibgp: { type: list, _subtype: bgp_community_type }
+      ebgp: { type: list, _subtype: bgp_community_type }
+      _value_to_dict:
+        ibgp: '{value}'
+        ebgp: '{value}'
+```
+
+### Dictionaries Specified as True/False Values
+
+Sometimes we want an attribute that is expected to be a dictionary specified as *True* (enable the functionality with no extra parameters) or *False* (disable the functionality). You could achieve that with `_alt_types` (see above) and custom code transforming *True*/*False* values into desired attribute values, or you could get the job done with a slightly more convoluted data type definition.
+
+To use the *True* value for a dictionary attribute, specify its `true_value`. That value will be used (and checked for validity) whenever the dictionary attribute has a *True* value in the lab topology.
+
+Consider, for example, the (imaginary) **ospf.gr** node attribute that has a single optional parameter (**timer**). You could define it like this:
+
+```
+defaults.ospf.attributes.node:
+  gr:
+    timer: int
+```
+
+However, this definition would not allow you to use `ospf.gr: True` to enable the feature (you could use `ospf.gr: {}`, but that looks awkward). Using the `true_value: {}`, we could specify that `ospf.gr: True` really means `ospf.gr: {}`.
+
+**Note:** You have to use `type: dict` with `_keys`, otherwise the `true_value` becomes another valid dictionary key.
+
+```
+defaults.ospf.attributes.node:
+  gr:
+    type: dict
+    _keys:
+      timer: int
+    true_value: {}
+```
+
+However, the value we get when setting `ospf.gr: True` is indistinguishable from the value we get when setting `ospf.gr: False`. _netlab_ data validation code transforms a *False* value of an attribute that should be a list or a dictionary into an empty list/dictionary. That behavior is hard-coded too deeply in the code to be changed; we have to live with it, but you can use the `_remove_when_false` flag to force the removal of the attribute before it's type-checked.
+
+The final definition of our attribute is thus:
+
+```
+defaults.ospf.attributes.node:
+  gr:
+    type: dict
+    _keys:
+      timer: int
+    true_value: {}
+    _remove_when_false: True
+```
+
+Using that definition, the transformed **ospf.gr** attribute gets these values based on its initial value:
+
+| Initial value | Transformed value |
+|---------------|-------------------|
+| `False`       | not present       |
+| `True`        | `{}`              |
+| `timer: 3`    | `{ timer: 3 }`    |
+
+You can use these values to differentiate the scenarios in your Jinja2 template:
+
+```
+{% if ospf.gr is defined %}
+... enable ospf.gr functionality
+{%   if ospf.gr.timer is defined %}
+... set ospf.gr.timer value
+{%   endif %}
+{% endif %}
+```

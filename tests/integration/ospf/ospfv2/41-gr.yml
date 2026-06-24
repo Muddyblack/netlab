@@ -1,0 +1,66 @@
+---
+message: |
+  This lab tests OSPF graceful restart helper behavior. The device under test
+  should retain the FRR probe loopback route during a planned OSPF restart.
+
+defaults.sources.extra: [ ../../wait_times.yml, ../../warnings.yml ]
+module: [ ospf ]
+
+groups:
+  probes:
+    device: frr
+    provider: clab
+    members: [ xgr, xp ]
+    module: [ ospf ]
+
+nodes:
+  dut:
+    ospf.gr:
+      helper:
+        grace_period: 600
+  xgr:
+    ospf.gr:
+      restart:
+        grace_period: 60
+  xp:
+
+ospf.timers:
+  hello: 1
+  dead: 3
+
+links:
+- dut-xgr
+- dut-xp
+
+validate:
+  adj:
+    description: Check OSPF adjacency with DUT
+    wait_msg: Waiting for OSPF adjacency process to complete
+    wait: ospfv2_adj_p2p
+    nodes: [ xgr, xp ]
+    plugin: ospf_neighbor(nodes.dut.ospf.router_id)
+  xgr_present:
+    description: Check XGR loopback route on XP
+    wait_msg: Waiting for SPF to complete
+    wait: ospfv2_spf
+    nodes: [ xp ]
+    plugin: ospf_prefix(nodes.xgr.loopback.ipv4)
+  gr_stop:
+    description: Start planned OSPF graceful restart on XGR
+    nodes: [ xgr ]
+    devices: [ frr ]
+    exec: >-
+      vtysh -c "graceful-restart prepare ip ospf" && kill -STOP $(pidof ospfd)
+  wait_gr:
+    description: Wait a long while to ensure SPF has been run
+    wait: ospfv2_spf_long
+  gr_helper:
+    description: Check XGR loopback during graceful restart
+    nodes: [ xp ]
+    plugin: ospf_prefix(nodes.xgr.loopback.ipv4)
+  gr_resume:
+    description: Resume OSPF on XGR
+    nodes: [ xgr ]
+    devices: [ frr ]
+    exec: kill -CONT $(pidof ospfd) || true
+    pass: OSPF daemon resumed on XGR

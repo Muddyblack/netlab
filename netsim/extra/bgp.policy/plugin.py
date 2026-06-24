@@ -5,13 +5,15 @@ from box import Box
 from netsim import api, data
 from netsim.augment import devices
 from netsim.data import types
+from netsim.modules import get_effective_module_attribute
 from netsim.modules.routing.policy import check_routing_policy, import_routing_policy
 from netsim.utils import log
 from netsim.utils import routing as _bgp
 
 _config_name = 'bgp.policy'
 
-_requires    = [ 'bgp' ]
+_requires        = [ 'bgp' ]
+_execute_after    = [ 'bgp.session' ]
 
 @types.type_test()
 def must_be_autobw(
@@ -19,13 +21,13 @@ def must_be_autobw(
       min_value:  typing.Optional[int] = None,          # Minimum value
       max_value:  typing.Optional[int] = None,          # Maximum value
                 ) -> dict:
-  
+
   expected_type = { '_type': 'auto-bandwidth (an integer or keyword "auto")' }
 
   if isinstance(value,str):
     if value == 'auto':
       return { '_valid': True } 
-    
+
   result = types.check_num_type(value,min_value,max_value)
   return expected_type if '_type' in result else result
 
@@ -175,7 +177,8 @@ def apply_policy_attributes(node: Box, ngb: Box, intf: Box, topology: Box) -> bo
       continue
 
     # Check that the node(device) supports the desired attribute
-    if not _bgp.check_device_attribute_support(attr,node,ngb,topology,_config_name):
+    if not _bgp.check_device_attribute_support(
+              attr,node,topology=topology,module=_config_name,neigh=ngb):
       continue
 
     Found = True
@@ -323,8 +326,7 @@ def post_transform(topology: Box) -> None:
     default_locpref = _bgp.get_device_bgp_feature('_default_locpref',ndata,topology)
     copy_locpref = False if default_locpref else 'locpref' in ndata.bgp
 
-    # Now iterate over all EBGP neighbors (global and VRF) and apply bgp.policy interface
-    # attributes to the neighbors
+    # Iterate over BGP neighbors and apply bgp.policy interface attributes to EBGP sessions.
     #
     for (intf,ngb) in _bgp.intf_neighbors(ndata,select=['ebgp']):
       policy_idx += 1
@@ -338,6 +340,10 @@ def post_transform(topology: Box) -> None:
             communities.append('extended')
       if copy_locpref and not intf.get('bgp.locpref',False):
         intf.bgp.locpref = ndata.bgp.locpref
+      role = get_effective_module_attribute(
+        'bgp.role',intf=intf,node=ndata,topology=topology,defaults=topology.defaults)
+      if isinstance(role,dict) and 'name' in role:
+        intf.bgp.role = role
       if intf.get('bgp.policy',{}):
         apply_bgp_routing_policy(ndata,ngb,intf,topology)
       if apply_policy_attributes(ndata,ngb,intf,topology):  # If we applied at least some bgp.policy attribute to the neighbor

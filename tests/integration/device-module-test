@@ -210,7 +210,10 @@ def execute(
 
 def extract_warning(test: str, args: argparse.Namespace, step: str = 'validate') -> list:
   log_name = f"{args.logdir}/{os.path.basename(test)}-{step}.log"
-  log_lines = pathlib.Path(log_name).read_text().split('\n')
+  log_path = pathlib.Path(log_name)
+  if not log_path.exists():
+    return []
+  log_lines = log_path.read_text().split('\n')
   w_prefixes = ['[WARNING]','Warning in ']
   return [ line.replace(w_pfx,'').strip() for w_pfx in w_prefixes for line in log_lines if line.startswith(w_pfx) ]
 
@@ -306,7 +309,6 @@ def run_test(test: str, args: argparse.Namespace,first: bool) -> None:
 
   if "initial" not in args.steps or "initial" in test_skip:
     print("config(skip)",end=" ",flush=True)
-    return
   else:
     os.environ['ANSIBLE_ANY_ERRORS_FATAL'] = 'True'
     cmd  = "netlab initial" if 'up' in test_exec else "netlab initial -o config"
@@ -326,7 +328,7 @@ def run_test(test: str, args: argparse.Namespace,first: bool) -> None:
     print("validate(skip)",end=" ",flush=True)
     run_cleanup(args)
     return
-  if "up" not in test_exec or "initial" not in test_exec:
+  if ("up" not in test_exec or "initial" not in test_exec) and 'validate' not in test_def:
     print("validate(unavailable)",end=" ",flush=True)
     run_cleanup(args)
     return

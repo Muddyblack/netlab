@@ -9,6 +9,7 @@ from box import Box, BoxList
 from netsim.data import global_vars
 
 from ...utils import log
+from ...utils import routing as _rp_utils
 from .. import _common
 from . import BGP_PREFIX_NAMES, check_community_kw
 
@@ -122,7 +123,7 @@ Select BGP paths with the specified next hop
 
 Implements custom exception listing next hops found in the data
 """
-def filter_bgp_nh(data: list, value: typing.Any, pfx: str, state: str) -> list:
+def filter_bgp_nh(data: list, value: typing.Any, pfx: str, state: str, **kwargs: typing.Any) -> list:
   value = value.split('/')[0]                         # Get IP address from a CIDR address
   found_nh = []
   result = []
@@ -148,7 +149,7 @@ def filter_best(data: list, value: typing.Any, **kwargs: typing.Any) -> list:
 """
 Check BGP cluster ID on BGP paths
 """
-def check_cluster_id(data: list, value: typing.Any, pfx: str, state: str) -> list:
+def check_cluster_id(data: list, value: typing.Any, pfx: str, state: str, **kwargs: typing.Any) -> list:
   result = [ p_element for p_element in data
                 if 'clusterList' in p_element and value in p_element.clusterList.get('list',[]) ]
 
@@ -160,7 +161,7 @@ def check_cluster_id(data: list, value: typing.Any, pfx: str, state: str) -> lis
 """
 Check presence or absence of BGP communities
 """
-def check_community(data: list, value: typing.Any, pfx: str, state: str) -> list:
+def check_community(data: list, value: typing.Any, pfx: str, state: str, **kwargs: typing.Any) -> list:
   if not isinstance(value,dict):
     raise Exception('Community check expects a dictionary of communities')
 
@@ -183,7 +184,7 @@ def check_community(data: list, value: typing.Any, pfx: str, state: str) -> list
 """
 Check complete AS path
 """
-def check_aspath(data: list, value: typing.Any, pfx: str, state: str) -> list:
+def check_aspath(data: list, value: typing.Any, pfx: str, state: str, **kwargs: typing.Any) -> list:
   result = []
   p_found = []
 
@@ -201,7 +202,7 @@ def check_aspath(data: list, value: typing.Any, pfx: str, state: str) -> list:
 """
 Check elements of an AS path
 """
-def check_as_elements(data: list, value: typing.Any, pfx: str, state: str) -> list:
+def check_as_elements(data: list, value: typing.Any, pfx: str, state: str, **kwargs: typing.Any) -> list:
   result = []
   p_found = []
 
@@ -243,13 +244,15 @@ BGP prefix validation function:
 * Use single-prefix show command
 * Use the run_prefix_checks framework for validation
 """
-def show_bgp_prefix(pfx: str, af: str = 'ipv4', **kwargs: typing.Any) -> str:
-  return f"bgp {af} {pfx} json"
+def show_bgp_prefix(pfx: str, af: str = 'ipv4', vrf: str = 'default', **kwargs: typing.Any) -> str:
+  pfx = _rp_utils.get_prefix(pfx)
+  return f"bgp vrf {vrf} {af} unicast {pfx} json"
 
 def valid_bgp_prefix(
       pfx: str,*,
       af: str = 'ipv4',
       state: str = 'present',
+      vrf: str = 'default',
       **kwargs: typing.Any) -> str:
   _result = global_vars.get_result_dict('_result')
 
@@ -270,4 +273,5 @@ def valid_bgp_prefix(
               'aspath': check_aspath,
               'locpref': check_locpref,
               'med': check_med },
-            names = BGP_PREFIX_NAMES)
+            names = BGP_PREFIX_NAMES,
+            vrf = vrf)

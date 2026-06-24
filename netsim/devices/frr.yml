@@ -63,14 +63,6 @@ libvirt:
     ansible_ssh_private_key_file: .vagrant/machines/{{ inventory_hostname }}/libvirt/private_key
     netlab_show_command: [ sudo, vtysh, -c, 'show $@' ]
 
-virtualbox:
-  image: generic/ubuntu2004
-  group_vars:
-    ansible_connection: paramiko
-    ansible_user: vagrant
-    ansible_ssh_pass: vagrant
-    netlab_show_command: [ sudo, vtysh, -c, 'show $@' ]
-
 external:
   image: none
 features:
@@ -106,12 +98,14 @@ features:
     bfd: true
     default_originate: true
     description: true
+    gr: true
     gtsm: true
     passive: true
     password: true
-    remove_private_as: true
+    remove_private_as.valid: [ 'on', all, replace ]
     rs: true
     rs_client: true
+    role: true
     timers: true
     _default_locpref: true
     aggregate: true
@@ -144,6 +138,7 @@ features:
     unnumbered: true
     import: [ bgp, ripv2, isis, connected, static, vrf ]
     default: true
+    gr: [ ipv4, ipv6 ]
     password: true
     priority: true
     timers: true
