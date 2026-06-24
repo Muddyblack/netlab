@@ -12,6 +12,8 @@ multiserver:
       host: 192.168.128.2
   assignment: auto
   replicate: [ mon_srv ]
+  vxlan:
+    dev: eth0
 
 groups:
   g1:
