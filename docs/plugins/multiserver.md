@@ -31,7 +31,7 @@ The plugin is configured with the **multiserver** topology-level dictionary that
 | **assignment** | string | How to assign nodes to servers: `explicit` (default) or `auto` |
 | **servers** | dictionary | Target physical servers, keyed by server name |
 | **vxlan** | dictionary | Global settings for VXLAN tunnels |
-| **replicate** | list | Nodes or groups that must be duplicated on all servers |
+| **replicate** | list | Advanced: nodes or groups intentionally duplicated on all servers; see [Replicated Nodes](multiserver-replicate) before using |
 | **output_dir** | string | Template for per-server directory names (default: `server-{server_name}`); supports `{server_name}`, `{server_id}`, and `{name}` (topology name) |
 | **copy_dirs** | list | Subdirectories copied into every server directory (default: `[group_vars, templates]`); overrides the default list |
 | **copy_files** | list | Top-level files copied into every server directory (default: `[ansible.cfg]`); overrides the default list |
@@ -163,24 +163,6 @@ In the second example the parent `sites` group can still be used for Ansible tar
 
 ```{note}
 Groups are processed in definition order. Child groups defined **before** a parent group will claim their members first, making the parent group a no-op for assignment. Always define fine-grained groups before aggregate groups in your topology.
-```
-
-(multiserver-replicate)=
-### Replicated Nodes
-
-Nodes listed in **multiserver.replicate** are instantiated on every server. This is useful for infrastructure services that need local access on each physical host — for example, monitoring collectors, route reflectors, or DNS resolvers.
-
-Links connecting to replicated nodes are always treated as local, so traffic between a replicated node and its neighbors never crosses the VXLAN overlay.
-
-```yaml
-multiserver:
-  assignment: auto
-  servers:
-    srv1:
-      host: 192.168.168.128
-    srv2:
-      host: 192.168.168.129
-  replicate: [ prometheus, grafana ]
 ```
 
 ## Complete Example
@@ -322,3 +304,29 @@ The Ansible inventory (`hosts.yml`) is always written into each server directory
 * Only the **containerlab** provider is supported. Libvirt and virtualbox topologies cannot be split across servers.
 * Cross-server VXLAN tunnels use a flat VNI space starting at **vni_base**. The maximum VNI value is 16777215 (24-bit). Topologies with more than ~16 million cross-server links will fail validation, if you somehow manage to hit that number ;)
 * All physical servers must have direct IP reachability — the plugin does not support NAT traversal or relay hosts between servers.
+
+(multiserver-replicate)=
+## Replicated Nodes
+
+```{warning}
+Replicated nodes are an advanced feature intended for out-of-band, per-server services. The plugin does not create a cluster, synchronize state between replicas, prevent split-brain scenarios, or assign unique per-replica addresses.
+```
+
+Nodes or groups listed in **multiserver.replicate** are instantiated in every per-server topology. The node definition, generated configuration, and allocated addresses are copied unchanged into every server directory.
+
+Links connecting to replicated nodes are always treated as local, so traffic between a replicated node and its neighbors never crosses the VXLAN overlay.
+
+A typical safe use case is a local monitoring or telemetry stack. For example, every physical server could run its own exporter, collector, or dashboard container that reads Docker/containerlab state from the local host or scrapes only the lab nodes placed on that server. Those services are outside the simulated network's routing and forwarding behavior; they observe the lab but do not become part of it.
+
+Do not attach replicated nodes to a shared external or management segment unless you provide unique addressing outside the multiserver plugin. Otherwise, the duplicate IP or MAC addresses become visible in the same L2/L3 domain.
+
+```yaml
+multiserver:
+  assignment: auto
+  servers:
+    srv1:
+      host: 192.168.168.128
+    srv2:
+      host: 192.168.168.129
+  replicate: [ prometheus, grafana ]
+```
