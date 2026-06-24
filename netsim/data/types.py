@@ -1024,12 +1024,13 @@ def must_be_node_or_group(value: typing.Any) -> dict:
   if topology is None:                                # pragma: no-cover
     log.fatal('Calling node_or_group validation before the topology has been initialized')
 
-  if value not in topology.nodes and value not in topology.get('groups',{}):
+  groups = topology.get('groups', {})
+  if value not in topology.nodes and value not in groups:
     return {
       '_type':    "node or group",
       '_value':   f"valid node or group name (found {value})",
       '_hint_id': "node_or_group",
-      '_hint':    "Valid node or group names are "+", ".join(list(topology.nodes) + list(topology.get('groups',{})))
+      '_hint':    "Valid node or group names are "+", ".join(list(topology.nodes) + list(groups))
     }
 
   return { '_valid': True }
