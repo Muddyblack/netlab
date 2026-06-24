@@ -61,9 +61,9 @@ Global VXLAN settings are specified in the **multiserver.vxlan** dictionary:
 |-----------|------|---------|
 | **vni_base** | integer | Starting VNI for cross-server links (default: `10000`) |
 | **dstport** | integer | UDP destination port for VXLAN traffic (default: `4789`) |
-| **dev** | string | Default physical interface to bind VXLAN tunnels (default: `ens33`) |
+| **dev** | string | **Required.** Default physical interface to bind VXLAN tunnels |
 
-By default, VXLAN tunnels bind to the global default interface specified in **multiserver.vxlan.dev** (which falls back to `ens33` if not configured). If your physical servers use different interface names, you can override this interface per-server using the **vxlan_dev** parameter under each server in the **multiserver.servers** dictionary.
+VXLAN tunnels bind to the global interface specified in **multiserver.vxlan.dev**. If your physical servers use different interface names, you can override this interface per-server using the **vxlan_dev** parameter under each server in the **multiserver.servers** dictionary.
 
 (multiserver-assignment)=
 ## Assignment Modes
@@ -152,6 +152,13 @@ groups:
                site2-r1, site2-r2, site2-r3, site2-r4, site2-r5 ]
 ```
 
+```{tip}
+You can also reference child groups by name in `members`, which is more concise and avoids repeating individual node names:
+
+    sites:
+      members: [ site1, site2 ]
+```
+
 In the second example the parent `sites` group can still be used for Ansible targeting or shared configuration — it does not affect placement because the child groups (`site1`, `site2`) claim their members first during assignment.
 
 ```{note}
@@ -213,14 +220,14 @@ multiserver:
     spine-host:
       host: 192.168.168.128
       groups: [ spines ]
-      vxlan_dev: ens33          # Override per-server (optional)
+      vxlan_dev: eth0           # Override per-server (optional)
     leaf-host:
       host: 192.168.168.129
       groups: [ leaves ]
-      vxlan_dev: eth0           # Override per-server (optional)
+      vxlan_dev: eth1           # Override per-server (optional)
   vxlan:
     vni_base: 10000
-    dev: ens33                  # Global default interface
+    dev: eth0                   # Required: global default interface
 ```
 
 This places spines on `spine-host` and leaves on `leaf-host`. All four links cross servers and are provisioned as containerlab native VXLAN endpoints.
@@ -267,7 +274,7 @@ rsync -avz server-leaf-host/ user@192.168.168.129:~/lab/server-leaf-host/
 **Step 3: Deploy on each server** by running the following on each remote host:
 
 ```bash
-sudo netlab up --snapshot -vv
+netlab up --snapshot -vv
 ```
 
 When multi-access VXLAN tunnels are present, `netlab up` runs `vxlan-setup.sh` automatically via a [CLI hook](dev-cli-hooks) registered by the plugin.
@@ -275,7 +282,7 @@ When multi-access VXLAN tunnels are present, `netlab up` runs `vxlan-setup.sh` a
 ```{important}
 **Why is `--snapshot` required on remote servers?**
 
-You must run `sudo netlab up --snapshot` on remote servers to load the topology from the pre-generated snapshot (`netlab.snapshot.pickle`) instead of the original `topology.yml`. 
+You must run `netlab up --snapshot` on remote servers to load the topology from the pre-generated snapshot (`netlab.snapshot.pickle`) instead of the original `topology.yml`.
 
 Running with `topology.yml` directly on remote servers will fail because:
 1. **Consistency**: Netlab dynamically allocates IP addresses, interface IDs, and VXLAN VNIs. Independent creation runs on different hosts would result in mismatched allocations.
@@ -285,7 +292,7 @@ Running with `topology.yml` directly on remote servers will fail because:
 **Teardown** on each server:
 
 ```bash
-sudo netlab down
+netlab down
 ```
 
 When multi-access VXLAN tunnels are present, `netlab down` runs `vxlan-teardown.sh` automatically via a CLI hook registered by the plugin.
@@ -313,5 +320,5 @@ The Ansible inventory (`hosts.yml`) is always written into each server directory
 ## Limitations
 
 * Only the **containerlab** provider is supported. Libvirt and virtualbox topologies cannot be split across servers.
-* Cross-server VXLAN tunnels use a flat VNI space starting at **vni_base**. The maximum VNI value is 16777215 (24-bit). Topologies with more than ~16 million cross-server links will fail validation.
+* Cross-server VXLAN tunnels use a flat VNI space starting at **vni_base**. The maximum VNI value is 16777215 (24-bit). Topologies with more than ~16 million cross-server links will fail validation, if you somehow manage to hit that number ;)
 * All physical servers must have direct IP reachability — the plugin does not support NAT traversal or relay hosts between servers.

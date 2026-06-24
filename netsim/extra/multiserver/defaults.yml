@@ -33,9 +33,13 @@ attributes:
             type: int
             _min: 1
       vxlan:
-        vni_base: int
+        vni_base:
+          type: int
+          _required: True
         dstport: int
-        dev: str
+        dev:
+          type: str
+          _required: True
         auto_start: bool
       assignment:
         type: str
@@ -54,7 +58,6 @@ multiserver:
   vxlan:
     vni_base: 10000
     dstport: 4789
-    dev: ens33
     # When true, 'netlab up --snapshot' auto-runs vxlan-setup.sh via a CLI hook.
     # Set false to keep cross-server tunnels inactive until you run the script
     # manually (e.g. to stage convergence or connect servers on your own schedule).

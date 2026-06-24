@@ -98,7 +98,7 @@ topology:
 {%     endfor %}
 {%   endfor %}
 {% elif l.node_count == 2 %}
-{%   if l.clab is defined and l.clab.vxlan is defined %}
+{%   if l.clab.vxlan is defined %}
 {#
     Cross-server P2P link via containerlab native VXLAN endpoint.
     Only the local interface appears in l.interfaces (remote was pruned by the multiserver plugin).

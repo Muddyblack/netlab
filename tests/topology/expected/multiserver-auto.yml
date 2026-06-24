@@ -121,7 +121,7 @@ multiserver:
       id: 2
   vxlan:
     auto_start: true
-    dev: ens33
+    dev: eth0
     dstport: 4789
     vni_base: 10000
 name: input
