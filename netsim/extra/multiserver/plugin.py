@@ -1,5 +1,5 @@
 """
-multiserver plugin — split a netlab topology across multiple physical servers.
+multiserver plugin — split a netlab topology across multiple workers.
 
 Generates per-server containerlab topology files with cross-server VXLAN links.
 See docs/plugins/multiserver.md for usage, examples, and configuration reference.
@@ -155,9 +155,9 @@ def output(topology: Box) -> None:
 
     # Generate VXLAN setup/teardown scripts for multi-access bridge tunnels.
     # Register CLI hooks inside this server's snapshot so 'netlab up --snapshot'
-    # (run from inside server-<name>/ on the remote host) executes them automatically.
-    # The hooks must live in topo_copy — they fire on the remote server, not the
-    # control node, which only runs 'netlab create'.
+    # (run from inside server-<name>/ on the worker) executes them automatically.
+    # The hooks must live in topo_copy — they fire on the worker, not the
+    # controller, which only runs 'netlab create'.
     if vxlan_tunnels:
       dev = server.get("vxlan_dev", "") or vxlan_cfg.get("dev", "")
       if not dev:
@@ -184,8 +184,8 @@ def output(topology: Box) -> None:
   if server_folders:
     topology._multiserver.server_folders = [[out_dir, sorted(nodes)] for out_dir, nodes in server_folders]
 
-  # Flag the control node so the pre_probe hook aborts 'netlab up' instead of
-  # starting the unsplit topology locally. Set after the loop, so worker snapshots
+  # Flag the controller so the pre_probe hook aborts 'netlab up' instead of
+  # starting the unsplit topology locally. Set after the loop, so server snapshots
   # don't capture it; workers run --snapshot and never reach output().
   topology.defaults.multiserver._control_node_abort = [out_dir for out_dir, _ in server_folders]
 
@@ -269,7 +269,7 @@ def _distribute_files(lab_folder: str, server_folders: list, copy_dirs: list, co
 def _write_filtered_inventory(src: Path, dst: Path, local_nodes: set) -> None:
   """Write a hosts.yml containing only the nodes assigned to this server.
 
-  A filtered inventory prevents 'netlab initial' on the remote server from
+  A filtered inventory prevents 'netlab initial' on the worker from
   attempting to configure nodes that live on other servers.
   """
   if not src.exists():
@@ -297,7 +297,7 @@ def _write_filtered_inventory(src: Path, dst: Path, local_nodes: set) -> None:
       yaml.dump(inv, f, default_flow_style=False)
   except Exception as e:
     # Falling back to the unfiltered inventory means 'netlab initial' on the
-    # remote server may try to configure nodes that live on other servers, so
+    # worker may try to configure nodes that live on other servers, so
     # make the failure visible instead of silently degrading.
     log.error(
       f"Could not filter Ansible inventory {src} -> {dst}: {e}",
@@ -589,8 +589,8 @@ def _write_server_snapshot(topo_copy: Box, out_dir: str) -> None:
 def pre_shell_pre_probe(topology: Box) -> None:
   """pre_probe hook fired by 'netlab up' before it probes providers.
 
-  On the control node the flag is set (output() ran during create), so we abort
-  before starting the unsplit topology. On a remote server it's absent, and we
+  On the controller the flag is set (output() ran during create), so we abort
+  before starting the unsplit topology. On a worker it's absent, and we
   resolve search paths and refresh the snapshot/inventory as before.
   """
   abort = topology.defaults.get("multiserver", {}).get("_control_node_abort", None)
@@ -598,9 +598,9 @@ def pre_shell_pre_probe(topology: Box) -> None:
     folders = "\n".join(f"  - {f}/" for f in abort)
     log.fatal(
       "multiserver: per-server configurations have been generated; "
-      "'netlab up' will not start the merged topology on the control node.\n"
+      "'netlab up' will not start the merged topology on the controller.\n"
       f"Generated server folders:\n{folders}\n"
-      "Copy each folder to its server and run 'netlab up --snapshot' there "
+      "Copy each folder to its worker and run 'netlab up --snapshot' there "
       "(see docs/plugins/multiserver.md, Deployment Workflow).",
       "multiserver",
     )

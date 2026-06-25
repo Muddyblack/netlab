@@ -1,4 +1,4 @@
-# multiserver plugin: split a topology across multiple physical servers
+# multiserver plugin: split a topology across multiple workers (server)
 #
 # Requires containerlab >= 0.46 (VXLAN link support).
 #
@@ -66,6 +66,6 @@ multiserver:
   replicate: []
   output_dir: "server-{server_name}"
   # Subdirectories always copied into every server directory
-  copy_dirs: [ group_vars, templates ]
+  copy_dirs: [group_vars, templates]
   # Top-level files always copied into every server directory
-  copy_files: [ ansible.cfg ]
+  copy_files: [ansible.cfg]
