@@ -1,0 +1,91 @@
+#
+# Grafana + Prometheus + cAdvisor monitoring stack
+#
+# Enabling this tool starts a self-contained observability stack next to your lab:
+#
+# * cAdvisor    -- collects per-container CPU / memory / traffic metrics for every
+#                  lab node. Works out of the box, no device configuration needed.
+# * Prometheus  -- scrapes cAdvisor (and, optionally, exporters running on the lab
+#                  nodes) over the management network.
+# * Grafana     -- displays the data. Ships with a ready-to-use "netlab overview"
+#                  dashboard and anonymous access, so you just open the URL.
+#
+---
+runtime: docker     # Default: start in Docker containers
+
+# Container images (override in the lab topology or user defaults to pin versions)
+grafana_image: grafana/grafana:11.3.0
+prometheus_image: prom/prometheus:v3.1.0
+cadvisor_image: gcr.io/cadvisor/cadvisor:v0.49.1
+
+docker:
+  up:
+  # cAdvisor: free per-container metrics for every lab node
+  - docker run -d --rm
+      --name "{name}_cadvisor"
+      {sys.docker_net}
+      --privileged
+      --device /dev/kmsg
+      --volume /:/rootfs:ro
+      --volume /var/run:/var/run:ro
+      --volume /sys:/sys:ro
+      --volume /var/lib/docker/:/var/lib/docker:ro
+      --volume /dev/disk/:/dev/disk:ro
+      {grafana.cadvisor_image}
+
+  # Prometheus: scrapes cAdvisor and any opt-in node exporters
+  - docker run -d --rm
+      --name "{name}_prometheus"
+      {sys.docker_net}
+      -p { 9090 + defaults.multilab.id if defaults.multilab.id else 9090 }:9090
+      --mount type=bind,source="$(pwd)/grafana/prometheus.yml",target=/etc/prometheus/prometheus.yml,readonly
+      {grafana.prometheus_image}
+
+  # Grafana: dashboards, provisioned datasource, anonymous access
+  - docker run -d --rm
+      --name "{name}_grafana"
+      {sys.docker_net}
+      -p { 3000 + defaults.multilab.id if defaults.multilab.id else 3000 }:3000
+      -e GF_AUTH_ANONYMOUS_ENABLED=true
+      -e GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      -e GF_AUTH_DISABLE_LOGIN_FORM=false
+      -e GF_SECURITY_ALLOW_EMBEDDING=true
+      --mount type=bind,source="$(pwd)/grafana/provisioning",target=/etc/grafana/provisioning,readonly
+      --mount type=bind,source="$(pwd)/grafana/dashboards",target=/var/lib/grafana/dashboards,readonly
+      {grafana.grafana_image}
+
+  message:
+    Open Grafana at http://{sys.ipurl}:{ 3000 + defaults.multilab.id if defaults.multilab.id else 3000 }
+    (anonymous access, no login required).
+    Prometheus is at http://{sys.ipurl}:{ 9090 + defaults.multilab.id if defaults.multilab.id else 9090 }.
+    Per-container CPU / memory / traffic dashboards work out of the box.
+
+  down:
+  - docker kill "{name}_grafana" 2>/dev/null || true
+  - docker kill "{name}_prometheus" 2>/dev/null || true
+  - docker kill "{name}_cadvisor" 2>/dev/null || true
+
+config:
+- dest: prometheus.yml
+  render: prometheus
+- dest: provisioning/datasources/netlab.yml
+  template: datasources.yml.j2
+- dest: provisioning/dashboards/netlab.yml
+  template: dashboards.yml.j2
+- dest: dashboards/netlab-overview.json
+  render: dashboard-overview
+
+# Per-node metrics-scraping parameters (all optional).
+#
+# Set 'grafana.port' on a node to have Prometheus scrape a metrics exporter
+# running on that node (for example frr_exporter or node_exporter):
+#
+#   nodes:
+#     r1:
+#       grafana.port: 9342         # scrape http://<mgmt-ip>:9342/metrics
+#
+attributes:
+  node:
+    port: int                      # Exporter TCP port on the node (enables scraping)
+    path: str                      # Metrics path (default: /metrics)
+    job: str                       # Prometheus job label (default: netlab)

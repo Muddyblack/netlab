@@ -48,6 +48,7 @@ _netlab_ includes definitions for the following tools:
    :maxdepth: 1
 
    extool/graphite.md
+   extool/grafana.md
    extool/suzieq.md
    extool/edgeshark.md
    extool/nso.md
