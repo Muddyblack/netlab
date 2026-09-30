@@ -3,6 +3,7 @@
 #
 import os
 import pathlib
+import typing
 
 from box import Box
 
@@ -83,8 +84,11 @@ def destroy_ovs_bridge( brname: str ) -> bool:
 '''
 get_loaded_kernel_modules: Get the list of loaded kernel modules from '/proc/modules'
 '''
-def get_loaded_kernel_modules() -> list:
-  mod_list = pathlib.Path('/proc/modules').read_text().split('\n')
+def get_loaded_kernel_modules() -> typing.Optional[list]:
+  try:
+    mod_list = pathlib.Path('/proc/modules').read_text().split('\n')
+  except FileNotFoundError:                                 # Kernel without loadable module support
+    return None
   return [ line.split(' ')[0] for line in mod_list ]
 
 '''
@@ -122,6 +126,11 @@ def load_kmods(topology: Box) -> None:
   #
   for m in kmod_list.keys():
     loaded_kmods = get_loaded_kernel_modules()
+    if loaded_kmods is None:                                # No loadable modules: whatever the kernel
+      log.info(                                             # ... has is built in, there's nothing to load
+        'The Linux kernel has no loadable module support, assuming the modules containers need are built in',
+        module='clab')
+      return
     needed_kmods = [ kmod for kmod in kmod_list[m] if kmod.replace('?','') not in loaded_kmods ]
     if not needed_kmods:
       continue
