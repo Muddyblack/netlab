@@ -103,7 +103,7 @@ class Containerlab(_Provider):
   def get_lab_status(self,collect_status: dict) -> Box:
     try:
       status = external_commands.run_command(
-                  'docker ps --format json',
+                  'docker ps -a --format json',     # -a: show stopped nodes (netlab node stop) as 'Exited'
                   check_result=True,
                   ignore_errors=True,
                   return_stdout=True,

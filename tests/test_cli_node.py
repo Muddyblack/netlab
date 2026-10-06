@@ -56,3 +56,13 @@ def test_clab_reports_failure() -> None:
     clab = Containerlab('clab',data.get_empty_box())
     topo = _topology()
     assert clab.control_node(topo.nodes.r1,topo,'restart') is False
+
+def test_clab_status_reports_paused_and_stopped_nodes() -> None:
+  docker_ps = '\n'.join([
+    '{"Names":"clab-lab-r1","Status":"Up 2 minutes (Paused)","Image":"frr"}',
+    '{"Names":"clab-lab-r2","Status":"Exited (137) 5 seconds ago","Image":"frr"}'])
+  with mock.patch('netsim.providers.clab.external_commands.run_command',return_value=docker_ps) as run:
+    stat = Containerlab('clab',data.get_empty_box()).get_lab_status({})
+  assert 'ps -a' in run.call_args.args[0]
+  assert stat['clab-lab-r1'].status == 'Up 2 minutes (Paused)'
+  assert stat['clab-lab-r2'].status.startswith('Exited')
