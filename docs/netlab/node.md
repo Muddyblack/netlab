@@ -44,7 +44,3 @@ The *node* parameter is a [nodeset](netlab-inspect-node): a comma-separated list
 | **unpause** | `docker unpause` | Resume a paused container |
 
 The **[netlab status](status.md)** command displays the state reported by Docker (for example, *Up 2 minutes (Paused)* or *Exited (137) 5 seconds ago*).
-
-```{warning}
-**netlab node** does not deploy device configuration. After a node has been restarted, use **[netlab initial](initial.md) --limit *node*** to deploy the initial configuration if the device has lost it.
-```
