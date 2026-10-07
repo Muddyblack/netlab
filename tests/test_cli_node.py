@@ -2,7 +2,6 @@
 # Unit tests for the 'netlab node' command (command-line parsing, action mapping and the
 # containerlab provider hook). No lab is started: the external command runner is mocked.
 #
-import argparse
 import typing
 from unittest import mock
 
@@ -19,29 +18,23 @@ def _topology() -> typing.Any:
     'defaults': { 'providers': { 'clab': { 'config': 'clab.yml', 'lab_prefix': 'clab' }}},
     'nodes': { 'r1': { 'name': 'r1' }}})
 
-def test_aliases_map_to_actions() -> None:
-  assert node.ACTION_ALIASES['up'] == 'start'
-  assert node.ACTION_ALIASES['down'] == 'stop'
-  assert node.ACTION_ALIASES['resume'] == 'unpause'
-
 def test_parser_rejects_unknown_action() -> None:
   with pytest.raises(SystemExit):
     node.node_parse(['r1','explode'])
 
-def test_parser_accepts_actions_and_aliases() -> None:
-  for action in node.NODE_ACTIONS + list(node.ACTION_ALIASES):
+def test_parser_accepts_actions() -> None:
+  for action in ['up','down','restart','pause','unpause']:
     args = node.node_parse(['r1,r2',action])
-    assert isinstance(args, argparse.Namespace)
     assert args.node == 'r1,r2' and args.action == action
 
-@pytest.mark.parametrize('action', ['start','stop','restart'])
-def test_clab_uses_containerlab_for_start_stop_restart(action: str) -> None:
+@pytest.mark.parametrize('action,c_action', [('up','start'),('down','stop'),('restart','restart')])
+def test_clab_uses_containerlab_for_up_down_restart(action: str, c_action: str) -> None:
   with mock.patch('netsim.providers.clab.external_commands.run_command',return_value=True) as run:
     clab = Containerlab('clab',data.get_empty_box())
     topo = _topology()
     assert clab.control_node(topo.nodes.r1,topo,action) is True
   run.assert_called_once()
-  assert run.call_args.args[0] == ['containerlab',action,'-t','clab.yml','--node','r1']
+  assert run.call_args.args[0] == ['containerlab',c_action,'-t','clab.yml','--node','r1']
 
 @pytest.mark.parametrize('action', ['pause','unpause'])
 def test_clab_uses_docker_for_pause(action: str) -> None:

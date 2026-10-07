@@ -103,7 +103,7 @@ class Containerlab(_Provider):
   def get_lab_status(self,collect_status: dict) -> Box:
     try:
       status = external_commands.run_command(
-                  'docker ps -a --format json',     # -a: show stopped nodes (netlab node stop) as 'Exited'
+                  'docker ps -a --format json',     # -a: show stopped nodes as 'Exited'
                   check_result=True,
                   ignore_errors=True,
                   return_stdout=True,
@@ -223,18 +223,14 @@ class Containerlab(_Provider):
     return strings.string_to_list(f'sudo ip netns exec {node_name}') + cmd
 
   def control_node(self, node: Box, topology: Box, action: str) -> bool:
-    """
-    Start, stop, restart, pause or unpause a single container. Containerlab (0.75+) handles
-    start/stop/restart while keeping the links intact, pause/unpause is done with Docker.
-    """
     labops.set_clab_runtime(topology)
-    if action in ('pause','unpause'):
+    if action in ('pause','unpause'):                         # Containerlab cannot pause nodes, Docker can
       cmd = [ 'docker', action, self.get_node_name(node.name,topology) ]
     else:
-      cmd = [ 'containerlab', action, '-t', topology.defaults.providers.clab.config, '--node', node.name ]
+      c_action = { 'up': 'start', 'down': 'stop' }.get(action,action)
+      cmd = [ 'containerlab', c_action, '-t', topology.defaults.providers.clab.config, '--node', node.name ]
 
-    log.print_verbose(f'clab: executing {" ".join(cmd)}')
-    return bool(external_commands.run_command(cmd,check_result=True,ignore_errors=True,run_always=False))
+    return bool(external_commands.run_command(cmd,check_result=True,ignore_errors=True))
 
   def set_tc(self, node: Box, topology: Box, intf: Box, error: bool = True) -> None:
     c_name = self.get_node_name(node.name,topology)

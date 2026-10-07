@@ -8,10 +8,8 @@ import typing
 
 from ..providers import execute_node
 from ..utils import log
-from . import _nodeset, is_dry_run, load_snapshot, parser_add_verbose, parser_lab_location, set_dry_run
+from . import _nodeset, load_snapshot, parser_add_verbose, parser_lab_location, set_dry_run
 
-NODE_ACTIONS = ['start','stop','restart','pause','unpause']
-ACTION_ALIASES = { 'up': 'start', 'down': 'stop', 'resume': 'unpause' }
 
 #
 # CLI parser for 'netlab node' command
@@ -19,8 +17,7 @@ ACTION_ALIASES = { 'up': 'start', 'down': 'stop', 'resume': 'unpause' }
 def node_parse(args: typing.List[str]) -> argparse.Namespace:
   parser = argparse.ArgumentParser(
     prog="netlab node",
-    description='Start, stop, restart, or pause individual lab nodes (links stay intact)',
-    epilog='Aliases: up = start, down = stop, resume = unpause')
+    description='Start, stop, restart, or pause individual lab nodes (links stay intact)')
   parser_add_verbose(parser,quiet=True)
   parser.add_argument(
     '--dry-run',
@@ -32,8 +29,7 @@ def node_parse(args: typing.List[str]) -> argparse.Namespace:
     help='Node(s) to act on (node names, groups, or globs, separated by commas)')
   parser.add_argument(
     dest='action', action='store',
-    choices=NODE_ACTIONS + list(ACTION_ALIASES),
-    metavar='{' + ','.join(NODE_ACTIONS) + '}',
+    choices=['up','down','restart','pause','unpause'],
     help='Action to execute on the selected nodes')
   parser_lab_location(parser,instance=True,action='change nodes in')
 
@@ -43,27 +39,16 @@ def run(cli_args: typing.List[str]) -> None:
   args = node_parse(cli_args)
   log.set_logging_flags(args)
   set_dry_run(args)
-  action = ACTION_ALIASES.get(args.action,args.action)
 
   topology = load_snapshot(args)
   node_list = _nodeset.parse_nodeset(args.node,topology)
   log.exit_on_error()
 
-  failed = []
   for node in node_list:
-    n_data = topology.nodes[node]
-    status = execute_node('control_node',node=n_data,topology=topology,action=action)
+    status = execute_node('control_node',node=topology.nodes[node],topology=topology,action=args.action)
     if status is None:
-      log.error(
-        f'Node {node} uses a provider that cannot {action} individual nodes',
-        category=log.IncorrectType,
-        module='node',
-        skip_header=True)
-    elif status is False:
-      failed.append(node)
-    elif not is_dry_run():
-      log.info(f'{node}: {action} completed',module='node')
+      log.error(f'Provider of node {node} cannot {args.action} individual nodes',module='node',skip_header=True)
+    elif not status:
+      log.error(f'Failed to {args.action} node {node}',module='node',skip_header=True)
 
-  if failed:
-    log.fatal(f'Failed to {action} node(s): {", ".join(failed)}')
   log.exit_on_error()
